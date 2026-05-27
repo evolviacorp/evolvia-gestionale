@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evolvia — Gestionale</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f7f7f5;--bg3:#f0efe9;
+  --text:#1a1a18;--text2:#6b6b67;--text3:#a8a8a4;
+  --border:#e4e4e0;--border2:#d0d0cc;
+  --blue:#185FA5;--blue-bg:#E6F1FB;--blue-mid:#378ADD;
+  --purple:#3C3489;--purple-bg:#EEEDFE;
+  --green:#3B6D11;--green-bg:#EAF3DE;--green-mid:#1D9E75;
+  --red:#A32D2D;--red-bg:#FCEBEB;--red-mid:#E24B4A;
+  --amber:#854F0B;--amber-bg:#FAEEDA;
+  --radius:8px;--radius-lg:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg2);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+.shell{display:flex;min-height:100vh}
+.sidebar{width:220px;background:var(--bg);border-right:0.5px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0}
+.main{flex:1;padding:24px 28px;overflow:auto}
+.logo{padding:20px;border-bottom:0.5px solid var(--border);margin-bottom:8px}
+.logo-name{font-size:16px;font-weight:700;letter-spacing:-.3px}
+.logo-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.nav-section{padding:8px 12px 4px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 20px;font-size:13px;color:var(--text2);cursor:pointer;border-left:2px solid transparent;transition:all .12s}
+.nav-item:hover{background:var(--bg2);color:var(--text)}
+.nav-item.active{background:var(--blue-bg);color:var(--blue);border-left-color:var(--blue);font-weight:500}
+.nav-item i{font-size:15px;width:16px}
+.sidebar-footer{margin-top:auto;padding:16px;border-top:0.5px solid var(--border)}
+.year-row{display:flex;gap:4px;background:var(--bg2);border-radius:var(--radius);padding:3px}
+.year-btn{flex:1;text-align:center;padding:4px 2px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--text2)}
+.year-btn.active{background:var(--bg);color:var(--text);box-shadow:0 0 0 0.5px var(--border2)}
+.page{display:none}.page.active{display:block}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap}
+.page-title{font-size:20px;font-weight:700}
+.page-sub{font-size:13px;color:var(--text3);margin-top:2px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid var(--border2);background:var(--bg);color:var(--text);transition:all .12s;white-space:nowrap}
+.btn:hover{background:var(--bg2)}
+.btn-primary{background:var(--text);color:var(--bg);border-color:var(--text)}.btn-primary:hover{opacity:.85}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-danger{color:var(--red);border-color:#F09595;background:none}.btn-danger:hover{background:var(--red-bg)}
+.btn-ghost{border:none;background:none;color:var(--text2)}.btn-ghost:hover{background:var(--bg2)}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.metric{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px}
+.metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.metric-value{font-size:24px;font-weight:700}
+.mv-blue{color:var(--blue)}.mv-red{color:var(--red)}.mv-green{color:var(--green)}.mv-amber{color:var(--amber)}
+.metric-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px}
+.card-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid var(--border);gap:8px;flex-wrap:wrap}
+.card-title{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
+.form-panel{background:var(--bg2);border-bottom:0.5px solid var(--border);padding:16px;display:none}
+.form-panel.open{display:block}
+.form-title{font-size:14px;font-weight:600;margin-bottom:14px}
+.frow{display:grid;gap:10px;margin-bottom:10px}
+.frow.c2{grid-template-columns:1fr 1fr}
+.frow.c3{grid-template-columns:1fr 1fr 1fr}
+.frow.c4{grid-template-columns:1fr 1fr 1fr 1fr}
+.frow.c5{grid-template-columns:1fr 1fr 1fr 1fr 1fr}
+.field label{font-size:11px;font-weight:500;color:var(--text2);display:block;margin-bottom:4px}
+.field input,.field select{width:100%;padding:7px 10px;font-size:13px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:inherit}
+.field input:focus,.field select:focus{outline:none;border-color:var(--blue-mid);box-shadow:0 0 0 2px rgba(55,138,221,.12)}
+.perc-row{display:flex;gap:12px;align-items:flex-end;margin-bottom:10px}
+.perc-box{flex:1;background:var(--blue-bg);border-radius:var(--radius);padding:10px 12px;border:0.5px solid #B5D4F4}
+.perc-box.riccardo{background:var(--purple-bg);border-color:#CECBF6}
+.perc-label{font-size:11px;font-weight:600;margin-bottom:6px}
+.perc-label.mattia{color:var(--blue)}.perc-label.riccardo{color:var(--purple)}
+.perc-inp{width:100%;padding:6px 10px;font-size:18px;font-weight:700;border:0.5px solid var(--border2);border-radius:6px;background:var(--bg);color:var(--text);text-align:center}
+.perc-quota{font-size:12px;color:var(--text2);margin-top:6px;text-align:center;font-weight:500}
+.perc-warn{font-size:11px;color:var(--red);margin-top:4px;text-align:center}
+.check-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);cursor:pointer}
+.check-row input[type=checkbox]{width:14px;height:14px}
+.form-actions{display:flex;gap:8px;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;font-weight:600;color:var(--text3);text-align:left;padding:8px 12px;border-bottom:0.5px solid var(--border);background:var(--bg2);white-space:nowrap}
+td{padding:9px 12px;border-bottom:0.5px solid var(--border);color:var(--text);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--bg2)}
+.tfoot td{background:var(--bg2);font-weight:600;padding:9px 12px}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.chip{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.cM{background:var(--blue-bg);color:var(--blue)}
+.cR{background:var(--purple-bg);color:var(--purple)}
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:500}
+.bg-gray{background:#f1f0ea;color:#5a5a56}
+.bg-amber{background:var(--amber-bg);color:var(--amber)}
+.nc-tag{font-size:10px;color:var(--red);border:0.5px solid #F09595;border-radius:3px;padding:1px 5px;margin-left:4px}
+.ok-icon{color:var(--green-mid)}.no-icon{color:var(--border2)}
+.link-a{color:var(--blue);text-decoration:none;font-size:12px}
+.link-a:hover{text-decoration:underline}
+.filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 16px;border-bottom:0.5px solid var(--border);background:var(--bg)}
+.filter-bar input,.filter-bar select{padding:6px 10px;font-size:12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text)}
+.filter-bar input{min-width:180px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.residuo-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px}
+.residuo-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.res-line{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:13px}
+.res-line:last-child{border-bottom:none;padding-top:10px;font-size:15px;font-weight:700}
+.chart-wrap{position:relative;height:220px}
+.empty-row td{text-align:center;padding:24px;color:var(--text3)}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:var(--bg);padding:10px 18px;border-radius:var(--radius);font-size:13px;font-weight:500;z-index:200;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.table-wrap{overflow-x:auto}
+@media(max-width:768px){.sidebar{display:none}.main{padding:16px}.two-col{grid-template-columns:1fr}.frow.c2,.frow.c3,.frow.c4,.frow.c5{grid-template-columns:1fr 1fr}}
+@media print{.sidebar,.btn,.form-panel,.filter-bar{display:none!important}.main{padding:0}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-name">⚡ Evolvia</div>
+    <div class="logo-sub">Gestionale amministrativo</div>
+  </div>
+  <div class="nav-section">Principale</div>
+  <div class="nav-item active" onclick="go('dashboard')"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+  <div class="nav-item" onclick="go('fatture')"><i class="ti ti-file-invoice"></i>Fatture Evolvia</div>
+  <div class="nav-item" onclick="go('prelievi')"><i class="ti ti-cash"></i>Prelievi soci</div>
+  <div class="nav-item" onclick="go('spese')"><i class="ti ti-receipt"></i>Spese società</div>
+  <div class="nav-section">Analisi</div>
+  <div class="nav-item" onclick="go('report')"><i class="ti ti-chart-bar"></i>Report annuale</div>
+  <div class="nav-section">Strumenti</div>
+  <div class="nav-item" onclick="go('importa')"><i class="ti ti-upload"></i>Importa Excel</div>
+  <div class="sidebar-footer">
+    <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Anno</div>
+    <div class="year-row" id="year-row"></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="page-header">
+    <div><div class="page-title" id="dash-title">Dashboard</div><div class="page-sub" id="dash-sub"></div></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn btn-ghost btn-sm" onclick="prevMonth()">‹</button>
+      <span id="month-label" style="font-size:15px;font-weight:600;min-width:130px;text-align:center"></span>
+      <button class="btn btn-ghost btn-sm" onclick="nextMonth()">›</button>
+    </div>
+  </div>
+  <div class="metrics" id="dash-metrics"></div>
+  <div class="two-col" style="margin-bottom:16px">
+    <div class="residuo-card" id="res-mattia"></div>
+    <div class="residuo-card" id="res-riccardo"></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-header"><span class="card-title">📄 Ultime fatture Evolvia</span><button class="btn btn-sm" onclick="go('fatture')">Tutte →</button></div>
+      <div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="num">Importo</th><th>Quota M.</th><th>Quota R.</th></tr></thead><tbody id="dash-fatt"></tbody></table></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">💸 Ultimi prelievi</span><button class="btn btn-sm" onclick="go('prelievi')">Tutti →</button></div>
+      <div class="table-wrap"><table><thead><tr><th>Socio</th><th>Descrizione</th><th class="num">Importo</th></tr></thead><tbody id="dash-prel"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<!-- FATTURE EVOLVIA -->
+<div class="page" id="page-fatture">
+  <div class="page-header">
+    <div><div class="page-title">Fatture Evolvia</div><div class="page-sub">Ogni fattura ha la % di competenza per ogni socio</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-sm" onclick="exportXls('fatture')">⬇ Excel</button>
+      <button class="btn btn-sm btn-primary" onclick="toggleForm('ff')">+ Nuova fattura</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="form-panel" id="ff">
+      <div class="form-title">Nuova fattura Evolvia</div>
+      <div class="frow c4">
+        <div class="field"><label>N° Fattura</label><input id="ff-num" placeholder="001/2026"></div>
+        <div class="field"><label>Cliente</label><input id="ff-cli" placeholder="Nome cliente"></div>
+        <div class="field"><label>Descrizione</label><input id="ff-desc" placeholder="Servizio..."></div>
+        <div class="field"><label>Categoria</label><select id="ff-cat"><option>Multiutility</option><option>Luce/Gas</option><option>Internet</option><option>Fotovoltaico</option><option>Pratiche camerali</option><option>Consulenza</option><option>Altro</option></select></div>
+      </div>
+      <div class="frow c4">
+        <div class="field"><label>Imponibile (€)</label><input id="ff-imp" type="number" step="0.01" placeholder="0.00" oninput="updateQuote()"></div>
+        <div class="field"><label>IVA %</label><select id="ff-iva"><option value="22">22%</option><option value="10">10%</option><option value="4">4%</option><option value="0">Esente</option></select></div>
+        <div class="field"><label>Mese</label><select id="ff-month"></select></div>
+        <div class="field"><label>Link allegato Drive</label><input id="ff-drive" placeholder="https://drive.google.com/..."></div>
+      </div>
+      <!-- QUOTE SOCI -->
+      <div style="margin-bottom:10px">
+        <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">Quote di competenza soci</div>
+        <div class="perc-row">
+          <div class="perc-box">
+            <div class="perc-label mattia">Mattia %</div>
+            <input class="perc-inp" id="ff-pM" type="number" min="0" max="100" value="50" oninput="syncPerc('M')">
+            <div class="perc-quota" id="ff-qM">Quota: €0,00</div>
+          </div>
+          <div style="font-size:22px;color:var(--text3);padding-bottom:20px">+</div>
+          <div class="perc-box riccardo">
+            <div class="perc-label riccardo">Riccardo %</div>
+            <input class="perc-inp" id="ff-pR" type="number" min="0" max="100" value="50" oninput="syncPerc('R')">
+            <div class="perc-quota" id="ff-qR">Quota: €0,00</div>
+          </div>
+          <div style="font-size:22px;color:var(--text3);padding-bottom:20px">=</div>
+          <div style="padding-bottom:20px;min-width:80px;text-align:center">
+            <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Totale %</div>
+            <div id="ff-ptot" style="font-size:24px;font-weight:700;color:var(--green)">100%</div>
+          </div>
+        </div>
+        <div id="ff-pwarn" class="perc-warn" style="display:none">⚠ Le percentuali non sommano a 100%</div>
+      </div>
+      <div style="display:flex;gap:20px;margin-bottom:10px">
+        <label class="check-row"><input type="checkbox" id="ff-boni"> Bonifico ricevuto</label>
+        <label class="check-row"><input type="checkbox" id="ff-nc"> Nota di credito</label>
+      </div>
+      <div class="field" style="margin-bottom:10px"><label>Note</label><input id="ff-note" placeholder="Note opzionali..."></div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="addFattura()">Salva fattura</button>
+        <button class="btn btn-ghost" onclick="toggleForm('ff')">Annulla</button>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <input placeholder="🔍 Cerca cliente, descrizione..." id="sf-q" oninput="renderFatture()">
+      <select id="sf-month" onchange="renderFatture()"><option value="">Tutti i mesi</option></select>
+      <select id="sf-boni" onchange="renderFatture()"><option value="">Tutti</option><option value="1">Incassate</option><option value="0">Da incassare</option></select>
+      <span id="sf-count" style="font-size:12px;color:var(--text3);margin-left:auto"></span>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr>
+        <th>N°</th><th>Cliente</th><th>Descrizione</th><th>Cat.</th>
+        <th class="num">Imponibile</th><th>IVA</th><th class="num">Totale</th>
+        <th>Mese</th>
+        <th class="num">% M</th><th class="num">Quota M.</th>
+        <th class="num">% R</th><th class="num">Quota R.</th>
+        <th>Boni.</th><th>Drive</th><th>Note</th><th></th>
+      </tr></thead>
+      <tbody id="tb-fatture"></tbody>
+      <tfoot><tr id="tf-fatture" class="tfoot"></tr></tfoot>
+    </table></div>
+  </div>
+</div>
+
+<!-- PRELIEVI -->
+<div class="page" id="page-prelievi">
+  <div class="page-header">
+    <div><div class="page-title">Prelievi soci</div><div class="page-sub">Quanto ogni socio ha già fatturato/prelevato dalla sua quota</div></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-sm" onclick="exportXls('prelievi')">⬇ Excel</button>
+      <button class="btn btn-sm btn-primary" onclick="toggleForm('fp')">+ Nuovo prelievo</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="form-panel" id="fp">
+      <div class="form-title">Nuovo prelievo / anticipo socio</div>
+      <div class="frow c5">
+        <div class="field"><label>Socio</label><select id="fp-socio"><option>MATTIA</option><option>RICCARDO</option></select></div>
+        <div class="field"><label>Importo (€)</label><input id="fp-imp" type="number" step="0.01" placeholder="0.00"></div>
+        <div class="field"><label>Mese</label><select id="fp-month"></select></div>
+        <div class="field"><label>Descrizione</label><input id="fp-desc" placeholder="Fattura ditta, anticipo..."></div>
+        <div class="field"><label>Link Drive</label><input id="fp-drive" placeholder="https://drive.google.com/..."></div>
+      </div>
+      <div class="field" style="margin-bottom:10px"><label>Note</label><input id="fp-note" placeholder="Note opzionali..."></div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="addPrelievo()">Salva prelievo</button>
+        <button class="btn btn-ghost" onclick="toggleForm('fp')">Annulla</button>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <select id="sp-socio" onchange="renderPrelievi()"><option value="">Tutti i soci</option><option>MATTIA</option><option>RICCARDO</option></select>
+      <select id="sp-month" onchange="renderPrelievi()"><option value="">Tutti i mesi</option></select>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Socio</th><th>Descrizione</th><th>Mese</th><th class="num">Importo</th><th>Drive</th><th>Note</th><th></th></tr></thead>
+      <tbody id="tb-prelievi"></tbody>
+      <tfoot><tr id="tf-prelievi" class="tfoot"></tr></tfoot>
+    </table></div>
+  </div>
+</div>
+
+<!-- SPESE SOCIETA -->
+<div class="page" id="page-spese">
+  <div class="page-header">
+    <div><div class="page-title">Spese società</div><div class="page-sub">Costi operativi di Evolvia (non collegati alle quote soci)</div></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-sm" onclick="exportXls('spese')">⬇ Excel</button>
+      <button class="btn btn-sm btn-primary" onclick="toggleForm('fs')">+ Nuova spesa</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="form-panel" id="fs">
+      <div class="form-title">Nuova spesa società</div>
+      <div class="frow c4">
+        <div class="field"><label>Fornitore</label><input id="fs-forn" placeholder="Ragione sociale"></div>
+        <div class="field"><label>N° Doc.</label><input id="fs-num" placeholder="001/2026"></div>
+        <div class="field"><label>Descrizione</label><input id="fs-desc" placeholder="Tipo di spesa"></div>
+        <div class="field"><label>Categoria</label><select id="fs-cat"><option>Affitto</option><option>Leasing auto</option><option>Commercialista</option><option>Marketing</option><option>Personale</option><option>Carburante</option><option>Software</option><option>Telefonia</option><option>Tasse/F24</option><option>Cene aziendali</option><option>Ufficio</option><option>Altro</option></select></div>
+      </div>
+      <div class="frow c4">
+        <div class="field"><label>Imponibile (€)</label><input id="fs-imp" type="number" step="0.01" placeholder="0.00"></div>
+        <div class="field"><label>IVA %</label><select id="fs-iva"><option value="22">22%</option><option value="10">10%</option><option value="4">4%</option><option value="0">Esente</option></select></div>
+        <div class="field"><label>Mese</label><select id="fs-month"></select></div>
+        <div class="field"><label>Link Drive</label><input id="fs-drive" placeholder="https://drive.google.com/..."></div>
+      </div>
+      <div style="display:flex;gap:20px;margin-bottom:10px">
+        <label class="check-row"><input type="checkbox" id="fs-pag"> Pagata</label>
+        <label class="check-row"><input type="checkbox" id="fs-nc"> Nota di credito</label>
+      </div>
+      <div class="field" style="margin-bottom:10px"><label>Note</label><input id="fs-note" placeholder="Note opzionali..."></div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="addSpesa()">Salva spesa</button>
+        <button class="btn btn-ghost" onclick="toggleForm('fs')">Annulla</button>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <input placeholder="🔍 Cerca fornitore, descrizione..." id="ss-q" oninput="renderSpese()">
+      <select id="ss-month" onchange="renderSpese()"><option value="">Tutti i mesi</option></select>
+      <select id="ss-cat" onchange="renderSpese()"><option value="">Tutte le categorie</option></select>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Fornitore</th><th>N°</th><th>Desc.</th><th>Cat.</th><th class="num">Imponibile</th><th>IVA</th><th class="num">Totale</th><th>Mese</th><th>Pag.</th><th>Drive</th><th>Note</th><th></th></tr></thead>
+      <tbody id="tb-spese"></tbody>
+      <tfoot><tr id="tf-spese" class="tfoot"></tr></tfoot>
+    </table></div>
+  </div>
+</div>
+
+<!-- REPORT -->
+<div class="page" id="page-report">
+  <div class="page-header">
+    <div><div class="page-title">Report annuale</div></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-sm" onclick="exportReportXls()">⬇ Excel completo</button>
+      <button class="btn btn-sm" onclick="window.print()">🖨 PDF</button>
+    </div>
+  </div>
+  <div class="metrics" id="rep-metrics"></div>
+  <div class="two-col" style="margin-bottom:16px">
+    <div class="residuo-card" id="rep-res-M"></div>
+    <div class="residuo-card" id="rep-res-R"></div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-header"><span class="card-title">📈 Andamento mensile</span>
+      <div style="display:flex;gap:12px;font-size:11px;color:var(--text3)">
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#1D9E75;margin-right:4px"></span>Fatturato</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#E24B4A;margin-right:4px"></span>Spese soc.</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#378ADD;border:1.5px dashed #185FA5;margin-right:4px"></span>Margine</span>
+      </div>
+    </div>
+    <div style="padding:16px"><div class="chart-wrap"><canvas id="chart-ann" role="img" aria-label="Andamento mensile">Grafico andamento mensile.</canvas></div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">📅 Riepilogo mensile</span></div>
+    <div class="table-wrap"><table>
+      <thead><tr>
+        <th>Mese</th><th class="num">Fatturato</th><th class="num">Spese soc.</th><th class="num">Margine</th>
+        <th class="num">Quota Mattia</th><th class="num">Prel. Mattia</th><th class="num">Res. Mattia</th>
+        <th class="num">Quota Riccardo</th><th class="num">Prel. Riccardo</th><th class="num">Res. Riccardo</th>
+      </tr></thead>
+      <tbody id="tb-report"></tbody>
+      <tfoot><tr id="tf-report" class="tfoot"></tr></tfoot>
+    </table></div>
+  </div>
+</div>
+
+<!-- IMPORTA -->
+<div class="page" id="page-importa">
+  <div class="page-header"><div class="page-title">Importa dati Excel</div></div>
+  <div class="card" style="max-width:580px">
+    <div style="padding:24px">
+      <p style="color:var(--text2);margin-bottom:16px;font-size:13px">Carica il file Excel del gestionale precedente per importare fatture e spese dai fogli mensili.</p>
+      <div style="border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:32px;text-align:center;margin-bottom:16px">
+        <div style="font-size:36px;margin-bottom:8px">📂</div>
+        <div style="font-size:14px;font-weight:600;margin-bottom:6px">Trascina il file Excel qui</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:16px">oppure</div>
+        <label class="btn btn-primary" style="cursor:pointer">Scegli file <input type="file" id="xl-in" accept=".xlsx,.xls" style="display:none" onchange="importXl(this)"></label>
+      </div>
+      <div id="imp-log" style="display:none;font-size:12px;background:var(--bg2);border-radius:var(--radius);padding:12px;max-height:180px;overflow-y:auto;color:var(--text2)"></div>
+      <div style="margin-top:16px;padding-top:16px;border-top:0.5px solid var(--border)">
+        <p style="font-size:12px;color:var(--text3);margin-bottom:12px">⚠ L'importazione aggiunge i dati senza cancellare quelli esistenti. Le % soci vengono impostate di default 50/50.</p>
+        <button class="btn btn-danger btn-sm" onclick="if(confirm('Cancellare TUTTI i dati?')){clearAll()}">🗑 Cancella tutti i dati</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const MESI=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const MS=['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+const YEARS=[2024,2025,2026,2027];
+const fmt=v=>new Intl.NumberFormat('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2}).format(v||0);
+const fmtK=v=>{const a=Math.abs(v),s=v<0?'−':'';return s+'€'+(a>=100000?(a/1000).toFixed(0)+'k':a>=10000?(a/1000).toFixed(1)+'k':fmt(a))};
+
+let yr=2026, mo=new Date().getMonth();
+// db.fatture: oggetti con percM, percR, quotaM, quotaR
+// db.prelievi: prelievi per singolo socio
+// db.spese: spese generali società
+let db={fatture:[],prelievi:[],spese:[]};
+let chartInst=null;
+
+function load(){
+  try{const s=localStorage.getItem('evolvia_v3');if(s)db=JSON.parse(s);}catch(e){}
+  initSel();renderAll();
+}
+function save(){localStorage.setItem('evolvia_v3',JSON.stringify(db));}
+function toast(m,ms=2200){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),ms);}
+
+function initSel(){
+  document.getElementById('year-row').innerHTML=YEARS.map(y=>`<button class="year-btn ${y===yr?'active':''}" onclick="setYear(${y})">${y}</button>`).join('');
+  const mOpts=MESI.map((n,i)=>`<option value="${i}" ${i===mo?'selected':''}>${n}</option>`).join('');
+  const mOptsAll='<option value="">Tutti i mesi</option>'+MESI.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+  ['ff-month','fp-month','fs-month'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=mOpts;});
+  ['sf-month','sp-month','ss-month'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=mOptsAll;});
+  const sc=document.getElementById('ss-cat');
+  if(sc)sc.innerHTML='<option value="">Tutte le categorie</option>'+['Affitto','Leasing auto','Commercialista','Marketing','Personale','Carburante','Software','Telefonia','Tasse/F24','Cene aziendali','Ufficio','Altro'].map(c=>`<option>${c}</option>`).join('');
+}
+
+function setYear(y){yr=y;document.querySelectorAll('.year-btn').forEach(b=>b.classList.toggle('active',parseInt(b.textContent)===y));renderAll();}
+function prevMonth(){mo===0?(mo=11,yr--):mo--;document.querySelectorAll('.year-btn').forEach(b=>b.classList.toggle('active',parseInt(b.textContent)===yr));renderAll();}
+function nextMonth(){mo===11?(mo=0,yr++):mo++;document.querySelectorAll('.year-btn').forEach(b=>b.classList.toggle('active',parseInt(b.textContent)===yr));renderAll();}
+
+function go(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{if((n.getAttribute('onclick')||'').includes("'"+name+"'"))n.classList.add('active');});
+  if(name==='report')renderReport();
+}
+function toggleForm(id){document.getElementById(id).classList.toggle('open');}
+
+// CALCOLO QUOTE LIVE
+function updateQuote(){
+  const imp=parseFloat(document.getElementById('ff-imp').value)||0;
+  const pM=parseFloat(document.getElementById('ff-pM').value)||0;
+  const pR=parseFloat(document.getElementById('ff-pR').value)||0;
+  document.getElementById('ff-qM').textContent='Quota: €'+fmt(imp*pM/100);
+  document.getElementById('ff-qR').textContent='Quota: €'+fmt(imp*pR/100);
+  const tot=pM+pR;
+  const ptEl=document.getElementById('ff-ptot');
+  ptEl.textContent=tot+'%';
+  ptEl.style.color=Math.abs(tot-100)<0.01?'var(--green)':'var(--red)';
+  document.getElementById('ff-pwarn').style.display=Math.abs(tot-100)<0.01?'none':'block';
+}
+function syncPerc(changed){
+  const pM=parseFloat(document.getElementById('ff-pM').value)||0;
+  const pR=parseFloat(document.getElementById('ff-pR').value)||0;
+  // non auto-sync, lasciamo libera la somma
+  updateQuote();
+}
+
+// RESIDUO PER SOCIO
+function calcResiduo(socio, filteredYr){
+  const fy=filteredYr||yr;
+  const aF=db.fatture.filter(x=>x.year===fy);
+  const aP=db.prelievi.filter(x=>x.year===fy&&x.socio===socio);
+  const quotaTot=socio==='MATTIA'
+    ? aF.reduce((s,x)=>s+(x.quotaM||0),0)
+    : aF.reduce((s,x)=>s+(x.quotaR||0),0);
+  const prelTot=aP.reduce((s,x)=>s+x.imp,0);
+  return{quota:quotaTot, prelievi:prelTot, residuo:quotaTot-prelTot};
+}
+
+function residuoCard(socio, containerEl){
+  const r=calcResiduo(socio);
+  const cfg=socio==='MATTIA'?{av:'#B5D4F4',tc:'var(--blue)',init:'MA',cls:'cM'}:{av:'#CECBF6',tc:'var(--purple)',init:'RI',cls:'cR'};
+  containerEl.innerHTML=`
+    <div class="residuo-header">
+      <div class="avatar" style="background:${cfg.av};color:${cfg.tc}">${cfg.init}</div>
+      <div><div style="font-size:15px;font-weight:700">${socio.charAt(0)+socio.slice(1).toLowerCase()}</div><div style="font-size:11px;color:var(--text3)">Anno ${yr}</div></div>
+    </div>
+    <div class="res-line"><span style="color:var(--text2)">Quota totale dalle fatture</span><span style="color:var(--blue);font-weight:600">${fmtK(r.quota)}</span></div>
+    <div class="res-line"><span style="color:var(--text2)">Già prelevato / fatturato</span><span style="color:var(--red)">${fmtK(r.prelievi)}</span></div>
+    <div class="res-line"><span>Residuo disponibile</span><span style="color:${r.residuo>=0?'var(--green)':'var(--red)'};font-size:20px">${fmtK(r.residuo)}</span></div>
+  `;
+}
+
+function renderAll(){
+  document.getElementById('month-label').textContent=MESI[mo]+' '+yr;
+  document.getElementById('dash-title').textContent='Dashboard — '+MESI[mo];
+  document.getElementById('dash-sub').textContent=yr;
+  const mF=db.fatture.filter(x=>x.month===mo&&x.year===yr);
+  const mP=db.prelievi.filter(x=>x.month===mo&&x.year===yr);
+  const mS=db.spese.filter(x=>x.month===mo&&x.year===yr);
+  const totF=mF.reduce((s,x)=>s+x.imp,0);
+  const totS=mS.reduce((s,x)=>s+x.imp,0);
+  const totPM=mP.filter(x=>x.socio==='MATTIA').reduce((s,x)=>s+x.imp,0);
+  const totPR=mP.filter(x=>x.socio==='RICCARDO').reduce((s,x)=>s+x.imp,0);
+  const daInc=mF.filter(x=>!x.boni&&!x.nc).reduce((s,x)=>s+x.imp*(1+(x.iva||22)/100),0);
+  document.getElementById('dash-metrics').innerHTML=`
+    <div class="metric"><div class="metric-label">Fatturato mese</div><div class="metric-value mv-blue">${fmtK(totF)}</div><div class="metric-sub">${mF.length} fatture</div></div>
+    <div class="metric"><div class="metric-label">Spese società</div><div class="metric-value mv-red">${fmtK(totS)}</div><div class="metric-sub">${mS.length} voci</div></div>
+    <div class="metric"><div class="metric-label">Prelievi Mattia</div><div class="metric-value mv-amber">${fmtK(totPM)}</div></div>
+    <div class="metric"><div class="metric-label">Prelievi Riccardo</div><div class="metric-value mv-amber">${fmtK(totPR)}</div></div>
+    <div class="metric"><div class="metric-label">Da incassare</div><div class="metric-value">${fmtK(daInc)}</div></div>
+    <div class="metric"><div class="metric-label">IVA a debito</div><div class="metric-value">${fmtK(mF.reduce((s,x)=>s+x.imp*(x.iva||22)/100,0))}</div></div>
+  `;
+  residuoCard('MATTIA',document.getElementById('res-mattia'));
+  residuoCard('RICCARDO',document.getElementById('res-riccardo'));
+  const aF=db.fatture.filter(x=>x.year===yr);
+  document.getElementById('dash-fatt').innerHTML=aF.slice(-5).reverse().map(x=>`<tr>
+    <td>${x.cli||'—'}</td><td class="num">${fmt(x.imp)}</td>
+    <td class="num" style="color:var(--blue)">${x.percM}% = €${fmt(x.quotaM)}</td>
+    <td class="num" style="color:var(--purple)">${x.percR}% = €${fmt(x.quotaR)}</td>
+  </tr>`).join('')||'<tr class="empty-row"><td colspan="4">Nessuna fattura</td></tr>';
+  document.getElementById('dash-prel').innerHTML=db.prelievi.filter(x=>x.year===yr).slice(-5).reverse().map(x=>`<tr>
+    <td><span class="chip ${x.socio==='MATTIA'?'cM':'cR'}">${x.socio==='MATTIA'?'Mattia':'Riccardo'}</span></td>
+    <td>${x.desc||'—'}</td><td class="num" style="color:var(--amber)">${fmt(x.imp)}</td>
+  </tr>`).join('')||'<tr class="empty-row"><td colspan="3">Nessun prelievo</td></tr>';
+}
+
+// ADD FATTURA
+function addFattura(){
+  const imp=parseFloat(document.getElementById('ff-imp').value)||0;
+  if(!imp){toast('⚠ Inserisci imponibile');return;}
+  const pM=parseFloat(document.getElementById('ff-pM').value)||0;
+  const pR=parseFloat(document.getElementById('ff-pR').value)||0;
+  if(Math.abs(pM+pR-100)>0.1){if(!confirm(`Le percentuali sommano ${pM+pR}%, non 100%. Continuare?`))return;}
+  db.fatture.push({
+    id:Date.now(),num:v('ff-num'),cli:v('ff-cli'),desc:v('ff-desc'),cat:v('ff-cat'),
+    imp,iva:parseFloat(v('ff-iva')),totale:imp*(1+parseFloat(v('ff-iva'))/100),
+    month:parseInt(v('ff-month')),year:yr,
+    percM:pM,percR:pR,quotaM:imp*pM/100,quotaR:imp*pR/100,
+    boni:cb('ff-boni'),nc:cb('ff-nc'),drive:v('ff-drive'),note:v('ff-note')
+  });
+  save();clearForm(['ff-num','ff-cli','ff-desc','ff-imp','ff-drive','ff-note'],['ff-boni','ff-nc']);
+  document.getElementById('ff-pM').value=50;document.getElementById('ff-pR').value=50;updateQuote();
+  toggleForm('ff');renderAll();renderFatture();toast('✅ Fattura aggiunta');
+}
+
+function addPrelievo(){
+  const imp=parseFloat(document.getElementById('fp-imp').value)||0;
+  if(!imp){toast('⚠ Inserisci importo');return;}
+  const socio=v('fp-socio');
+  const month=parseInt(v('fp-month'));
+  const desc=v('fp-desc')||'Prelievo '+socio.charAt(0)+socio.slice(1).toLowerCase();
+  const drive=v('fp-drive');
+  const note=v('fp-note');
+  const pid=Date.now();
+  // 1. Registra prelievo socio
+  db.prelievi.push({id:pid,socio,imp,month,year:yr,desc,drive,note});
+  // 2. Registra automaticamente come spesa società (collegata al prelievo)
+  db.spese.push({
+    id:pid+0.5,
+    forn:socio.charAt(0)+socio.slice(1).toLowerCase()+' (ditta individuale)',
+    num:'',
+    desc:desc,
+    cat:'Prelievo socio',
+    imp,iva:0,totale:imp,
+    month,year:yr,
+    pag:true,
+    nc:false,
+    drive,
+    note:'Generata automaticamente da prelievo socio',
+    fromPrelievo:pid
+  });
+  save();clearForm(['fp-imp','fp-desc','fp-drive','fp-note'],[]);
+  toggleForm('fp');renderAll();renderPrelievi();renderSpese();toast('✅ Prelievo aggiunto — spesa creata automaticamente');
+}
+
+function addSpesa(){
+  const imp=parseFloat(document.getElementById('fs-imp').value)||0;
+  if(!imp){toast('⚠ Inserisci imponibile');return;}
+  const iva=parseFloat(v('fs-iva'));
+  db.spese.push({id:Date.now(),forn:v('fs-forn'),num:v('fs-num'),desc:v('fs-desc'),cat:v('fs-cat'),imp,iva,totale:imp*(1+iva/100),month:parseInt(v('fs-month')),year:yr,pag:cb('fs-pag'),nc:cb('fs-nc'),drive:v('fs-drive'),note:v('fs-note')});
+  save();clearForm(['fs-forn','fs-num','fs-desc','fs-imp','fs-drive','fs-note'],['fs-pag','fs-nc']);
+  toggleForm('fs');renderSpese();toast('✅ Spesa aggiunta');
+}
+
+function v(id){return document.getElementById(id)?.value||'';}
+function cb(id){return document.getElementById(id)?.checked||false;}
+function clearForm(ids,cbs){ids.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});cbs.forEach(id=>{const el=document.getElementById(id);if(el)el.checked=false;});}
+function del(arr,id){
+  const i=db[arr].findIndex(x=>x.id===id);
+  if(i>=0){
+    // Se elimino un prelievo, elimino anche la spesa collegata
+    if(arr==='prelievi'){
+      const pid=db.prelievi[i].id;
+      db.spese=db.spese.filter(x=>x.fromPrelievo!==pid);
+    }
+    // Se elimino una spesa generata da prelievo, impedisco (mostrare avviso)
+    if(arr==='spese'&&db.spese[i]&&db.spese[i].fromPrelievo){
+      if(!confirm('Questa spesa è collegata a un prelievo socio. Eliminando la spesa verrà eliminato anche il prelievo. Continuare?'))return;
+      const pid=db.spese[i].fromPrelievo;
+      db.prelievi=db.prelievi.filter(x=>x.id!==pid);
+    }
+    db[arr].splice(i,1);
+    save();renderAll();renderFatture();renderPrelievi();renderSpese();
+  }
+}
+
+function renderFatture(){
+  const q=(v('sf-q')).toLowerCase();
+  const sm=v('sf-month');const sb=v('sf-boni');
+  let list=db.fatture.filter(x=>{
+    if(x.year!==yr)return false;
+    if(sm!==''&&x.month!==parseInt(sm))return false;
+    if(sb==='1'&&!x.boni)return false;
+    if(sb==='0'&&x.boni)return false;
+    if(q&&!(x.cli+' '+x.desc+' '+x.num).toLowerCase().includes(q))return false;
+    return true;
+  });
+  document.getElementById('sf-count').textContent=list.length+' fatture';
+  const tb=document.getElementById('tb-fatture');
+  tb.innerHTML=list.length===0?'<tr class="empty-row"><td colspan="16">Nessuna fattura trovata</td></tr>':
+    list.sort((a,b)=>b.month-a.month||b.id-a.id).map(x=>`<tr>
+      <td>${x.num||'—'}</td><td>${x.cli||'—'}</td>
+      <td>${x.desc||'—'}${x.nc?'<span class="nc-tag">NC</span>':''}</td>
+      <td><span class="badge bg-gray">${x.cat||'—'}</span></td>
+      <td class="num">${fmt(x.imp)}</td><td>${x.iva}%</td>
+      <td class="num" style="font-weight:600">${fmt(x.totale)}</td>
+      <td>${MS[x.month]}</td>
+      <td class="num" style="color:var(--blue)">${x.percM}%</td>
+      <td class="num" style="color:var(--blue);font-weight:600">${fmt(x.quotaM)}</td>
+      <td class="num" style="color:var(--purple)">${x.percR}%</td>
+      <td class="num" style="color:var(--purple);font-weight:600">${fmt(x.quotaR)}</td>
+      <td style="text-align:center">${x.boni?'<span class="ok-icon">✓</span>':'<span class="no-icon">○</span>'}</td>
+      <td>${x.drive?`<a class="link-a" href="${x.drive}" target="_blank">📎</a>`:'—'}</td>
+      <td style="font-size:12px;color:var(--text3)">${x.note||''}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="del('fatture',${x.id})">✕</button></td>
+    </tr>`).join('');
+  const tF=list.reduce((s,x)=>s+x.imp,0);
+  const qM=list.reduce((s,x)=>s+x.quotaM,0);
+  const qR=list.reduce((s,x)=>s+x.quotaR,0);
+  document.getElementById('tf-fatture').innerHTML=`<td colspan="4">Totale (${list.length})</td><td class="num">${fmt(tF)}</td><td></td><td class="num">${fmt(list.reduce((s,x)=>s+x.totale,0))}</td><td></td><td></td><td class="num" style="color:var(--blue)">${fmt(qM)}</td><td></td><td class="num" style="color:var(--purple)">${fmt(qR)}</td><td colspan="4"></td>`;
+}
+
+function renderPrelievi(){
+  const ss=v('sp-socio');const sm=v('sp-month');
+  let list=db.prelievi.filter(x=>{
+    if(x.year!==yr)return false;
+    if(ss&&x.socio!==ss)return false;
+    if(sm!==''&&x.month!==parseInt(sm))return false;
+    return true;
+  });
+  const tb=document.getElementById('tb-prelievi');
+  tb.innerHTML=list.length===0?'<tr class="empty-row"><td colspan="7">Nessun prelievo</td></tr>':
+    list.sort((a,b)=>b.month-a.month).map(x=>`<tr>
+      <td><span class="chip ${x.socio==='MATTIA'?'cM':'cR'}">${x.socio==='MATTIA'?'Mattia':'Riccardo'}</span></td>
+      <td>${x.desc||'—'}</td><td>${MS[x.month]}</td>
+      <td class="num" style="font-weight:600;color:var(--amber)">${fmt(x.imp)}</td>
+      <td>${x.drive?`<a class="link-a" href="${x.drive}" target="_blank">📎</a>`:'—'}</td>
+      <td style="font-size:12px;color:var(--text3)">${x.note||''}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="del('prelievi',${x.id})">✕</button></td>
+    </tr>`).join('');
+  document.getElementById('tf-prelievi').innerHTML=`<td colspan="3">Totale (${list.length})</td><td class="num">${fmt(list.reduce((s,x)=>s+x.imp,0))}</td><td colspan="3"></td>`;
+}
+
+function renderSpese(){
+  const q=(v('ss-q')).toLowerCase();const sm=v('ss-month');const sc=v('ss-cat');
+  let list=db.spese.filter(x=>{
+    if(x.year!==yr)return false;
+    if(sm!==''&&x.month!==parseInt(sm))return false;
+    if(sc&&x.cat!==sc)return false;
+    if(q&&!(x.forn+' '+x.desc).toLowerCase().includes(q))return false;
+    return true;
+  });
+  const tb=document.getElementById('tb-spese');
+  tb.innerHTML=list.length===0?'<tr class="empty-row"><td colspan="12">Nessuna spesa trovata</td></tr>':
+    list.sort((a,b)=>b.month-a.month).map(x=>`<tr>
+      <td>${x.forn||'—'}</td><td>${x.num||'—'}</td><td>${x.desc||'—'}${x.nc?'<span class="nc-tag">NC</span>':''}</td>
+      <td><span class="badge bg-amber">${x.cat||'—'}</span></td>
+      <td class="num">${fmt(x.imp)}</td><td>${x.iva}%</td>
+      <td class="num" style="font-weight:600">${fmt(x.totale)}</td>
+      <td>${MS[x.month]}</td>
+      <td style="text-align:center">${x.pag?'<span class="ok-icon">✓</span>':'<span class="no-icon">○</span>'}</td>
+      <td>${x.drive?`<a class="link-a" href="${x.drive}" target="_blank">📎</a>`:'—'}</td>
+      <td style="font-size:12px;color:var(--text3)">${x.fromPrelievo?'<span style="font-size:10px;background:var(--purple-bg);color:var(--purple);border-radius:3px;padding:1px 5px;margin-right:4px">AUTO</span>':''}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="del('spese',${x.id})">✕</button></td>
+    </tr>`).join('');
+  const tI=list.reduce((s,x)=>s+x.imp,0);
+  document.getElementById('tf-spese').innerHTML=`<td colspan="4">Totale (${list.length})</td><td class="num">${fmt(tI)}</td><td></td><td class="num">${fmt(list.reduce((s,x)=>s+x.totale,0))}</td><td colspan="5"></td>`;
+}
+
+function renderReport(){
+  const aF=db.fatture.filter(x=>x.year===yr);
+  const aS=db.spese.filter(x=>x.year===yr);
+  const aP=db.prelievi.filter(x=>x.year===yr);
+  const totF=aF.reduce((s,x)=>s+x.imp,0);
+  const totS=aS.reduce((s,x)=>s+x.imp,0);
+  const rM=calcResiduo('MATTIA',yr);
+  const rR=calcResiduo('RICCARDO',yr);
+  document.getElementById('rep-metrics').innerHTML=`
+    <div class="metric"><div class="metric-label">Fatturato ${yr}</div><div class="metric-value mv-blue">${fmtK(totF)}</div><div class="metric-sub">${aF.length} fatture</div></div>
+    <div class="metric"><div class="metric-label">Spese società</div><div class="metric-value mv-red">${fmtK(totS)}</div></div>
+    <div class="metric"><div class="metric-label">Residuo Mattia</div><div class="metric-value ${rM.residuo>=0?'mv-green':'mv-red'}">${fmtK(rM.residuo)}</div></div>
+    <div class="metric"><div class="metric-label">Residuo Riccardo</div><div class="metric-value ${rR.residuo>=0?'mv-green':'mv-red'}">${fmtK(rR.residuo)}</div></div>
+    <div class="metric"><div class="metric-label">Prelievi Mattia</div><div class="metric-value mv-amber">${fmtK(aP.filter(x=>x.socio==='MATTIA').reduce((s,x)=>s+x.imp,0))}</div></div>
+    <div class="metric"><div class="metric-label">Prelievi Riccardo</div><div class="metric-value mv-amber">${fmtK(aP.filter(x=>x.socio==='RICCARDO').reduce((s,x)=>s+x.imp,0))}</div></div>
+  `;
+  residuoCard('MATTIA',document.getElementById('rep-res-M'));
+  residuoCard('RICCARDO',document.getElementById('rep-res-R'));
+  const mFatts=MS.map((_,m)=>aF.filter(x=>x.month===m).reduce((s,x)=>s+x.imp,0));
+  const mSpese=MS.map((_,m)=>aS.filter(x=>x.month===m).reduce((s,x)=>s+x.imp,0));
+  const mMarg=mFatts.map((v,i)=>Math.round((v-mSpese[i])*100)/100);
+  if(chartInst)chartInst.destroy();
+  chartInst=new Chart(document.getElementById('chart-ann'),{
+    type:'bar',
+    data:{labels:MS,datasets:[
+      {label:'Fatturato',data:mFatts,backgroundColor:'#9FE1CB',borderColor:'#1D9E75',borderWidth:1},
+      {label:'Spese',data:mSpese,backgroundColor:'#F7C1C1',borderColor:'#E24B4A',borderWidth:1},
+      {label:'Margine',data:mMarg,type:'line',borderColor:'#185FA5',backgroundColor:'transparent',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#185FA5',tension:.3}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{autoSkip:false,maxRotation:0,font:{size:11}},grid:{display:false}},y:{ticks:{font:{size:11},callback:v=>v>=1000?'€'+(v/1000).toFixed(0)+'k':'€'+v},grid:{color:'rgba(0,0,0,.04)'}}}}
+  });
+  let tF2=0,tS2=0,tQM=0,tQR=0,tPM=0,tPR=0;
+  document.getElementById('tb-report').innerHTML=MESI.map((nome,m)=>{
+    const mfA=aF.filter(x=>x.month===m),msA=aS.filter(x=>x.month===m);
+    const mpM=aP.filter(x=>x.month===m&&x.socio==='MATTIA').reduce((s,x)=>s+x.imp,0);
+    const mpR=aP.filter(x=>x.month===m&&x.socio==='RICCARDO').reduce((s,x)=>s+x.imp,0);
+    const mf=mfA.reduce((s,x)=>s+x.imp,0),ms=msA.reduce((s,x)=>s+x.imp,0);
+    const qM=mfA.reduce((s,x)=>s+(x.quotaM||0),0),qR=mfA.reduce((s,x)=>s+(x.quotaR||0),0);
+    const resM=qM-mpM,resR=qR-mpR;
+    tF2+=mf;tS2+=ms;tQM+=qM;tQR+=qR;tPM+=mpM;tPR+=mpR;
+    if(mf===0&&ms===0&&mpM===0&&mpR===0)return`<tr><td style="color:var(--text3)">${nome}</td><td colspan="9" style="color:var(--text3);font-size:12px">—</td></tr>`;
+    return`<tr>
+      <td style="font-weight:500">${nome}</td>
+      <td class="num" style="color:var(--blue)">${fmt(mf)}</td>
+      <td class="num" style="color:var(--red)">${fmt(ms)}</td>
+      <td class="num" style="color:${(mf-ms)>=0?'var(--green)':'var(--red)'};font-weight:600">${fmt(mf-ms)}</td>
+      <td class="num" style="color:var(--blue)">${fmt(qM)}</td>
+      <td class="num" style="color:var(--amber)">${mpM>0?fmt(mpM):'—'}</td>
+      <td class="num" style="color:${resM>=0?'var(--green)':'var(--red)'};font-weight:600">${fmt(resM)}</td>
+      <td class="num" style="color:var(--purple)">${fmt(qR)}</td>
+      <td class="num" style="color:var(--amber)">${mpR>0?fmt(mpR):'—'}</td>
+      <td class="num" style="color:${resR>=0?'var(--green)':'var(--red)'};font-weight:600">${fmt(resR)}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('tf-report').innerHTML=`<td>Totale ${yr}</td><td class="num">${fmt(tF2)}</td><td class="num">${fmt(tS2)}</td><td class="num">${fmt(tF2-tS2)}</td><td class="num">${fmt(tQM)}</td><td class="num">${fmt(tPM)}</td><td class="num" style="color:${(tQM-tPM)>=0?'var(--green)':'var(--red)'}">${fmt(tQM-tPM)}</td><td class="num">${fmt(tQR)}</td><td class="num">${fmt(tPR)}</td><td class="num" style="color:${(tQR-tPR)>=0?'var(--green)':'var(--red)'}">${fmt(tQR-tPR)}</td>`;
+}
+
+function exportXls(tipo){
+  const data=tipo==='fatture'
+    ?db.fatture.filter(x=>x.year===yr).map(x=>({'N°':x.num,Cliente:x.cli,Descrizione:x.desc,Categoria:x.cat,Imponibile:x.imp,'IVA%':x.iva,Totale:x.totale,Mese:MESI[x.month],'% Mattia':x.percM,'Quota Mattia':x.quotaM,'% Riccardo':x.percR,'Quota Riccardo':x.quotaR,'Bonifico':x.boni?'Sì':'No',Drive:x.drive,Note:x.note}))
+    :tipo==='prelievi'
+    ?db.prelievi.filter(x=>x.year===yr).map(x=>({Socio:x.socio,Descrizione:x.desc,Mese:MESI[x.month],Importo:x.imp,Drive:x.drive,Note:x.note}))
+    :db.spese.filter(x=>x.year===yr).map(x=>({Fornitore:x.forn,'N°':x.num,Descrizione:x.desc,Categoria:x.cat,Imponibile:x.imp,'IVA%':x.iva,Totale:x.totale,Mese:MESI[x.month],Pagata:x.pag?'Sì':'No',Drive:x.drive,Note:x.note}));
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(data),tipo);
+  XLSX.writeFile(wb,`Evolvia_${tipo}_${yr}.xlsx`);
+  toast('⬇ Export completato');
+}
+
+function exportReportXls(){
+  const wb=XLSX.utils.book_new();
+  ['fatture','prelievi','spese'].forEach(t=>{
+    const d=db[t].filter(x=>x.year===yr);
+    if(d.length)XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(d),t.charAt(0).toUpperCase()+t.slice(1));
+  });
+  const riep=MESI.map((nome,m)=>{
+    const aF=db.fatture.filter(x=>x.year===yr&&x.month===m);
+    const aP=db.prelievi.filter(x=>x.year===yr&&x.month===m);
+    return{Mese:nome,Fatturato:aF.reduce((s,x)=>s+x.imp,0),Spese:db.spese.filter(x=>x.year===yr&&x.month===m).reduce((s,x)=>s+x.imp,0),'Quota Mattia':aF.reduce((s,x)=>s+(x.quotaM||0),0),'Prel. Mattia':aP.filter(x=>x.socio==='MATTIA').reduce((s,x)=>s+x.imp,0),'Quota Riccardo':aF.reduce((s,x)=>s+(x.quotaR||0),0),'Prel. Riccardo':aP.filter(x=>x.socio==='RICCARDO').reduce((s,x)=>s+x.imp,0)};
+  });
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(riep),'Riepilogo');
+  XLSX.writeFile(wb,`Evolvia_Report_${yr}.xlsx`);
+  toast('⬇ Report Excel scaricato');
+}
+
+function importXl(input){
+  const file=input.files[0];if(!file)return;
+  const log=document.getElementById('imp-log');
+  log.style.display='block';log.innerHTML='Lettura...<br>';
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const wb=XLSX.read(e.target.result,{type:'array'});
+      const MAP={FEBBRAIO:1,MARZO:2,APRILE:3,MAGGIO:4,GIUGNO:5,LUGLIO:6,AGOSTO:7,SETTEMBRE:8,OTTOBRE:9,NOVEMBRE:10,DICEMBRE:11,GENNAIO:0};
+      let cf=0,cs=0;
+      wb.SheetNames.forEach(name=>{
+        const mIdx=MAP[name.toUpperCase()];if(mIdx===undefined)return;
+        const rows=XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,defval:''});
+        rows.forEach((row,ri)=>{
+          if(ri===0)return;
+          const cli=String(row[0]||'').trim(),fImp=parseFloat(row[6])||0;
+          if(cli&&fImp>0){
+            db.fatture.push({id:Date.now()+Math.random(),num:String(row[4]||''),cli,desc:String(row[5]||''),cat:'Importato',imp:fImp,iva:22,totale:fImp*1.22,month:mIdx,year:2026,percM:50,percR:50,quotaM:fImp*0.5,quotaR:fImp*0.5,boni:row[3]===true||String(row[3]).toUpperCase()==='TRUE',nc:false,drive:'',note:''});
+            cf++;
+          }
+          const forn=String(row[13]||'').trim(),sImp=parseFloat(row[21])||0;
+          if(forn&&sImp>0){
+            db.spese.push({id:Date.now()+Math.random()+1,forn,num:String(row[19]||''),desc:String(row[20]||''),cat:'Importato',imp:sImp,iva:22,totale:sImp*1.22,month:mIdx,year:2026,pag:row[15]===true,nc:false,drive:'',note:''});
+            cs++;
+          }
+        });
+        log.innerHTML+=`✓ ${name}<br>`;
+      });
+      save();renderAll();renderFatture();renderSpese();
+      log.innerHTML+=`<strong>✅ ${cf} fatture + ${cs} spese importate</strong>`;
+      toast(`✅ Importate ${cf} fatture + ${cs} spese`);
+    }catch(err){log.innerHTML+=`❌ ${err.message}`;}
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function clearAll(){db={fatture:[],prelievi:[],spese:[]};save();renderAll();renderFatture();renderPrelievi();renderSpese();toast('🗑 Dati cancellati');}
+
+load();
+updateQuote();
+</script>
+</body>
+</html>
