@@ -20,6 +20,22 @@
   --radius:8px;--radius-lg:12px;
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg2);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+
+/* PIN SCREEN */
+#pin-screen{position:fixed;inset:0;background:var(--bg2);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px}
+.pin-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:36px 40px;text-align:center;width:320px;box-shadow:0 4px 24px rgba(0,0,0,.07)}
+.pin-logo{font-size:28px;font-weight:700;margin-bottom:4px}
+.pin-sub{font-size:13px;color:var(--text3);margin-bottom:24px}
+.pin-dots{display:flex;gap:12px;justify-content:center;margin-bottom:20px}
+.pin-dot{width:14px;height:14px;border-radius:50%;background:var(--border2);transition:background .15s}
+.pin-dot.filled{background:var(--blue)}
+.pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.pin-key{background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--radius);padding:14px;font-size:18px;font-weight:600;cursor:pointer;transition:all .1s;color:var(--text)}
+.pin-key:hover{background:var(--blue-bg);border-color:var(--blue-mid);color:var(--blue)}
+.pin-key.del{font-size:14px;color:var(--text2)}
+.pin-error{color:var(--red);font-size:12px;min-height:18px}
+.pin-change{font-size:12px;color:var(--text3);margin-top:16px;cursor:pointer;text-decoration:underline}
+
 .shell{display:flex;min-height:100vh}
 .sidebar{width:220px;background:var(--bg);border-right:0.5px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0}
 .main{flex:1;padding:24px 28px;overflow:auto}
@@ -30,7 +46,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .nav-item{display:flex;align-items:center;gap:10px;padding:8px 20px;font-size:13px;color:var(--text2);cursor:pointer;border-left:2px solid transparent;transition:all .12s}
 .nav-item:hover{background:var(--bg2);color:var(--text)}
 .nav-item.active{background:var(--blue-bg);color:var(--blue);border-left-color:var(--blue);font-weight:500}
-.nav-item i{font-size:15px;width:16px}
 .sidebar-footer{margin-top:auto;padding:16px;border-top:0.5px solid var(--border)}
 .year-row{display:flex;gap:4px;background:var(--bg2);border-radius:var(--radius);padding:3px}
 .year-btn{flex:1;text-align:center;padding:4px 2px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--text2)}
@@ -44,12 +59,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-primary{background:var(--text);color:var(--bg);border-color:var(--text)}.btn-primary:hover{opacity:.85}
 .btn-sm{padding:5px 10px;font-size:12px}
 .btn-danger{color:var(--red);border-color:#F09595;background:none}.btn-danger:hover{background:var(--red-bg)}
+.btn-edit{color:var(--blue);border-color:#B5D4F4;background:none}.btn-edit:hover{background:var(--blue-bg)}
 .btn-ghost{border:none;background:none;color:var(--text2)}.btn-ghost:hover{background:var(--bg2)}
 .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
 .metric{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px}
 .metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
-.metric-value{font-size:24px;font-weight:700}
-.mv-blue{color:var(--blue)}.mv-red{color:var(--red)}.mv-green{color:var(--green)}.mv-amber{color:var(--amber)}
+.metric-value{font-size:22px;font-weight:700}
+.mv-blue{color:var(--blue)}.mv-red{color:var(--red)}.mv-green{color:var(--green)}.mv-amber{color:var(--amber)}.mv-purple{color:var(--purple)}
 .metric-sub{font-size:11px;color:var(--text3);margin-top:3px}
 .card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px}
 .card-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid var(--border);gap:8px;flex-wrap:wrap}
@@ -89,6 +105,8 @@ tbody tr:hover td{background:var(--bg2)}
 .badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:500}
 .bg-gray{background:#f1f0ea;color:#5a5a56}
 .bg-amber{background:var(--amber-bg);color:var(--amber)}
+.bg-green{background:var(--green-bg);color:var(--green)}
+.bg-red{background:var(--red-bg);color:var(--red)}
 .nc-tag{font-size:10px;color:var(--red);border:0.5px solid #F09595;border-radius:3px;padding:1px 5px;margin-left:4px}
 .ok-icon{color:var(--green-mid)}.no-icon{color:var(--border2)}
 .link-a{color:var(--blue);text-decoration:none;font-size:12px}
@@ -104,16 +122,87 @@ tbody tr:hover td{background:var(--bg2)}
 .res-line:last-child{border-bottom:none;padding-top:10px;font-size:15px;font-weight:700}
 .chart-wrap{position:relative;height:220px}
 .empty-row td{text-align:center;padding:24px;color:var(--text3)}
-.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:var(--bg);padding:10px 18px;border-radius:var(--radius);font-size:13px;font-weight:500;z-index:200;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:var(--bg);padding:10px 18px;border-radius:var(--radius);font-size:13px;font-weight:500;z-index:9999;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none}
 .toast.show{opacity:1;transform:translateY(0)}
+
+/* MODAL MODIFICA */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--bg);border-radius:var(--radius-lg);border:0.5px solid var(--border);padding:24px;width:680px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.15)}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);line-height:1}
+.modal-actions{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+
+/* IVA TRIMESTRALE */
+.iva-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.iva-trim{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px}
+.iva-trim-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-bottom:8px}
+.iva-trim-value{font-size:18px;font-weight:700}
+.iva-trim-sub{font-size:11px;color:var(--text3);margin-top:4px}
+
+/* RICORRENTI */
+.ricorrente-row{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:0.5px solid var(--border);font-size:13px}
+.ricorrente-row:last-child{border-bottom:none}
+.ric-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;background:var(--blue-bg);color:var(--blue)}
+
+/* DIPENDENTI */
+.dip-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px}
+
 ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 .table-wrap{overflow-x:auto}
-@media(max-width:768px){.sidebar{display:none}.main{padding:16px}.two-col{grid-template-columns:1fr}.frow.c2,.frow.c3,.frow.c4,.frow.c5{grid-template-columns:1fr 1fr}}
-@media print{.sidebar,.btn,.form-panel,.filter-bar{display:none!important}.main{padding:0}}
+@media(max-width:768px){.sidebar{display:none}.main{padding:16px}.two-col{grid-template-columns:1fr}.frow.c2,.frow.c3,.frow.c4,.frow.c5{grid-template-columns:1fr 1fr}.iva-grid{grid-template-columns:1fr 1fr}}
+@media print{.sidebar,.btn,.form-panel,.filter-bar,#pin-screen{display:none!important}.main{padding:0}}
 </style>
 </head>
 <body>
-<div class="shell">
+
+<!-- PIN SCREEN -->
+<div id="pin-screen">
+  <div class="pin-card">
+    <div class="pin-logo">⚡ Evolvia</div>
+    <div class="pin-sub">Inserisci il PIN per accedere</div>
+    <div class="pin-dots" id="pin-dots">
+      <div class="pin-dot" id="d0"></div>
+      <div class="pin-dot" id="d1"></div>
+      <div class="pin-dot" id="d2"></div>
+      <div class="pin-dot" id="d3"></div>
+    </div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinKey('1')">1</button>
+      <button class="pin-key" onclick="pinKey('2')">2</button>
+      <button class="pin-key" onclick="pinKey('3')">3</button>
+      <button class="pin-key" onclick="pinKey('4')">4</button>
+      <button class="pin-key" onclick="pinKey('5')">5</button>
+      <button class="pin-key" onclick="pinKey('6')">6</button>
+      <button class="pin-key" onclick="pinKey('7')">7</button>
+      <button class="pin-key" onclick="pinKey('8')">8</button>
+      <button class="pin-key" onclick="pinKey('9')">9</button>
+      <button class="pin-key" onclick="pinKey('0')" style="grid-column:2">0</button>
+      <button class="pin-key del" onclick="pinDel()">⌫</button>
+    </div>
+    <div class="pin-error" id="pin-error"></div>
+    <div class="pin-change" onclick="showChangePin()">Cambia PIN</div>
+  </div>
+</div>
+
+<!-- CHANGE PIN MODAL -->
+<div class="modal-bg" id="modal-pin">
+  <div class="modal" style="width:360px">
+    <div class="modal-title">Cambia PIN <button class="modal-close" onclick="closeModal('modal-pin')">×</button></div>
+    <div class="frow c1" style="display:grid;gap:10px">
+      <div class="field"><label>PIN attuale</label><input type="password" id="cp-old" placeholder="••••" maxlength="6"></div>
+      <div class="field"><label>Nuovo PIN (4-6 cifre)</label><input type="password" id="cp-new" placeholder="••••" maxlength="6"></div>
+      <div class="field"><label>Conferma nuovo PIN</label><input type="password" id="cp-conf" placeholder="••••" maxlength="6"></div>
+    </div>
+    <div id="cp-error" style="color:var(--red);font-size:12px;min-height:16px"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="changePin()">Salva nuovo PIN</button>
+      <button class="btn btn-ghost" onclick="closeModal('modal-pin')">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<div class="shell" id="app" style="display:none">
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -122,14 +211,17 @@ tbody tr:hover td{background:var(--bg2)}
     <div class="logo-sub">Gestionale amministrativo</div>
   </div>
   <div class="nav-section">Principale</div>
-  <div class="nav-item active" onclick="go('dashboard')"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
-  <div class="nav-item" onclick="go('fatture')"><i class="ti ti-file-invoice"></i>Fatture Evolvia</div>
-  <div class="nav-item" onclick="go('prelievi')"><i class="ti ti-cash"></i>Prelievi soci</div>
-  <div class="nav-item" onclick="go('spese')"><i class="ti ti-receipt"></i>Spese società</div>
+  <div class="nav-item active" onclick="go('dashboard')">📊 Dashboard</div>
+  <div class="nav-item" onclick="go('fatture')">📄 Fatture Evolvia</div>
+  <div class="nav-item" onclick="go('prelievi')">💸 Prelievi soci</div>
+  <div class="nav-item" onclick="go('spese')">🧾 Spese società</div>
+  <div class="nav-item" onclick="go('ricorrenti')">🔁 Pagamenti ricorrenti</div>
+  <div class="nav-item" onclick="go('dipendenti')">👥 Dipendenti</div>
   <div class="nav-section">Analisi</div>
-  <div class="nav-item" onclick="go('report')"><i class="ti ti-chart-bar"></i>Report annuale</div>
+  <div class="nav-item" onclick="go('report')">📈 Report annuale</div>
   <div class="nav-section">Strumenti</div>
-  <div class="nav-item" onclick="go('importa')"><i class="ti ti-upload"></i>Importa Excel</div>
+  <div class="nav-item" onclick="go('importa')">⬆ Importa Excel</div>
+  <div class="nav-item" onclick="showChangePin()" style="margin-top:4px">🔒 Cambia PIN</div>
   <div class="sidebar-footer">
     <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Anno</div>
     <div class="year-row" id="year-row"></div>
@@ -150,13 +242,39 @@ tbody tr:hover td{background:var(--bg2)}
     </div>
   </div>
   <div class="metrics" id="dash-metrics"></div>
+  <!-- IVA TRIMESTRALE -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-header">
+      <span class="card-title">🧾 IVA trimestrale — Anno <span id="iva-year-label"></span></span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="iva-filter" onchange="renderDashboard()" style="padding:5px 10px;font-size:12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg)">
+          <option value="tutti">Tutto (F24 + tasse)</option>
+          <option value="f24">Solo F24</option>
+          <option value="altre">Solo altre tasse</option>
+        </select>
+      </div>
+    </div>
+    <div style="padding:16px">
+      <div class="iva-grid" id="iva-trimestrale"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="background:var(--bg2);border-radius:var(--radius);padding:12px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">IVA A DEBITO ANNO</div>
+          <div style="font-size:20px;font-weight:700;color:var(--red)" id="iva-tot-debito"></div>
+        </div>
+        <div style="background:var(--bg2);border-radius:var(--radius);padding:12px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">IVA A CREDITO ANNO</div>
+          <div style="font-size:20px;font-weight:700;color:var(--green)" id="iva-tot-credito"></div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="two-col" style="margin-bottom:16px">
     <div class="residuo-card" id="res-mattia"></div>
     <div class="residuo-card" id="res-riccardo"></div>
   </div>
   <div class="two-col">
     <div class="card">
-      <div class="card-header"><span class="card-title">📄 Ultime fatture Evolvia</span><button class="btn btn-sm" onclick="go('fatture')">Tutte →</button></div>
+      <div class="card-header"><span class="card-title">📄 Ultime fatture</span><button class="btn btn-sm" onclick="go('fatture')">Tutte →</button></div>
       <div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="num">Importo</th><th>Quota M.</th><th>Quota R.</th></tr></thead><tbody id="dash-fatt"></tbody></table></div>
     </div>
     <div class="card">
@@ -166,10 +284,10 @@ tbody tr:hover td{background:var(--bg2)}
   </div>
 </div>
 
-<!-- FATTURE EVOLVIA -->
+<!-- FATTURE -->
 <div class="page" id="page-fatture">
   <div class="page-header">
-    <div><div class="page-title">Fatture Evolvia</div><div class="page-sub">Ogni fattura ha la % di competenza per ogni socio</div></div>
+    <div><div class="page-title">Fatture Evolvia</div><div class="page-sub">Quote di competenza per ogni socio</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn btn-sm" onclick="exportXls('fatture')">⬇ Excel</button>
       <button class="btn btn-sm btn-primary" onclick="toggleForm('ff')">+ Nuova fattura</button>
@@ -177,7 +295,7 @@ tbody tr:hover td{background:var(--bg2)}
   </div>
   <div class="card">
     <div class="form-panel" id="ff">
-      <div class="form-title">Nuova fattura Evolvia</div>
+      <div class="form-title" id="ff-title">Nuova fattura Evolvia</div>
       <div class="frow c4">
         <div class="field"><label>N° Fattura</label><input id="ff-num" placeholder="001/2026"></div>
         <div class="field"><label>Cliente</label><input id="ff-cli" placeholder="Nome cliente"></div>
@@ -190,19 +308,18 @@ tbody tr:hover td{background:var(--bg2)}
         <div class="field"><label>Mese</label><select id="ff-month"></select></div>
         <div class="field"><label>Link allegato Drive</label><input id="ff-drive" placeholder="https://drive.google.com/..."></div>
       </div>
-      <!-- QUOTE SOCI -->
       <div style="margin-bottom:10px">
         <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">Quote di competenza soci</div>
         <div class="perc-row">
           <div class="perc-box">
             <div class="perc-label mattia">Mattia %</div>
-            <input class="perc-inp" id="ff-pM" type="number" min="0" max="100" value="50" oninput="syncPerc('M')">
+            <input class="perc-inp" id="ff-pM" type="number" min="0" max="100" value="50" oninput="updateQuote()">
             <div class="perc-quota" id="ff-qM">Quota: €0,00</div>
           </div>
           <div style="font-size:22px;color:var(--text3);padding-bottom:20px">+</div>
           <div class="perc-box riccardo">
             <div class="perc-label riccardo">Riccardo %</div>
-            <input class="perc-inp" id="ff-pR" type="number" min="0" max="100" value="50" oninput="syncPerc('R')">
+            <input class="perc-inp" id="ff-pR" type="number" min="0" max="100" value="50" oninput="updateQuote()">
             <div class="perc-quota" id="ff-qR">Quota: €0,00</div>
           </div>
           <div style="font-size:22px;color:var(--text3);padding-bottom:20px">=</div>
@@ -218,9 +335,10 @@ tbody tr:hover td{background:var(--bg2)}
         <label class="check-row"><input type="checkbox" id="ff-nc"> Nota di credito</label>
       </div>
       <div class="field" style="margin-bottom:10px"><label>Note</label><input id="ff-note" placeholder="Note opzionali..."></div>
+      <input type="hidden" id="ff-edit-id" value="">
       <div class="form-actions">
-        <button class="btn btn-primary" onclick="addFattura()">Salva fattura</button>
-        <button class="btn btn-ghost" onclick="toggleForm('ff')">Annulla</button>
+        <button class="btn btn-primary" onclick="saveFattura()">Salva fattura</button>
+        <button class="btn btn-ghost" onclick="cancelForm('ff')">Annulla</button>
       </div>
     </div>
     <div class="filter-bar">
@@ -231,11 +349,10 @@ tbody tr:hover td{background:var(--bg2)}
     </div>
     <div class="table-wrap"><table>
       <thead><tr>
-        <th>N°</th><th>Cliente</th><th>Descrizione</th><th>Cat.</th>
+        <th>N°</th><th>Cliente</th><th>Desc.</th><th>Cat.</th>
         <th class="num">Imponibile</th><th>IVA</th><th class="num">Totale</th>
-        <th>Mese</th>
-        <th class="num">% M</th><th class="num">Quota M.</th>
-        <th class="num">% R</th><th class="num">Quota R.</th>
+        <th>Mese</th><th class="num">%M</th><th class="num">Quota M.</th>
+        <th class="num">%R</th><th class="num">Quota R.</th>
         <th>Boni.</th><th>Drive</th><th>Note</th><th></th>
       </tr></thead>
       <tbody id="tb-fatture"></tbody>
@@ -247,7 +364,7 @@ tbody tr:hover td{background:var(--bg2)}
 <!-- PRELIEVI -->
 <div class="page" id="page-prelievi">
   <div class="page-header">
-    <div><div class="page-title">Prelievi soci</div><div class="page-sub">Quanto ogni socio ha già fatturato/prelevato dalla sua quota</div></div>
+    <div><div class="page-title">Prelievi soci</div><div class="page-sub">Quanto ogni socio ha già prelevato dalla sua quota</div></div>
     <div style="display:flex;gap:8px">
       <button class="btn btn-sm" onclick="exportXls('prelievi')">⬇ Excel</button>
       <button class="btn btn-sm btn-primary" onclick="toggleForm('fp')">+ Nuovo prelievo</button>
@@ -255,7 +372,7 @@ tbody tr:hover td{background:var(--bg2)}
   </div>
   <div class="card">
     <div class="form-panel" id="fp">
-      <div class="form-title">Nuovo prelievo / anticipo socio</div>
+      <div class="form-title" id="fp-title">Nuovo prelievo / anticipo socio</div>
       <div class="frow c5">
         <div class="field"><label>Socio</label><select id="fp-socio"><option>MATTIA</option><option>RICCARDO</option></select></div>
         <div class="field"><label>Importo (€)</label><input id="fp-imp" type="number" step="0.01" placeholder="0.00"></div>
@@ -264,9 +381,10 @@ tbody tr:hover td{background:var(--bg2)}
         <div class="field"><label>Link Drive</label><input id="fp-drive" placeholder="https://drive.google.com/..."></div>
       </div>
       <div class="field" style="margin-bottom:10px"><label>Note</label><input id="fp-note" placeholder="Note opzionali..."></div>
+      <input type="hidden" id="fp-edit-id" value="">
       <div class="form-actions">
-        <button class="btn btn-primary" onclick="addPrelievo()">Salva prelievo</button>
-        <button class="btn btn-ghost" onclick="toggleForm('fp')">Annulla</button>
+        <button class="btn btn-primary" onclick="savePrelievo()">Salva prelievo</button>
+        <button class="btn btn-ghost" onclick="cancelForm('fp')">Annulla</button>
       </div>
     </div>
     <div class="filter-bar">
@@ -281,10 +399,10 @@ tbody tr:hover td{background:var(--bg2)}
   </div>
 </div>
 
-<!-- SPESE SOCIETA -->
+<!-- SPESE -->
 <div class="page" id="page-spese">
   <div class="page-header">
-    <div><div class="page-title">Spese società</div><div class="page-sub">Costi operativi di Evolvia (non collegati alle quote soci)</div></div>
+    <div><div class="page-title">Spese società</div><div class="page-sub">Costi operativi di Evolvia</div></div>
     <div style="display:flex;gap:8px">
       <button class="btn btn-sm" onclick="exportXls('spese')">⬇ Excel</button>
       <button class="btn btn-sm btn-primary" onclick="toggleForm('fs')">+ Nuova spesa</button>
@@ -292,16 +410,22 @@ tbody tr:hover td{background:var(--bg2)}
   </div>
   <div class="card">
     <div class="form-panel" id="fs">
-      <div class="form-title">Nuova spesa società</div>
+      <div class="form-title" id="fs-title">Nuova spesa società</div>
       <div class="frow c4">
         <div class="field"><label>Fornitore</label><input id="fs-forn" placeholder="Ragione sociale"></div>
         <div class="field"><label>N° Doc.</label><input id="fs-num" placeholder="001/2026"></div>
         <div class="field"><label>Descrizione</label><input id="fs-desc" placeholder="Tipo di spesa"></div>
-        <div class="field"><label>Categoria</label><select id="fs-cat"><option>Affitto</option><option>Leasing auto</option><option>Commercialista</option><option>Marketing</option><option>Personale</option><option>Carburante</option><option>Software</option><option>Telefonia</option><option>Tasse/F24</option><option>Cene aziendali</option><option>Ufficio</option><option>Altro</option></select></div>
+        <div class="field"><label>Categoria</label><select id="fs-cat">
+          <option>Affitto</option><option>Leasing auto</option><option>Commercialista</option>
+          <option>Marketing</option><option>Personale</option><option>Carburante</option>
+          <option>Software</option><option>Telefonia</option><option>F24</option>
+          <option>Altre tasse</option><option>Dipendenti</option><option>Cene aziendali</option>
+          <option>Ufficio</option><option>Prelievo socio</option><option>Altro</option>
+        </select></div>
       </div>
       <div class="frow c4">
         <div class="field"><label>Imponibile (€)</label><input id="fs-imp" type="number" step="0.01" placeholder="0.00"></div>
-        <div class="field"><label>IVA %</label><select id="fs-iva"><option value="22">22%</option><option value="10">10%</option><option value="4">4%</option><option value="0">Esente</option></select></div>
+        <div class="field"><label>IVA %</label><select id="fs-iva"><option value="22">22%</option><option value="10">10%</option><option value="4">4%</option><option value="0">Esente/N.A.</option></select></div>
         <div class="field"><label>Mese</label><select id="fs-month"></select></div>
         <div class="field"><label>Link Drive</label><input id="fs-drive" placeholder="https://drive.google.com/..."></div>
       </div>
@@ -310,20 +434,100 @@ tbody tr:hover td{background:var(--bg2)}
         <label class="check-row"><input type="checkbox" id="fs-nc"> Nota di credito</label>
       </div>
       <div class="field" style="margin-bottom:10px"><label>Note</label><input id="fs-note" placeholder="Note opzionali..."></div>
+      <input type="hidden" id="fs-edit-id" value="">
       <div class="form-actions">
-        <button class="btn btn-primary" onclick="addSpesa()">Salva spesa</button>
-        <button class="btn btn-ghost" onclick="toggleForm('fs')">Annulla</button>
+        <button class="btn btn-primary" onclick="saveSpesa()">Salva spesa</button>
+        <button class="btn btn-ghost" onclick="cancelForm('fs')">Annulla</button>
       </div>
     </div>
     <div class="filter-bar">
       <input placeholder="🔍 Cerca fornitore, descrizione..." id="ss-q" oninput="renderSpese()">
       <select id="ss-month" onchange="renderSpese()"><option value="">Tutti i mesi</option></select>
       <select id="ss-cat" onchange="renderSpese()"><option value="">Tutte le categorie</option></select>
+      <select id="ss-tasse" onchange="renderSpese()">
+        <option value="">Tutte le tasse</option>
+        <option value="F24">Solo F24</option>
+        <option value="Altre tasse">Solo altre tasse</option>
+      </select>
     </div>
     <div class="table-wrap"><table>
       <thead><tr><th>Fornitore</th><th>N°</th><th>Desc.</th><th>Cat.</th><th class="num">Imponibile</th><th>IVA</th><th class="num">Totale</th><th>Mese</th><th>Pag.</th><th>Drive</th><th>Note</th><th></th></tr></thead>
       <tbody id="tb-spese"></tbody>
       <tfoot><tr id="tf-spese" class="tfoot"></tr></tfoot>
+    </table></div>
+  </div>
+</div>
+
+<!-- RICORRENTI -->
+<div class="page" id="page-ricorrenti">
+  <div class="page-header">
+    <div><div class="page-title">Pagamenti ricorrenti</div><div class="page-sub">Abbonamenti fissi mensili — vengono aggiunti automaticamente alle spese ogni mese</div></div>
+    <button class="btn btn-primary" onclick="toggleForm('fr')">+ Nuovo ricorrente</button>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="form-panel" id="fr">
+      <div class="form-title">Nuovo pagamento ricorrente</div>
+      <div class="frow c4">
+        <div class="field"><label>Fornitore</label><input id="fr-forn" placeholder="Es. Leasing auto, Affitto..."></div>
+        <div class="field"><label>Descrizione</label><input id="fr-desc" placeholder="Descrizione..."></div>
+        <div class="field"><label>Categoria</label><select id="fr-cat">
+          <option>Affitto</option><option>Leasing auto</option><option>Software</option>
+          <option>Telefonia</option><option>Commercialista</option><option>Personale</option><option>Altro</option>
+        </select></div>
+        <div class="field"><label>Importo mensile (€)</label><input id="fr-imp" type="number" step="0.01" placeholder="0.00"></div>
+      </div>
+      <div class="frow c3">
+        <div class="field"><label>IVA %</label><select id="fr-iva"><option value="22">22%</option><option value="10">10%</option><option value="4">4%</option><option value="0">Esente</option></select></div>
+        <div class="field"><label>Mese inizio</label><select id="fr-start"></select></div>
+        <div class="field"><label>Link Drive</label><input id="fr-drive" placeholder="https://drive.google.com/..."></div>
+      </div>
+      <div class="field" style="margin-bottom:10px"><label>Note</label><input id="fr-note" placeholder="Note..."></div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="addRicorrente()">Salva ricorrente</button>
+        <button class="btn btn-ghost" onclick="toggleForm('fr')">Annulla</button>
+      </div>
+    </div>
+    <div class="card-header" style="border-top:none">
+      <span class="card-title">🔁 Pagamenti attivi</span>
+      <button class="btn btn-sm btn-primary" onclick="applyRicorrenti()">⚡ Applica al mese corrente</button>
+    </div>
+    <div id="ric-list"></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">📊 Totale ricorrenti mensile</span></div>
+    <div style="padding:16px" id="ric-summary"></div>
+  </div>
+</div>
+
+<!-- DIPENDENTI -->
+<div class="page" id="page-dipendenti">
+  <div class="page-header">
+    <div><div class="page-title">Dipendenti</div><div class="page-sub">Gestione costi del personale</div></div>
+    <button class="btn btn-primary" onclick="toggleForm('fd')">+ Aggiungi dipendente</button>
+  </div>
+  <div class="card">
+    <div class="form-panel" id="fd">
+      <div class="form-title">Nuovo dipendente</div>
+      <div class="frow c4">
+        <div class="field"><label>Nome e Cognome</label><input id="fd-nome" placeholder="Mario Rossi"></div>
+        <div class="field"><label>Ruolo</label><input id="fd-ruolo" placeholder="Agente, Operatore..."></div>
+        <div class="field"><label>RAL annua (€)</label><input id="fd-ral" type="number" step="100" placeholder="0.00"></div>
+        <div class="field"><label>Costo mensile aziendale (€)</label><input id="fd-costo" type="number" step="10" placeholder="0.00"></div>
+      </div>
+      <div class="frow c3">
+        <div class="field"><label>Data assunzione</label><input id="fd-data" type="date"></div>
+        <div class="field"><label>CCNL / Contratto</label><input id="fd-ccnl" placeholder="Commercio, Metalmeccanici..."></div>
+        <div class="field"><label>Note</label><input id="fd-note" placeholder="Note..."></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="addDipendente()">Salva dipendente</button>
+        <button class="btn btn-ghost" onclick="toggleForm('fd')">Annulla</button>
+      </div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Nome</th><th>Ruolo</th><th class="num">RAL annua</th><th class="num">Costo mens. az.</th><th>Assunto il</th><th>CCNL</th><th>Note</th><th></th></tr></thead>
+      <tbody id="tb-dipendenti"></tbody>
+      <tfoot><tr id="tf-dipendenti" class="tfoot"></tr></tfoot>
     </table></div>
   </div>
 </div>
@@ -343,22 +547,16 @@ tbody tr:hover td{background:var(--bg2)}
     <div class="residuo-card" id="rep-res-R"></div>
   </div>
   <div class="card" style="margin-bottom:16px">
-    <div class="card-header"><span class="card-title">📈 Andamento mensile</span>
-      <div style="display:flex;gap:12px;font-size:11px;color:var(--text3)">
-        <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#1D9E75;margin-right:4px"></span>Fatturato</span>
-        <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#E24B4A;margin-right:4px"></span>Spese soc.</span>
-        <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#378ADD;border:1.5px dashed #185FA5;margin-right:4px"></span>Margine</span>
-      </div>
-    </div>
-    <div style="padding:16px"><div class="chart-wrap"><canvas id="chart-ann" role="img" aria-label="Andamento mensile">Grafico andamento mensile.</canvas></div></div>
+    <div class="card-header"><span class="card-title">📈 Andamento mensile</span></div>
+    <div style="padding:16px"><div class="chart-wrap"><canvas id="chart-ann" role="img" aria-label="Andamento mensile">Grafico.</canvas></div></div>
   </div>
   <div class="card">
     <div class="card-header"><span class="card-title">📅 Riepilogo mensile</span></div>
     <div class="table-wrap"><table>
       <thead><tr>
-        <th>Mese</th><th class="num">Fatturato</th><th class="num">Spese soc.</th><th class="num">Margine</th>
-        <th class="num">Quota Mattia</th><th class="num">Prel. Mattia</th><th class="num">Res. Mattia</th>
-        <th class="num">Quota Riccardo</th><th class="num">Prel. Riccardo</th><th class="num">Res. Riccardo</th>
+        <th>Mese</th><th class="num">Fatturato</th><th class="num">Spese</th><th class="num">Margine</th>
+        <th class="num">Quota M.</th><th class="num">Prel. M.</th><th class="num">Res. M.</th>
+        <th class="num">Quota R.</th><th class="num">Prel. R.</th><th class="num">Res. R.</th>
       </tr></thead>
       <tbody id="tb-report"></tbody>
       <tfoot><tr id="tf-report" class="tfoot"></tr></tfoot>
@@ -371,7 +569,7 @@ tbody tr:hover td{background:var(--bg2)}
   <div class="page-header"><div class="page-title">Importa dati Excel</div></div>
   <div class="card" style="max-width:580px">
     <div style="padding:24px">
-      <p style="color:var(--text2);margin-bottom:16px;font-size:13px">Carica il file Excel del gestionale precedente per importare fatture e spese dai fogli mensili.</p>
+      <p style="color:var(--text2);margin-bottom:16px;font-size:13px">Carica il file Excel del gestionale precedente per importare fatture e spese.</p>
       <div style="border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:32px;text-align:center;margin-bottom:16px">
         <div style="font-size:36px;margin-bottom:8px">📂</div>
         <div style="font-size:14px;font-weight:600;margin-bottom:6px">Trascina il file Excel qui</div>
@@ -380,7 +578,6 @@ tbody tr:hover td{background:var(--bg2)}
       </div>
       <div id="imp-log" style="display:none;font-size:12px;background:var(--bg2);border-radius:var(--radius);padding:12px;max-height:180px;overflow-y:auto;color:var(--text2)"></div>
       <div style="margin-top:16px;padding-top:16px;border-top:0.5px solid var(--border)">
-        <p style="font-size:12px;color:var(--text3);margin-bottom:12px">⚠ L'importazione aggiunge i dati senza cancellare quelli esistenti. Le % soci vengono impostate di default 50/50.</p>
         <button class="btn btn-danger btn-sm" onclick="if(confirm('Cancellare TUTTI i dati?')){clearAll()}">🗑 Cancella tutti i dati</button>
       </div>
     </div>
@@ -389,37 +586,84 @@ tbody tr:hover td{background:var(--bg2)}
 
 </main>
 </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
+// ===== PIN =====
+const DEFAULT_PIN='1234';
+let pinBuf='';
+function getPin(){return localStorage.getItem('evolvia_pin')||DEFAULT_PIN;}
+function pinKey(k){
+  if(pinBuf.length>=4)return;
+  pinBuf+=k;
+  updateDots();
+  if(pinBuf.length===4)setTimeout(checkPin,120);
+}
+function pinDel(){pinBuf=pinBuf.slice(0,-1);updateDots();document.getElementById('pin-error').textContent='';}
+function updateDots(){for(let i=0;i<4;i++)document.getElementById('d'+i).classList.toggle('filled',i<pinBuf.length);}
+function checkPin(){
+  if(pinBuf===getPin()){
+    document.getElementById('pin-screen').style.display='none';
+    document.getElementById('app').style.display='flex';
+    load();
+  } else {
+    document.getElementById('pin-error').textContent='PIN errato. Riprova.';
+    pinBuf='';updateDots();
+  }
+}
+function showChangePin(){
+  document.getElementById('cp-old').value='';
+  document.getElementById('cp-new').value='';
+  document.getElementById('cp-conf').value='';
+  document.getElementById('cp-error').textContent='';
+  document.getElementById('modal-pin').classList.add('open');
+}
+function changePin(){
+  const old=document.getElementById('cp-old').value;
+  const nw=document.getElementById('cp-new').value;
+  const cf=document.getElementById('cp-conf').value;
+  const err=document.getElementById('cp-error');
+  if(old!==getPin()){err.textContent='PIN attuale errato';return;}
+  if(nw.length<4){err.textContent='Il PIN deve essere almeno 4 cifre';return;}
+  if(nw!==cf){err.textContent='I PIN non coincidono';return;}
+  localStorage.setItem('evolvia_pin',nw);
+  closeModal('modal-pin');toast('✅ PIN aggiornato');
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.addEventListener('keydown',e=>{
+  const ps=document.getElementById('pin-screen');
+  if(ps.style.display==='none')return;
+  if(e.key>='0'&&e.key<='9')pinKey(e.key);
+  if(e.key==='Backspace')pinDel();
+});
+
+// ===== CORE =====
 const MESI=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
 const MS=['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
 const YEARS=[2024,2025,2026,2027];
 const fmt=v=>new Intl.NumberFormat('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2}).format(v||0);
 const fmtK=v=>{const a=Math.abs(v),s=v<0?'−':'';return s+'€'+(a>=100000?(a/1000).toFixed(0)+'k':a>=10000?(a/1000).toFixed(1)+'k':fmt(a))};
 
-let yr=2026, mo=new Date().getMonth();
-// db.fatture: oggetti con percM, percR, quotaM, quotaR
-// db.prelievi: prelievi per singolo socio
-// db.spese: spese generali società
-let db={fatture:[],prelievi:[],spese:[]};
+let yr=2026,mo=new Date().getMonth();
+let db={fatture:[],prelievi:[],spese:[],ricorrenti:[],dipendenti:[]};
 let chartInst=null;
 
 function load(){
-  try{const s=localStorage.getItem('evolvia_v3');if(s)db=JSON.parse(s);}catch(e){}
+  try{const s=localStorage.getItem('evolvia_v2');if(s){const d=JSON.parse(s);db.fatture=d.fatture||[];db.prelievi=d.prelievi||[];db.spese=d.spese||[];db.ricorrenti=d.ricorrenti||[];db.dipendenti=d.dipendenti||[];}}catch(e){}
   initSel();renderAll();
 }
-function save(){localStorage.setItem('evolvia_v3',JSON.stringify(db));}
-function toast(m,ms=2200){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),ms);}
+function save(){localStorage.setItem('evolvia_v2',JSON.stringify(db));}
+function toast(m,ms=2400){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),ms);}
 
 function initSel(){
   document.getElementById('year-row').innerHTML=YEARS.map(y=>`<button class="year-btn ${y===yr?'active':''}" onclick="setYear(${y})">${y}</button>`).join('');
   const mOpts=MESI.map((n,i)=>`<option value="${i}" ${i===mo?'selected':''}>${n}</option>`).join('');
   const mOptsAll='<option value="">Tutti i mesi</option>'+MESI.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
-  ['ff-month','fp-month','fs-month'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=mOpts;});
+  ['ff-month','fp-month','fs-month','fr-start'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=mOpts;});
   ['sf-month','sp-month','ss-month'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=mOptsAll;});
   const sc=document.getElementById('ss-cat');
-  if(sc)sc.innerHTML='<option value="">Tutte le categorie</option>'+['Affitto','Leasing auto','Commercialista','Marketing','Personale','Carburante','Software','Telefonia','Tasse/F24','Cene aziendali','Ufficio','Altro'].map(c=>`<option>${c}</option>`).join('');
+  if(sc)sc.innerHTML='<option value="">Tutte le categorie</option>'+['Affitto','Leasing auto','Commercialista','Marketing','Personale','Carburante','Software','Telefonia','F24','Altre tasse','Dipendenti','Cene aziendali','Ufficio','Prelievo socio','Altro'].map(c=>`<option>${c}</option>`).join('');
 }
 
 function setYear(y){yr=y;document.querySelectorAll('.year-btn').forEach(b=>b.classList.toggle('active',parseInt(b.textContent)===y));renderAll();}
@@ -432,10 +676,22 @@ function go(name){
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>{if((n.getAttribute('onclick')||'').includes("'"+name+"'"))n.classList.add('active');});
   if(name==='report')renderReport();
+  if(name==='fatture')renderFatture();
+  if(name==='spese')renderSpese();
+  if(name==='prelievi')renderPrelievi();
+  if(name==='ricorrenti')renderRicorrenti();
+  if(name==='dipendenti')renderDipendenti();
 }
 function toggleForm(id){document.getElementById(id).classList.toggle('open');}
+function cancelForm(id){
+  document.getElementById(id).classList.remove('open');
+  const eid=document.getElementById(id+'-edit-id');
+  if(eid)eid.value='';
+  const t=document.getElementById(id+'-title');
+  if(t)t.textContent=id==='ff'?'Nuova fattura Evolvia':id==='fp'?'Nuovo prelievo / anticipo socio':'Nuova spesa società';
+}
 
-// CALCOLO QUOTE LIVE
+// ===== QUOTE =====
 function updateQuote(){
   const imp=parseFloat(document.getElementById('ff-imp').value)||0;
   const pM=parseFloat(document.getElementById('ff-pM').value)||0;
@@ -448,43 +704,61 @@ function updateQuote(){
   ptEl.style.color=Math.abs(tot-100)<0.01?'var(--green)':'var(--red)';
   document.getElementById('ff-pwarn').style.display=Math.abs(tot-100)<0.01?'none':'block';
 }
-function syncPerc(changed){
-  const pM=parseFloat(document.getElementById('ff-pM').value)||0;
-  const pR=parseFloat(document.getElementById('ff-pR').value)||0;
-  // non auto-sync, lasciamo libera la somma
-  updateQuote();
-}
 
-// RESIDUO PER SOCIO
-function calcResiduo(socio, filteredYr){
-  const fy=filteredYr||yr;
+// ===== RESIDUO =====
+function calcResiduo(socio,filtYr){
+  const fy=filtYr||yr;
   const aF=db.fatture.filter(x=>x.year===fy);
   const aP=db.prelievi.filter(x=>x.year===fy&&x.socio===socio);
-  const quotaTot=socio==='MATTIA'
-    ? aF.reduce((s,x)=>s+(x.quotaM||0),0)
-    : aF.reduce((s,x)=>s+(x.quotaR||0),0);
-  const prelTot=aP.reduce((s,x)=>s+x.imp,0);
-  return{quota:quotaTot, prelievi:prelTot, residuo:quotaTot-prelTot};
+  const quota=socio==='MATTIA'?aF.reduce((s,x)=>s+(x.quotaM||0),0):aF.reduce((s,x)=>s+(x.quotaR||0),0);
+  const prel=aP.reduce((s,x)=>s+x.imp,0);
+  return{quota,prelievi:prel,residuo:quota-prel};
 }
-
-function residuoCard(socio, containerEl){
+function residuoCard(socio,el){
   const r=calcResiduo(socio);
-  const cfg=socio==='MATTIA'?{av:'#B5D4F4',tc:'var(--blue)',init:'MA',cls:'cM'}:{av:'#CECBF6',tc:'var(--purple)',init:'RI',cls:'cR'};
-  containerEl.innerHTML=`
-    <div class="residuo-header">
-      <div class="avatar" style="background:${cfg.av};color:${cfg.tc}">${cfg.init}</div>
-      <div><div style="font-size:15px;font-weight:700">${socio.charAt(0)+socio.slice(1).toLowerCase()}</div><div style="font-size:11px;color:var(--text3)">Anno ${yr}</div></div>
-    </div>
+  const cfg=socio==='MATTIA'?{av:'#B5D4F4',tc:'var(--blue)',init:'MA'}:{av:'#CECBF6',tc:'var(--purple)',init:'RI'};
+  el.innerHTML=`<div class="residuo-header"><div class="avatar" style="background:${cfg.av};color:${cfg.tc}">${cfg.init}</div><div><div style="font-size:15px;font-weight:700">${socio.charAt(0)+socio.slice(1).toLowerCase()}</div><div style="font-size:11px;color:var(--text3)">Anno ${yr}</div></div></div>
     <div class="res-line"><span style="color:var(--text2)">Quota totale dalle fatture</span><span style="color:var(--blue);font-weight:600">${fmtK(r.quota)}</span></div>
-    <div class="res-line"><span style="color:var(--text2)">Già prelevato / fatturato</span><span style="color:var(--red)">${fmtK(r.prelievi)}</span></div>
-    <div class="res-line"><span>Residuo disponibile</span><span style="color:${r.residuo>=0?'var(--green)':'var(--red)'};font-size:20px">${fmtK(r.residuo)}</span></div>
-  `;
+    <div class="res-line"><span style="color:var(--text2)">Già prelevato</span><span style="color:var(--red)">${fmtK(r.prelievi)}</span></div>
+    <div class="res-line"><span>Residuo disponibile</span><span style="color:${r.residuo>=0?'var(--green)':'var(--red)'};font-size:20px">${fmtK(r.residuo)}</span></div>`;
 }
 
+// ===== IVA TRIMESTRALE =====
+function renderIvaTrim(){
+  const ivaFilt=document.getElementById('iva-filter')?.value||'tutti';
+  const aF=db.fatture.filter(x=>x.year===yr);
+  const aS=db.spese.filter(x=>x.year===yr);
+  const trims=[[0,1,2],[3,4,5],[6,7,8],[9,10,11]];
+  document.getElementById('iva-year-label').textContent=yr;
+  let totDeb=0,totCred=0;
+  document.getElementById('iva-trimestrale').innerHTML=trims.map((months,ti)=>{
+    const label=['1° Trim (Gen-Mar)','2° Trim (Apr-Giu)','3° Trim (Lug-Set)','4° Trim (Ott-Dic)'][ti];
+    const ivaD=aF.filter(x=>months.includes(x.month)).reduce((s,x)=>s+x.imp*(x.iva||0)/100,0);
+    let ivaC=0;
+    if(ivaFilt==='tutti')ivaC=aS.filter(x=>months.includes(x.month)).reduce((s,x)=>s+x.imp*(x.iva||0)/100,0);
+    else if(ivaFilt==='f24')ivaC=aS.filter(x=>months.includes(x.month)&&x.cat==='F24').reduce((s,x)=>s+x.imp*(x.iva||0)/100,0);
+    else if(ivaFilt==='altre')ivaC=aS.filter(x=>months.includes(x.month)&&x.cat==='Altre tasse').reduce((s,x)=>s+x.imp*(x.iva||0)/100,0);
+    const net=ivaD-ivaC;
+    totDeb+=ivaD;totCred+=ivaC;
+    return`<div class="iva-trim">
+      <div class="iva-trim-label">${label}</div>
+      <div class="iva-trim-value" style="color:${net>=0?'var(--red)':'var(--green)'}">${fmtK(Math.abs(net))}</div>
+      <div class="iva-trim-sub">${net>=0?'Da versare':'A credito'}</div>
+      <div style="margin-top:8px;font-size:11px;color:var(--text3)">Debito: ${fmtK(ivaD)}<br>Credito: ${fmtK(ivaC)}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('iva-tot-debito').textContent=fmtK(totDeb);
+  document.getElementById('iva-tot-credito').textContent=fmtK(totCred);
+}
+
+// ===== RENDER ALL =====
 function renderAll(){
   document.getElementById('month-label').textContent=MESI[mo]+' '+yr;
   document.getElementById('dash-title').textContent='Dashboard — '+MESI[mo];
   document.getElementById('dash-sub').textContent=yr;
+  renderDashboard();
+}
+function renderDashboard(){
   const mF=db.fatture.filter(x=>x.month===mo&&x.year===yr);
   const mP=db.prelievi.filter(x=>x.month===mo&&x.year===yr);
   const mS=db.spese.filter(x=>x.month===mo&&x.year===yr);
@@ -493,48 +767,56 @@ function renderAll(){
   const totPM=mP.filter(x=>x.socio==='MATTIA').reduce((s,x)=>s+x.imp,0);
   const totPR=mP.filter(x=>x.socio==='RICCARDO').reduce((s,x)=>s+x.imp,0);
   const daInc=mF.filter(x=>!x.boni&&!x.nc).reduce((s,x)=>s+x.imp*(1+(x.iva||22)/100),0);
+  const ivaD=mF.reduce((s,x)=>s+x.imp*(x.iva||0)/100,0);
+  const ivaC=mS.reduce((s,x)=>s+x.imp*(x.iva||0)/100,0);
   document.getElementById('dash-metrics').innerHTML=`
     <div class="metric"><div class="metric-label">Fatturato mese</div><div class="metric-value mv-blue">${fmtK(totF)}</div><div class="metric-sub">${mF.length} fatture</div></div>
-    <div class="metric"><div class="metric-label">Spese società</div><div class="metric-value mv-red">${fmtK(totS)}</div><div class="metric-sub">${mS.length} voci</div></div>
-    <div class="metric"><div class="metric-label">Prelievi Mattia</div><div class="metric-value mv-amber">${fmtK(totPM)}</div></div>
-    <div class="metric"><div class="metric-label">Prelievi Riccardo</div><div class="metric-value mv-amber">${fmtK(totPR)}</div></div>
-    <div class="metric"><div class="metric-label">Da incassare</div><div class="metric-value">${fmtK(daInc)}</div></div>
-    <div class="metric"><div class="metric-label">IVA a debito</div><div class="metric-value">${fmtK(mF.reduce((s,x)=>s+x.imp*(x.iva||22)/100,0))}</div></div>
+    <div class="metric"><div class="metric-label">Spese società</div><div class="metric-value mv-red">${fmtK(totS)}</div></div>
+    <div class="metric"><div class="metric-label">Margine mese</div><div class="metric-value ${(totF-totS)>=0?'mv-green':'mv-red'}">${fmtK(totF-totS)}</div></div>
+    <div class="metric"><div class="metric-label">Da incassare</div><div class="metric-value mv-amber">${fmtK(daInc)}</div></div>
+    <div class="metric"><div class="metric-label">IVA a debito</div><div class="metric-value mv-red">${fmtK(ivaD)}</div></div>
+    <div class="metric"><div class="metric-label">IVA a credito</div><div class="metric-value mv-green">${fmtK(ivaC)}</div></div>
+    <div class="metric"><div class="metric-label">Prel. Mattia</div><div class="metric-value mv-amber">${fmtK(totPM)}</div></div>
+    <div class="metric"><div class="metric-label">Prel. Riccardo</div><div class="metric-value mv-amber">${fmtK(totPR)}</div></div>
   `;
+  renderIvaTrim();
   residuoCard('MATTIA',document.getElementById('res-mattia'));
   residuoCard('RICCARDO',document.getElementById('res-riccardo'));
   const aF=db.fatture.filter(x=>x.year===yr);
-  document.getElementById('dash-fatt').innerHTML=aF.slice(-5).reverse().map(x=>`<tr>
-    <td>${x.cli||'—'}</td><td class="num">${fmt(x.imp)}</td>
-    <td class="num" style="color:var(--blue)">${x.percM}% = €${fmt(x.quotaM)}</td>
-    <td class="num" style="color:var(--purple)">${x.percR}% = €${fmt(x.quotaR)}</td>
-  </tr>`).join('')||'<tr class="empty-row"><td colspan="4">Nessuna fattura</td></tr>';
-  document.getElementById('dash-prel').innerHTML=db.prelievi.filter(x=>x.year===yr).slice(-5).reverse().map(x=>`<tr>
-    <td><span class="chip ${x.socio==='MATTIA'?'cM':'cR'}">${x.socio==='MATTIA'?'Mattia':'Riccardo'}</span></td>
-    <td>${x.desc||'—'}</td><td class="num" style="color:var(--amber)">${fmt(x.imp)}</td>
-  </tr>`).join('')||'<tr class="empty-row"><td colspan="3">Nessun prelievo</td></tr>';
+  document.getElementById('dash-fatt').innerHTML=aF.slice(-5).reverse().map(x=>`<tr><td>${x.cli||'—'}</td><td class="num">${fmt(x.imp)}</td><td class="num" style="color:var(--blue)">${x.percM}%=€${fmt(x.quotaM)}</td><td class="num" style="color:var(--purple)">${x.percR}%=€${fmt(x.quotaR)}</td></tr>`).join('')||'<tr class="empty-row"><td colspan="4">Nessuna fattura</td></tr>';
+  document.getElementById('dash-prel').innerHTML=db.prelievi.filter(x=>x.year===yr).slice(-5).reverse().map(x=>`<tr><td><span class="chip ${x.socio==='MATTIA'?'cM':'cR'}">${x.socio==='MATTIA'?'Mattia':'Riccardo'}</span></td><td>${x.desc||'—'}</td><td class="num" style="color:var(--amber)">${fmt(x.imp)}</td></tr>`).join('')||'<tr class="empty-row"><td colspan="3">Nessun prelievo</td></tr>';
 }
 
-// ADD FATTURA
-function addFattura(){
+// ===== FATTURE CRUD =====
+function saveFattura(){
   const imp=parseFloat(document.getElementById('ff-imp').value)||0;
   if(!imp){toast('⚠ Inserisci imponibile');return;}
   const pM=parseFloat(document.getElementById('ff-pM').value)||0;
   const pR=parseFloat(document.getElementById('ff-pR').value)||0;
-  if(Math.abs(pM+pR-100)>0.1){if(!confirm(`Le percentuali sommano ${pM+pR}%, non 100%. Continuare?`))return;}
-  db.fatture.push({
-    id:Date.now(),num:v('ff-num'),cli:v('ff-cli'),desc:v('ff-desc'),cat:v('ff-cat'),
-    imp,iva:parseFloat(v('ff-iva')),totale:imp*(1+parseFloat(v('ff-iva'))/100),
-    month:parseInt(v('ff-month')),year:yr,
-    percM:pM,percR:pR,quotaM:imp*pM/100,quotaR:imp*pR/100,
-    boni:cb('ff-boni'),nc:cb('ff-nc'),drive:v('ff-drive'),note:v('ff-note')
-  });
-  save();clearForm(['ff-num','ff-cli','ff-desc','ff-imp','ff-drive','ff-note'],['ff-boni','ff-nc']);
-  document.getElementById('ff-pM').value=50;document.getElementById('ff-pR').value=50;updateQuote();
-  toggleForm('ff');renderAll();renderFatture();toast('✅ Fattura aggiunta');
+  if(Math.abs(pM+pR-100)>0.1){if(!confirm(`Le % sommano ${pM+pR}%, non 100%. Continuare?`))return;}
+  const iva=parseFloat(v('ff-iva'));
+  const obj={num:v('ff-num'),cli:v('ff-cli'),desc:v('ff-desc'),cat:v('ff-cat'),imp,iva,totale:imp*(1+iva/100),month:parseInt(v('ff-month')),year:yr,percM:pM,percR:pR,quotaM:imp*pM/100,quotaR:imp*pR/100,boni:cb('ff-boni'),nc:cb('ff-nc'),drive:v('ff-drive'),note:v('ff-note')};
+  const eid=v('ff-edit-id');
+  if(eid){const i=db.fatture.findIndex(x=>x.id===parseInt(eid));if(i>=0){obj.id=parseInt(eid);db.fatture[i]=obj;}toast('✏️ Fattura modificata');}
+  else{obj.id=Date.now();db.fatture.push(obj);toast('✅ Fattura aggiunta');}
+  save();cancelForm('ff');renderAll();renderFatture();
+}
+function editFattura(id){
+  const x=db.fatture.find(f=>f.id===id);if(!x)return;
+  document.getElementById('ff-title').textContent='Modifica fattura';
+  document.getElementById('ff-edit-id').value=id;
+  sv('ff-num',x.num);sv('ff-cli',x.cli);sv('ff-desc',x.desc);sv('ff-cat',x.cat);
+  sv('ff-imp',x.imp);sv('ff-iva',x.iva);sv('ff-month',x.month);sv('ff-drive',x.drive||'');sv('ff-note',x.note||'');
+  sv('ff-pM',x.percM);sv('ff-pR',x.percR);
+  document.getElementById('ff-boni').checked=x.boni||false;
+  document.getElementById('ff-nc').checked=x.nc||false;
+  updateQuote();
+  document.getElementById('ff').classList.add('open');
+  document.getElementById('ff').scrollIntoView({behavior:'smooth'});
 }
 
-function addPrelievo(){
+// ===== PRELIEVI CRUD =====
+function savePrelievo(){
   const imp=parseFloat(document.getElementById('fp-imp').value)||0;
   if(!imp){toast('⚠ Inserisci importo');return;}
   const socio=v('fp-socio');
@@ -542,137 +824,213 @@ function addPrelievo(){
   const desc=v('fp-desc')||'Prelievo '+socio.charAt(0)+socio.slice(1).toLowerCase();
   const drive=v('fp-drive');
   const note=v('fp-note');
-  const pid=Date.now();
-  // 1. Registra prelievo socio
-  db.prelievi.push({id:pid,socio,imp,month,year:yr,desc,drive,note});
-  // 2. Registra automaticamente come spesa società (collegata al prelievo)
-  db.spese.push({
-    id:pid+0.5,
-    forn:socio.charAt(0)+socio.slice(1).toLowerCase()+' (ditta individuale)',
-    num:'',
-    desc:desc,
-    cat:'Prelievo socio',
-    imp,iva:0,totale:imp,
-    month,year:yr,
-    pag:true,
-    nc:false,
-    drive,
-    note:'Generata automaticamente da prelievo socio',
-    fromPrelievo:pid
-  });
-  save();clearForm(['fp-imp','fp-desc','fp-drive','fp-note'],[]);
-  toggleForm('fp');renderAll();renderPrelievi();renderSpese();toast('✅ Prelievo aggiunto — spesa creata automaticamente');
+  const eid=v('fp-edit-id');
+  if(eid){
+    const pid=parseInt(eid);
+    const i=db.prelievi.findIndex(x=>x.id===pid);
+    if(i>=0){
+      db.prelievi[i]={id:pid,socio,imp,month,year:yr,desc,drive,note};
+      // aggiorna spesa collegata
+      const si=db.spese.findIndex(x=>x.fromPrelievo===pid);
+      if(si>=0)db.spese[si]={...db.spese[si],forn:socio.charAt(0)+socio.slice(1).toLowerCase()+' (ditta individuale)',imp,totale:imp,month,desc,drive};
+    }
+    toast('✏️ Prelievo modificato');
+  } else {
+    const pid=Date.now();
+    db.prelievi.push({id:pid,socio,imp,month,year:yr,desc,drive,note});
+    db.spese.push({id:pid+0.5,forn:socio.charAt(0)+socio.slice(1).toLowerCase()+' (ditta individuale)',num:'',desc,cat:'Prelievo socio',imp,iva:0,totale:imp,month,year:yr,pag:true,nc:false,drive,note:'Generata da prelievo socio',fromPrelievo:pid});
+    toast('✅ Prelievo aggiunto — spesa creata automaticamente');
+  }
+  save();cancelForm('fp');renderAll();renderPrelievi();renderSpese();
+}
+function editPrelievo(id){
+  const x=db.prelievi.find(p=>p.id===id);if(!x)return;
+  document.getElementById('fp-title').textContent='Modifica prelievo';
+  document.getElementById('fp-edit-id').value=id;
+  sv('fp-socio',x.socio);sv('fp-imp',x.imp);sv('fp-month',x.month);sv('fp-desc',x.desc||'');sv('fp-drive',x.drive||'');sv('fp-note',x.note||'');
+  document.getElementById('fp').classList.add('open');
+  document.getElementById('fp').scrollIntoView({behavior:'smooth'});
 }
 
-function addSpesa(){
+// ===== SPESE CRUD =====
+function saveSpesa(){
   const imp=parseFloat(document.getElementById('fs-imp').value)||0;
   if(!imp){toast('⚠ Inserisci imponibile');return;}
   const iva=parseFloat(v('fs-iva'));
-  db.spese.push({id:Date.now(),forn:v('fs-forn'),num:v('fs-num'),desc:v('fs-desc'),cat:v('fs-cat'),imp,iva,totale:imp*(1+iva/100),month:parseInt(v('fs-month')),year:yr,pag:cb('fs-pag'),nc:cb('fs-nc'),drive:v('fs-drive'),note:v('fs-note')});
-  save();clearForm(['fs-forn','fs-num','fs-desc','fs-imp','fs-drive','fs-note'],['fs-pag','fs-nc']);
-  toggleForm('fs');renderSpese();toast('✅ Spesa aggiunta');
+  const obj={forn:v('fs-forn'),num:v('fs-num'),desc:v('fs-desc'),cat:v('fs-cat'),imp,iva,totale:imp*(1+iva/100),month:parseInt(v('fs-month')),year:yr,pag:cb('fs-pag'),nc:cb('fs-nc'),drive:v('fs-drive'),note:v('fs-note')};
+  const eid=v('fs-edit-id');
+  if(eid){const i=db.spese.findIndex(x=>x.id===parseInt(eid));if(i>=0){obj.id=parseInt(eid);obj.fromPrelievo=db.spese[i].fromPrelievo;db.spese[i]=obj;}toast('✏️ Spesa modificata');}
+  else{obj.id=Date.now();db.spese.push(obj);toast('✅ Spesa aggiunta');}
+  save();cancelForm('fs');renderSpese();renderAll();
+}
+function editSpesa(id){
+  const x=db.spese.find(s=>s.id===id);if(!x)return;
+  document.getElementById('fs-title').textContent='Modifica spesa';
+  document.getElementById('fs-edit-id').value=id;
+  sv('fs-forn',x.forn);sv('fs-num',x.num||'');sv('fs-desc',x.desc||'');sv('fs-cat',x.cat);
+  sv('fs-imp',x.imp);sv('fs-iva',x.iva);sv('fs-month',x.month);sv('fs-drive',x.drive||'');sv('fs-note',x.note||'');
+  document.getElementById('fs-pag').checked=x.pag||false;
+  document.getElementById('fs-nc').checked=x.nc||false;
+  document.getElementById('fs').classList.add('open');
+  document.getElementById('fs').scrollIntoView({behavior:'smooth'});
 }
 
-function v(id){return document.getElementById(id)?.value||'';}
-function cb(id){return document.getElementById(id)?.checked||false;}
-function clearForm(ids,cbs){ids.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});cbs.forEach(id=>{const el=document.getElementById(id);if(el)el.checked=false;});}
+// ===== DELETE =====
 function del(arr,id){
   const i=db[arr].findIndex(x=>x.id===id);
-  if(i>=0){
-    // Se elimino un prelievo, elimino anche la spesa collegata
-    if(arr==='prelievi'){
-      const pid=db.prelievi[i].id;
-      db.spese=db.spese.filter(x=>x.fromPrelievo!==pid);
-    }
-    // Se elimino una spesa generata da prelievo, impedisco (mostrare avviso)
-    if(arr==='spese'&&db.spese[i]&&db.spese[i].fromPrelievo){
-      if(!confirm('Questa spesa è collegata a un prelievo socio. Eliminando la spesa verrà eliminato anche il prelievo. Continuare?'))return;
-      const pid=db.spese[i].fromPrelievo;
-      db.prelievi=db.prelievi.filter(x=>x.id!==pid);
-    }
-    db[arr].splice(i,1);
-    save();renderAll();renderFatture();renderPrelievi();renderSpese();
-  }
+  if(i<0)return;
+  if(arr==='prelievi'){const pid=db.prelievi[i].id;db.spese=db.spese.filter(x=>x.fromPrelievo!==pid);}
+  if(arr==='spese'&&db.spese[i].fromPrelievo){if(!confirm('Questa spesa è collegata a un prelievo. Eliminare entrambi?'))return;const pid=db.spese[i].fromPrelievo;db.prelievi=db.prelievi.filter(x=>x.id!==pid);}
+  db[arr].splice(db[arr].findIndex(x=>x.id===id),1);
+  save();renderAll();renderFatture();renderPrelievi();renderSpese();
 }
 
+// ===== RICORRENTI =====
+function addRicorrente(){
+  const imp=parseFloat(document.getElementById('fr-imp').value)||0;
+  if(!imp){toast('⚠ Inserisci importo');return;}
+  const iva=parseFloat(v('fr-iva'));
+  db.ricorrenti.push({id:Date.now(),forn:v('fr-forn'),desc:v('fr-desc'),cat:v('fr-cat'),imp,iva,totale:imp*(1+iva/100),startMonth:parseInt(v('fr-start')),drive:v('fr-drive'),note:v('fr-note'),attivo:true});
+  save();toggleForm('fr');['fr-forn','fr-desc','fr-imp','fr-drive','fr-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  renderRicorrenti();toast('✅ Pagamento ricorrente aggiunto');
+}
+function toggleRicorrente(id){
+  const r=db.ricorrenti.find(x=>x.id===id);if(r)r.attivo=!r.attivo;
+  save();renderRicorrenti();
+}
+function delRicorrente(id){db.ricorrenti=db.ricorrenti.filter(x=>x.id!==id);save();renderRicorrenti();toast('🗑 Rimosso');}
+function applyRicorrenti(){
+  const attivi=db.ricorrenti.filter(x=>x.attivo);
+  if(!attivi.length){toast('⚠ Nessun ricorrente attivo');return;}
+  let count=0;
+  attivi.forEach(r=>{
+    const already=db.spese.find(s=>s.fromRicorrente===r.id&&s.month===mo&&s.year===yr);
+    if(!already){
+      db.spese.push({id:Date.now()+Math.random(),forn:r.forn,num:'',desc:r.desc,cat:r.cat,imp:r.imp,iva:r.iva,totale:r.totale,month:mo,year:yr,pag:false,nc:false,drive:r.drive,note:'Generata da ricorrente',fromRicorrente:r.id});
+      count++;
+    }
+  });
+  save();renderSpese();renderAll();
+  toast(count>0?`✅ ${count} spese aggiunte per ${MESI[mo]}`:`⚠ Già applicato per ${MESI[mo]}`);
+}
+function renderRicorrenti(){
+  const list=db.ricorrenti;
+  const el=document.getElementById('ric-list');
+  el.innerHTML=list.length===0?'<div style="padding:20px;text-align:center;color:var(--text3)">Nessun pagamento ricorrente</div>':
+    list.map(r=>`<div class="ricorrente-row">
+      <div style="flex:1"><strong>${r.forn}</strong> — ${r.desc}<span class="badge ${r.attivo?'bg-green':'bg-gray'}" style="margin-left:8px">${r.attivo?'Attivo':'Sospeso'}</span></div>
+      <div style="font-size:12px;color:var(--text3);min-width:80px">${r.cat}</div>
+      <div style="font-weight:600;color:var(--red);min-width:80px;text-align:right">${fmt(r.imp)}/mese</div>
+      <button class="btn btn-sm" onclick="toggleRicorrente(${r.id})" style="margin-left:8px">${r.attivo?'Sospendi':'Attiva'}</button>
+      <button class="btn btn-danger btn-sm" onclick="delRicorrente(${r.id})">✕</button>
+    </div>`).join('');
+  const totMens=list.filter(x=>x.attivo).reduce((s,x)=>s+x.imp,0);
+  const totAnn=totMens*12;
+  document.getElementById('ric-summary').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+      <div class="metric"><div class="metric-label">Costo mensile ricorrenti</div><div class="metric-value mv-red">${fmtK(totMens)}</div></div>
+      <div class="metric"><div class="metric-label">Costo annuo stimato</div><div class="metric-value mv-amber">${fmtK(totAnn)}</div></div>
+      <div class="metric"><div class="metric-label">N° ricorrenti attivi</div><div class="metric-value">${list.filter(x=>x.attivo).length}</div></div>
+    </div>`;
+}
+
+// ===== DIPENDENTI =====
+function addDipendente(){
+  const nome=v('fd-nome');if(!nome){toast('⚠ Inserisci nome');return;}
+  db.dipendenti.push({id:Date.now(),nome,ruolo:v('fd-ruolo'),ral:parseFloat(v('fd-ral'))||0,costo:parseFloat(v('fd-costo'))||0,data:v('fd-data'),ccnl:v('fd-ccnl'),note:v('fd-note')});
+  save();toggleForm('fd');['fd-nome','fd-ruolo','fd-ral','fd-costo','fd-data','fd-ccnl','fd-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  renderDipendenti();toast('✅ Dipendente aggiunto');
+}
+function delDipendente(id){db.dipendenti=db.dipendenti.filter(x=>x.id!==id);save();renderDipendenti();}
+function renderDipendenti(){
+  const list=db.dipendenti;
+  const tb=document.getElementById('tb-dipendenti');
+  tb.innerHTML=list.length===0?'<tr class="empty-row"><td colspan="8">Nessun dipendente registrato</td></tr>':
+    list.map(x=>`<tr>
+      <td style="font-weight:500">${x.nome}</td>
+      <td>${x.ruolo||'—'}</td>
+      <td class="num">${fmt(x.ral)}</td>
+      <td class="num" style="color:var(--red);font-weight:600">${fmt(x.costo)}/mese</td>
+      <td>${x.data||'—'}</td>
+      <td>${x.ccnl||'—'}</td>
+      <td style="font-size:12px;color:var(--text3)">${x.note||''}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="delDipendente(${x.id})">✕</button></td>
+    </tr>`).join('');
+  const totCosto=list.reduce((s,x)=>s+x.costo,0);
+  const totRal=list.reduce((s,x)=>s+x.ral,0);
+  document.getElementById('tf-dipendenti').innerHTML=`<td colspan="2">Totale (${list.length})</td><td class="num">${fmt(totRal)}</td><td class="num" style="color:var(--red)">${fmt(totCosto)}/mese</td><td colspan="4"></td>`;
+}
+
+// ===== RENDER TABELLE =====
 function renderFatture(){
-  const q=(v('sf-q')).toLowerCase();
-  const sm=v('sf-month');const sb=v('sf-boni');
+  const q=v('sf-q').toLowerCase();const sm=v('sf-month');const sb=v('sf-boni');
   let list=db.fatture.filter(x=>{
     if(x.year!==yr)return false;
     if(sm!==''&&x.month!==parseInt(sm))return false;
-    if(sb==='1'&&!x.boni)return false;
-    if(sb==='0'&&x.boni)return false;
+    if(sb==='1'&&!x.boni)return false;if(sb==='0'&&x.boni)return false;
     if(q&&!(x.cli+' '+x.desc+' '+x.num).toLowerCase().includes(q))return false;
     return true;
   });
   document.getElementById('sf-count').textContent=list.length+' fatture';
-  const tb=document.getElementById('tb-fatture');
-  tb.innerHTML=list.length===0?'<tr class="empty-row"><td colspan="16">Nessuna fattura trovata</td></tr>':
+  document.getElementById('tb-fatture').innerHTML=list.length===0?'<tr class="empty-row"><td colspan="16">Nessuna fattura trovata</td></tr>':
     list.sort((a,b)=>b.month-a.month||b.id-a.id).map(x=>`<tr>
-      <td>${x.num||'—'}</td><td>${x.cli||'—'}</td>
-      <td>${x.desc||'—'}${x.nc?'<span class="nc-tag">NC</span>':''}</td>
+      <td>${x.num||'—'}</td><td>${x.cli||'—'}</td><td>${x.desc||'—'}${x.nc?'<span class="nc-tag">NC</span>':''}</td>
       <td><span class="badge bg-gray">${x.cat||'—'}</span></td>
-      <td class="num">${fmt(x.imp)}</td><td>${x.iva}%</td>
-      <td class="num" style="font-weight:600">${fmt(x.totale)}</td>
+      <td class="num">${fmt(x.imp)}</td><td>${x.iva}%</td><td class="num" style="font-weight:600">${fmt(x.totale)}</td>
       <td>${MS[x.month]}</td>
-      <td class="num" style="color:var(--blue)">${x.percM}%</td>
-      <td class="num" style="color:var(--blue);font-weight:600">${fmt(x.quotaM)}</td>
-      <td class="num" style="color:var(--purple)">${x.percR}%</td>
-      <td class="num" style="color:var(--purple);font-weight:600">${fmt(x.quotaR)}</td>
+      <td class="num" style="color:var(--blue)">${x.percM}%</td><td class="num" style="color:var(--blue);font-weight:600">${fmt(x.quotaM)}</td>
+      <td class="num" style="color:var(--purple)">${x.percR}%</td><td class="num" style="color:var(--purple);font-weight:600">${fmt(x.quotaR)}</td>
       <td style="text-align:center">${x.boni?'<span class="ok-icon">✓</span>':'<span class="no-icon">○</span>'}</td>
       <td>${x.drive?`<a class="link-a" href="${x.drive}" target="_blank">📎</a>`:'—'}</td>
       <td style="font-size:12px;color:var(--text3)">${x.note||''}</td>
-      <td><button class="btn btn-danger btn-sm" onclick="del('fatture',${x.id})">✕</button></td>
+      <td style="display:flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(${x.id})">✏</button><button class="btn btn-danger btn-sm" onclick="del('fatture',${x.id})">✕</button></td>
     </tr>`).join('');
-  const tF=list.reduce((s,x)=>s+x.imp,0);
-  const qM=list.reduce((s,x)=>s+x.quotaM,0);
-  const qR=list.reduce((s,x)=>s+x.quotaR,0);
-  document.getElementById('tf-fatture').innerHTML=`<td colspan="4">Totale (${list.length})</td><td class="num">${fmt(tF)}</td><td></td><td class="num">${fmt(list.reduce((s,x)=>s+x.totale,0))}</td><td></td><td></td><td class="num" style="color:var(--blue)">${fmt(qM)}</td><td></td><td class="num" style="color:var(--purple)">${fmt(qR)}</td><td colspan="4"></td>`;
+  const tI=list.reduce((s,x)=>s+x.imp,0),tT=list.reduce((s,x)=>s+x.totale,0),qM=list.reduce((s,x)=>s+x.quotaM,0),qR=list.reduce((s,x)=>s+x.quotaR,0);
+  document.getElementById('tf-fatture').innerHTML=`<td colspan="4">Totale (${list.length})</td><td class="num">${fmt(tI)}</td><td></td><td class="num">${fmt(tT)}</td><td></td><td></td><td class="num" style="color:var(--blue)">${fmt(qM)}</td><td></td><td class="num" style="color:var(--purple)">${fmt(qR)}</td><td colspan="4"></td>`;
 }
 
 function renderPrelievi(){
-  const ss=v('sp-socio');const sm=v('sp-month');
+  const ss=v('sp-socio'),sm=v('sp-month');
   let list=db.prelievi.filter(x=>{
     if(x.year!==yr)return false;
     if(ss&&x.socio!==ss)return false;
     if(sm!==''&&x.month!==parseInt(sm))return false;
     return true;
   });
-  const tb=document.getElementById('tb-prelievi');
-  tb.innerHTML=list.length===0?'<tr class="empty-row"><td colspan="7">Nessun prelievo</td></tr>':
+  document.getElementById('tb-prelievi').innerHTML=list.length===0?'<tr class="empty-row"><td colspan="7">Nessun prelievo</td></tr>':
     list.sort((a,b)=>b.month-a.month).map(x=>`<tr>
       <td><span class="chip ${x.socio==='MATTIA'?'cM':'cR'}">${x.socio==='MATTIA'?'Mattia':'Riccardo'}</span></td>
       <td>${x.desc||'—'}</td><td>${MS[x.month]}</td>
       <td class="num" style="font-weight:600;color:var(--amber)">${fmt(x.imp)}</td>
       <td>${x.drive?`<a class="link-a" href="${x.drive}" target="_blank">📎</a>`:'—'}</td>
       <td style="font-size:12px;color:var(--text3)">${x.note||''}</td>
-      <td><button class="btn btn-danger btn-sm" onclick="del('prelievi',${x.id})">✕</button></td>
+      <td style="display:flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editPrelievo(${x.id})">✏</button><button class="btn btn-danger btn-sm" onclick="del('prelievi',${x.id})">✕</button></td>
     </tr>`).join('');
-  document.getElementById('tf-prelievi').innerHTML=`<td colspan="3">Totale (${list.length})</td><td class="num">${fmt(list.reduce((s,x)=>s+x.imp,0))}</td><td colspan="3"></td>`;
+  document.getElementById('tf-prelievi').innerHTML=`<td colspan="3">Totale</td><td class="num">${fmt(list.reduce((s,x)=>s+x.imp,0))}</td><td colspan="3"></td>`;
 }
 
 function renderSpese(){
-  const q=(v('ss-q')).toLowerCase();const sm=v('ss-month');const sc=v('ss-cat');
+  const q=v('ss-q').toLowerCase(),sm=v('ss-month'),sc=v('ss-cat'),st=v('ss-tasse');
   let list=db.spese.filter(x=>{
     if(x.year!==yr)return false;
     if(sm!==''&&x.month!==parseInt(sm))return false;
     if(sc&&x.cat!==sc)return false;
+    if(st&&x.cat!==st)return false;
     if(q&&!(x.forn+' '+x.desc).toLowerCase().includes(q))return false;
     return true;
   });
-  const tb=document.getElementById('tb-spese');
-  tb.innerHTML=list.length===0?'<tr class="empty-row"><td colspan="12">Nessuna spesa trovata</td></tr>':
+  document.getElementById('tb-spese').innerHTML=list.length===0?'<tr class="empty-row"><td colspan="12">Nessuna spesa trovata</td></tr>':
     list.sort((a,b)=>b.month-a.month).map(x=>`<tr>
-      <td>${x.forn||'—'}</td><td>${x.num||'—'}</td><td>${x.desc||'—'}${x.nc?'<span class="nc-tag">NC</span>':''}</td>
-      <td><span class="badge bg-amber">${x.cat||'—'}</span></td>
+      <td>${x.forn||'—'}</td><td>${x.num||'—'}</td>
+      <td>${x.desc||'—'}${x.nc?'<span class="nc-tag">NC</span>':''}${x.fromPrelievo?'<span class="nc-tag" style="color:var(--purple);border-color:#CECBF6">AUTO</span>':''}</td>
+      <td><span class="badge ${x.cat==='F24'||x.cat==='Altre tasse'?'bg-red':'bg-amber'}">${x.cat||'—'}</span></td>
       <td class="num">${fmt(x.imp)}</td><td>${x.iva}%</td>
       <td class="num" style="font-weight:600">${fmt(x.totale)}</td>
       <td>${MS[x.month]}</td>
       <td style="text-align:center">${x.pag?'<span class="ok-icon">✓</span>':'<span class="no-icon">○</span>'}</td>
       <td>${x.drive?`<a class="link-a" href="${x.drive}" target="_blank">📎</a>`:'—'}</td>
-      <td style="font-size:12px;color:var(--text3)">${x.fromPrelievo?'<span style="font-size:10px;background:var(--purple-bg);color:var(--purple);border-radius:3px;padding:1px 5px;margin-right:4px">AUTO</span>':''}</td>
-      <td><button class="btn btn-danger btn-sm" onclick="del('spese',${x.id})">✕</button></td>
+      <td style="font-size:12px;color:var(--text3)">${x.note||''}</td>
+      <td style="display:flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editSpesa(${x.id})">✏</button><button class="btn btn-danger btn-sm" onclick="del('spese',${x.id})">✕</button></td>
     </tr>`).join('');
   const tI=list.reduce((s,x)=>s+x.imp,0);
   document.getElementById('tf-spese').innerHTML=`<td colspan="4">Totale (${list.length})</td><td class="num">${fmt(tI)}</td><td></td><td class="num">${fmt(list.reduce((s,x)=>s+x.totale,0))}</td><td colspan="5"></td>`;
@@ -682,32 +1040,29 @@ function renderReport(){
   const aF=db.fatture.filter(x=>x.year===yr);
   const aS=db.spese.filter(x=>x.year===yr);
   const aP=db.prelievi.filter(x=>x.year===yr);
-  const totF=aF.reduce((s,x)=>s+x.imp,0);
-  const totS=aS.reduce((s,x)=>s+x.imp,0);
-  const rM=calcResiduo('MATTIA',yr);
-  const rR=calcResiduo('RICCARDO',yr);
+  const totF=aF.reduce((s,x)=>s+x.imp,0),totS=aS.reduce((s,x)=>s+x.imp,0);
+  const rM=calcResiduo('MATTIA',yr),rR=calcResiduo('RICCARDO',yr);
   document.getElementById('rep-metrics').innerHTML=`
     <div class="metric"><div class="metric-label">Fatturato ${yr}</div><div class="metric-value mv-blue">${fmtK(totF)}</div><div class="metric-sub">${aF.length} fatture</div></div>
-    <div class="metric"><div class="metric-label">Spese società</div><div class="metric-value mv-red">${fmtK(totS)}</div></div>
+    <div class="metric"><div class="metric-label">Spese ${yr}</div><div class="metric-value mv-red">${fmtK(totS)}</div></div>
+    <div class="metric"><div class="metric-label">Margine annuo</div><div class="metric-value ${(totF-totS)>=0?'mv-green':'mv-red'}">${fmtK(totF-totS)}</div></div>
     <div class="metric"><div class="metric-label">Residuo Mattia</div><div class="metric-value ${rM.residuo>=0?'mv-green':'mv-red'}">${fmtK(rM.residuo)}</div></div>
     <div class="metric"><div class="metric-label">Residuo Riccardo</div><div class="metric-value ${rR.residuo>=0?'mv-green':'mv-red'}">${fmtK(rR.residuo)}</div></div>
-    <div class="metric"><div class="metric-label">Prelievi Mattia</div><div class="metric-value mv-amber">${fmtK(aP.filter(x=>x.socio==='MATTIA').reduce((s,x)=>s+x.imp,0))}</div></div>
-    <div class="metric"><div class="metric-label">Prelievi Riccardo</div><div class="metric-value mv-amber">${fmtK(aP.filter(x=>x.socio==='RICCARDO').reduce((s,x)=>s+x.imp,0))}</div></div>
+    <div class="metric"><div class="metric-label">IVA a debito</div><div class="metric-value mv-red">${fmtK(aF.reduce((s,x)=>s+x.imp*(x.iva||0)/100,0))}</div></div>
   `;
   residuoCard('MATTIA',document.getElementById('rep-res-M'));
   residuoCard('RICCARDO',document.getElementById('rep-res-R'));
   const mFatts=MS.map((_,m)=>aF.filter(x=>x.month===m).reduce((s,x)=>s+x.imp,0));
   const mSpese=MS.map((_,m)=>aS.filter(x=>x.month===m).reduce((s,x)=>s+x.imp,0));
-  const mMarg=mFatts.map((v,i)=>Math.round((v-mSpese[i])*100)/100);
+  const mMarg=mFatts.map((val,i)=>Math.round((val-mSpese[i])*100)/100);
   if(chartInst)chartInst.destroy();
   chartInst=new Chart(document.getElementById('chart-ann'),{
-    type:'bar',
-    data:{labels:MS,datasets:[
+    type:'bar',data:{labels:MS,datasets:[
       {label:'Fatturato',data:mFatts,backgroundColor:'#9FE1CB',borderColor:'#1D9E75',borderWidth:1},
       {label:'Spese',data:mSpese,backgroundColor:'#F7C1C1',borderColor:'#E24B4A',borderWidth:1},
       {label:'Margine',data:mMarg,type:'line',borderColor:'#185FA5',backgroundColor:'transparent',borderWidth:2,borderDash:[5,3],pointRadius:3,pointBackgroundColor:'#185FA5',tension:.3}
     ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{autoSkip:false,maxRotation:0,font:{size:11}},grid:{display:false}},y:{ticks:{font:{size:11},callback:v=>v>=1000?'€'+(v/1000).toFixed(0)+'k':'€'+v},grid:{color:'rgba(0,0,0,.04)'}}}}
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{autoSkip:false,maxRotation:0,font:{size:11}},grid:{display:false}},y:{ticks:{font:{size:11},callback:val=>val>=1000?'€'+(val/1000).toFixed(0)+'k':'€'+val},grid:{color:'rgba(0,0,0,.04)'}}}}
   });
   let tF2=0,tS2=0,tQM=0,tQR=0,tPM=0,tPR=0;
   document.getElementById('tb-report').innerHTML=MESI.map((nome,m)=>{
@@ -716,57 +1071,44 @@ function renderReport(){
     const mpR=aP.filter(x=>x.month===m&&x.socio==='RICCARDO').reduce((s,x)=>s+x.imp,0);
     const mf=mfA.reduce((s,x)=>s+x.imp,0),ms=msA.reduce((s,x)=>s+x.imp,0);
     const qM=mfA.reduce((s,x)=>s+(x.quotaM||0),0),qR=mfA.reduce((s,x)=>s+(x.quotaR||0),0);
-    const resM=qM-mpM,resR=qR-mpR;
     tF2+=mf;tS2+=ms;tQM+=qM;tQR+=qR;tPM+=mpM;tPR+=mpR;
-    if(mf===0&&ms===0&&mpM===0&&mpR===0)return`<tr><td style="color:var(--text3)">${nome}</td><td colspan="9" style="color:var(--text3);font-size:12px">—</td></tr>`;
-    return`<tr>
-      <td style="font-weight:500">${nome}</td>
-      <td class="num" style="color:var(--blue)">${fmt(mf)}</td>
-      <td class="num" style="color:var(--red)">${fmt(ms)}</td>
+    if(mf===0&&ms===0&&mpM===0&&mpR===0)return`<tr><td style="color:var(--text3)">${nome}</td><td colspan="9" style="color:var(--text3)">—</td></tr>`;
+    return`<tr><td style="font-weight:500">${nome}</td>
+      <td class="num" style="color:var(--blue)">${fmt(mf)}</td><td class="num" style="color:var(--red)">${fmt(ms)}</td>
       <td class="num" style="color:${(mf-ms)>=0?'var(--green)':'var(--red)'};font-weight:600">${fmt(mf-ms)}</td>
-      <td class="num" style="color:var(--blue)">${fmt(qM)}</td>
-      <td class="num" style="color:var(--amber)">${mpM>0?fmt(mpM):'—'}</td>
-      <td class="num" style="color:${resM>=0?'var(--green)':'var(--red)'};font-weight:600">${fmt(resM)}</td>
-      <td class="num" style="color:var(--purple)">${fmt(qR)}</td>
-      <td class="num" style="color:var(--amber)">${mpR>0?fmt(mpR):'—'}</td>
-      <td class="num" style="color:${resR>=0?'var(--green)':'var(--red)'};font-weight:600">${fmt(resR)}</td>
+      <td class="num" style="color:var(--blue)">${fmt(qM)}</td><td class="num" style="color:var(--amber)">${mpM>0?fmt(mpM):'—'}</td>
+      <td class="num" style="color:${(qM-mpM)>=0?'var(--green)':'var(--red)'};font-weight:600">${fmt(qM-mpM)}</td>
+      <td class="num" style="color:var(--purple)">${fmt(qR)}</td><td class="num" style="color:var(--amber)">${mpR>0?fmt(mpR):'—'}</td>
+      <td class="num" style="color:${(qR-mpR)>=0?'var(--green)':'var(--red)'};font-weight:600">${fmt(qR-mpR)}</td>
     </tr>`;
   }).join('');
-  document.getElementById('tf-report').innerHTML=`<td>Totale ${yr}</td><td class="num">${fmt(tF2)}</td><td class="num">${fmt(tS2)}</td><td class="num">${fmt(tF2-tS2)}</td><td class="num">${fmt(tQM)}</td><td class="num">${fmt(tPM)}</td><td class="num" style="color:${(tQM-tPM)>=0?'var(--green)':'var(--red)'}">${fmt(tQM-tPM)}</td><td class="num">${fmt(tQR)}</td><td class="num">${fmt(tPR)}</td><td class="num" style="color:${(tQR-tPR)>=0?'var(--green)':'var(--red)'}">${fmt(tQR-tPR)}</td>`;
+  document.getElementById('tf-report').innerHTML=`<td>Totale ${yr}</td><td class="num">${fmt(tF2)}</td><td class="num">${fmt(tS2)}</td><td class="num" style="color:${(tF2-tS2)>=0?'var(--green)':'var(--red)'}">${fmt(tF2-tS2)}</td><td class="num">${fmt(tQM)}</td><td class="num">${fmt(tPM)}</td><td class="num" style="color:${(tQM-tPM)>=0?'var(--green)':'var(--red)'}">${fmt(tQM-tPM)}</td><td class="num">${fmt(tQR)}</td><td class="num">${fmt(tPR)}</td><td class="num" style="color:${(tQR-tPR)>=0?'var(--green)':'var(--red)'}">${fmt(tQR-tPR)}</td>`;
 }
 
+// ===== EXPORT =====
 function exportXls(tipo){
   const data=tipo==='fatture'
-    ?db.fatture.filter(x=>x.year===yr).map(x=>({'N°':x.num,Cliente:x.cli,Descrizione:x.desc,Categoria:x.cat,Imponibile:x.imp,'IVA%':x.iva,Totale:x.totale,Mese:MESI[x.month],'% Mattia':x.percM,'Quota Mattia':x.quotaM,'% Riccardo':x.percR,'Quota Riccardo':x.quotaR,'Bonifico':x.boni?'Sì':'No',Drive:x.drive,Note:x.note}))
+    ?db.fatture.filter(x=>x.year===yr).map(x=>({'N°':x.num,Cliente:x.cli,Descrizione:x.desc,Categoria:x.cat,Imponibile:x.imp,'IVA%':x.iva,Totale:x.totale,Mese:MESI[x.month],'%Mattia':x.percM,'QuotaMattia':x.quotaM,'%Riccardo':x.percR,'QuotaRiccardo':x.quotaR,Bonifico:x.boni?'Sì':'No',Drive:x.drive,Note:x.note}))
     :tipo==='prelievi'
     ?db.prelievi.filter(x=>x.year===yr).map(x=>({Socio:x.socio,Descrizione:x.desc,Mese:MESI[x.month],Importo:x.imp,Drive:x.drive,Note:x.note}))
     :db.spese.filter(x=>x.year===yr).map(x=>({Fornitore:x.forn,'N°':x.num,Descrizione:x.desc,Categoria:x.cat,Imponibile:x.imp,'IVA%':x.iva,Totale:x.totale,Mese:MESI[x.month],Pagata:x.pag?'Sì':'No',Drive:x.drive,Note:x.note}));
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(data),tipo);
-  XLSX.writeFile(wb,`Evolvia_${tipo}_${yr}.xlsx`);
-  toast('⬇ Export completato');
+  XLSX.writeFile(wb,`Evolvia_${tipo}_${yr}.xlsx`);toast('⬇ Export completato');
 }
-
 function exportReportXls(){
   const wb=XLSX.utils.book_new();
   ['fatture','prelievi','spese'].forEach(t=>{
     const d=db[t].filter(x=>x.year===yr);
     if(d.length)XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(d),t.charAt(0).toUpperCase()+t.slice(1));
   });
-  const riep=MESI.map((nome,m)=>{
-    const aF=db.fatture.filter(x=>x.year===yr&&x.month===m);
-    const aP=db.prelievi.filter(x=>x.year===yr&&x.month===m);
-    return{Mese:nome,Fatturato:aF.reduce((s,x)=>s+x.imp,0),Spese:db.spese.filter(x=>x.year===yr&&x.month===m).reduce((s,x)=>s+x.imp,0),'Quota Mattia':aF.reduce((s,x)=>s+(x.quotaM||0),0),'Prel. Mattia':aP.filter(x=>x.socio==='MATTIA').reduce((s,x)=>s+x.imp,0),'Quota Riccardo':aF.reduce((s,x)=>s+(x.quotaR||0),0),'Prel. Riccardo':aP.filter(x=>x.socio==='RICCARDO').reduce((s,x)=>s+x.imp,0)};
-  });
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(riep),'Riepilogo');
-  XLSX.writeFile(wb,`Evolvia_Report_${yr}.xlsx`);
-  toast('⬇ Report Excel scaricato');
+  XLSX.writeFile(wb,`Evolvia_Report_${yr}.xlsx`);toast('⬇ Report Excel scaricato');
 }
 
+// ===== IMPORT =====
 function importXl(input){
   const file=input.files[0];if(!file)return;
-  const log=document.getElementById('imp-log');
-  log.style.display='block';log.innerHTML='Lettura...<br>';
+  const log=document.getElementById('imp-log');log.style.display='block';log.innerHTML='Lettura...<br>';
   const reader=new FileReader();
   reader.onload=e=>{
     try{
@@ -779,30 +1121,25 @@ function importXl(input){
         rows.forEach((row,ri)=>{
           if(ri===0)return;
           const cli=String(row[0]||'').trim(),fImp=parseFloat(row[6])||0;
-          if(cli&&fImp>0){
-            db.fatture.push({id:Date.now()+Math.random(),num:String(row[4]||''),cli,desc:String(row[5]||''),cat:'Importato',imp:fImp,iva:22,totale:fImp*1.22,month:mIdx,year:2026,percM:50,percR:50,quotaM:fImp*0.5,quotaR:fImp*0.5,boni:row[3]===true||String(row[3]).toUpperCase()==='TRUE',nc:false,drive:'',note:''});
-            cf++;
-          }
+          if(cli&&fImp>0){db.fatture.push({id:Date.now()+Math.random(),num:String(row[4]||''),cli,desc:String(row[5]||''),cat:'Importato',imp:fImp,iva:22,totale:fImp*1.22,month:mIdx,year:2026,percM:50,percR:50,quotaM:fImp*0.5,quotaR:fImp*0.5,boni:false,nc:false,drive:'',note:''});cf++;}
           const forn=String(row[13]||'').trim(),sImp=parseFloat(row[21])||0;
-          if(forn&&sImp>0){
-            db.spese.push({id:Date.now()+Math.random()+1,forn,num:String(row[19]||''),desc:String(row[20]||''),cat:'Importato',imp:sImp,iva:22,totale:sImp*1.22,month:mIdx,year:2026,pag:row[15]===true,nc:false,drive:'',note:''});
-            cs++;
-          }
+          if(forn&&sImp>0){db.spese.push({id:Date.now()+Math.random()+1,forn,num:'',desc:String(row[20]||''),cat:'Importato',imp:sImp,iva:22,totale:sImp*1.22,month:mIdx,year:2026,pag:false,nc:false,drive:'',note:''});cs++;}
         });
         log.innerHTML+=`✓ ${name}<br>`;
       });
       save();renderAll();renderFatture();renderSpese();
       log.innerHTML+=`<strong>✅ ${cf} fatture + ${cs} spese importate</strong>`;
-      toast(`✅ Importate ${cf} fatture + ${cs} spese`);
+      toast(`✅ ${cf} fatture + ${cs} spese`);
     }catch(err){log.innerHTML+=`❌ ${err.message}`;}
   };
   reader.readAsArrayBuffer(file);
 }
+function clearAll(){db={fatture:[],prelievi:[],spese:[],ricorrenti:[],dipendenti:[]};save();renderAll();renderFatture();renderPrelievi();renderSpese();renderRicorrenti();renderDipendenti();toast('🗑 Dati cancellati');}
 
-function clearAll(){db={fatture:[],prelievi:[],spese:[]};save();renderAll();renderFatture();renderPrelievi();renderSpese();toast('🗑 Dati cancellati');}
-
-load();
-updateQuote();
+// ===== HELPERS =====
+function v(id){return document.getElementById(id)?.value||'';}
+function cb(id){return document.getElementById(id)?.checked||false;}
+function sv(id,val){const el=document.getElementById(id);if(el)el.value=val;}
 </script>
 </body>
 </html>
