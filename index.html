@@ -6,6 +6,7 @@
 <title>Evolvia — Gestionale</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -151,6 +152,42 @@ tbody tr:hover td{background:var(--bg2)}
 ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 .table-wrap{overflow-x:auto}
 @media(max-width:768px){.sidebar{display:none}.main{padding:16px}.two-col{grid-template-columns:1fr}.frow.c2,.frow.c3,.frow.c4,.frow.c5{grid-template-columns:1fr 1fr}.iva-grid{grid-template-columns:1fr 1fr}}
+
+/* ===== MOBILE ===== */
+.mobile-topbar{display:none;align-items:center;gap:12px;padding:12px 16px;background:var(--bg);border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:50}
+.hamburger{background:none;border:0.5px solid var(--border2);border-radius:var(--radius);padding:7px 11px;font-size:18px;cursor:pointer;color:var(--text);line-height:1}
+.mobile-logo{font-size:15px;font-weight:700}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:90}
+.sidebar-overlay.open{display:block}
+@media(max-width:768px){
+  .mobile-topbar{display:flex}
+  .sidebar{position:fixed;left:0;top:0;height:100vh;z-index:100;transform:translateX(-100%);transition:transform .25s ease;box-shadow:2px 0 16px rgba(0,0,0,.12)}
+  .sidebar.open{transform:translateX(0)}
+  .main{padding:14px}
+  .two-col{grid-template-columns:1fr}
+  .frow.c2,.frow.c3,.frow.c4,.frow.c5{grid-template-columns:1fr}
+  .iva-grid{grid-template-columns:1fr 1fr}
+  .metrics{grid-template-columns:1fr 1fr;gap:8px}
+  .metric{padding:11px 12px}
+  .metric-value{font-size:18px}
+  .page-header{flex-direction:column;align-items:stretch}
+  .page-title{font-size:18px}
+  .perc-row{flex-wrap:wrap}
+  .perc-box{min-width:120px}
+  .card-header{flex-direction:column;align-items:stretch}
+  .filter-bar{flex-direction:column;align-items:stretch}
+  .filter-bar input,.filter-bar select{min-width:0;width:100%}
+  table{font-size:12px}
+  th,td{padding:7px 8px}
+  .btn{padding:8px 14px}
+  .modal{padding:18px}
+  .ricorrente-row{flex-wrap:wrap}
+  /* swipe hint on tables */
+  .table-wrap{position:relative}
+  .table-wrap::after{content:'→ scorri';position:absolute;top:8px;right:8px;font-size:10px;color:var(--text3);background:var(--bg2);padding:2px 6px;border-radius:4px;pointer-events:none;opacity:.7}
+}
+@media(min-width:769px){.sidebar-overlay{display:none!important}}
+
 @media print{.sidebar,.btn,.form-panel,.filter-bar,#pin-screen{display:none!important}.main{padding:0}}
 </style>
 </head>
@@ -181,7 +218,6 @@ tbody tr:hover td{background:var(--bg2)}
       <button class="pin-key del" onclick="pinDel()">⌫</button>
     </div>
     <div class="pin-error" id="pin-error"></div>
-    <div class="pin-change" onclick="showChangePin()">Cambia PIN</div>
   </div>
 </div>
 
@@ -202,7 +238,13 @@ tbody tr:hover td{background:var(--bg2)}
   </div>
 </div>
 
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 <div class="shell" id="app" style="display:none">
+
+<div class="mobile-topbar">
+  <button class="hamburger" onclick="openSidebar()">☰</button>
+  <span class="mobile-logo">⚡ Evolvia</span>
+</div>
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -220,8 +262,7 @@ tbody tr:hover td{background:var(--bg2)}
   <div class="nav-section">Analisi</div>
   <div class="nav-item" onclick="go('report')">📈 Report annuale</div>
   <div class="nav-section">Strumenti</div>
-  <div class="nav-item" onclick="go('importa')">⬆ Importa Excel</div>
-  <div class="nav-item" onclick="showChangePin()" style="margin-top:4px">🔒 Cambia PIN</div>
+  <div class="nav-item" onclick="go('esporta')">⬇ Esporta dati</div>
   <div class="sidebar-footer">
     <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Anno</div>
     <div class="year-row" id="year-row"></div>
@@ -564,21 +605,24 @@ tbody tr:hover td{background:var(--bg2)}
   </div>
 </div>
 
-<!-- IMPORTA -->
-<div class="page" id="page-importa">
-  <div class="page-header"><div class="page-title">Importa dati Excel</div></div>
+<!-- ESPORTA -->
+<div class="page" id="page-esporta">
+  <div class="page-header"><div class="page-title">Esporta dati</div><div class="page-sub">Scarica tutti i dati del gestionale in un unico file Excel</div></div>
   <div class="card" style="max-width:580px">
     <div style="padding:24px">
-      <p style="color:var(--text2);margin-bottom:16px;font-size:13px">Carica il file Excel del gestionale precedente per importare fatture e spese.</p>
-      <div style="border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:32px;text-align:center;margin-bottom:16px">
-        <div style="font-size:36px;margin-bottom:8px">📂</div>
-        <div style="font-size:14px;font-weight:600;margin-bottom:6px">Trascina il file Excel qui</div>
-        <div style="font-size:12px;color:var(--text3);margin-bottom:16px">oppure</div>
-        <label class="btn btn-primary" style="cursor:pointer">Scegli file <input type="file" id="xl-in" accept=".xlsx,.xls" style="display:none" onchange="importXl(this)"></label>
+      <p style="color:var(--text2);margin-bottom:20px;font-size:13px">Esporta un backup completo con tutti i fogli: fatture, prelievi, spese, pagamenti ricorrenti, dipendenti e riepilogo annuale.</p>
+      <div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;text-align:center;margin-bottom:16px;background:var(--bg2)">
+        <div style="font-size:36px;margin-bottom:12px">📊</div>
+        <div style="font-size:14px;font-weight:600;margin-bottom:6px">Backup completo Excel</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:20px">Tutti i dati di tutti gli anni in un unico file</div>
+        <button class="btn btn-primary" onclick="exportFullBackup()">⬇ Scarica backup completo</button>
       </div>
-      <div id="imp-log" style="display:none;font-size:12px;background:var(--bg2);border-radius:var(--radius);padding:12px;max-height:180px;overflow-y:auto;color:var(--text2)"></div>
-      <div style="margin-top:16px;padding-top:16px;border-top:0.5px solid var(--border)">
-        <button class="btn btn-danger btn-sm" onclick="if(confirm('Cancellare TUTTI i dati?')){clearAll()}">🗑 Cancella tutti i dati</button>
+      <div style="background:var(--bg2);border-radius:var(--radius);padding:14px;margin-bottom:16px">
+        <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">📌 Stato sincronizzazione</div>
+        <div id="sync-status" style="font-size:12px;color:var(--text3)">Verifica in corso...</div>
+      </div>
+      <div style="padding-top:16px;border-top:0.5px solid var(--border)">
+        <button class="btn btn-danger btn-sm" onclick="if(confirm('Cancellare TUTTI i dati dal database condiviso? Questa azione è irreversibile e cancella i dati anche per l\'altro socio.')){clearAll()}">🗑 Cancella tutti i dati</button>
       </div>
     </div>
   </div>
@@ -591,9 +635,10 @@ tbody tr:hover td{background:var(--bg2)}
 
 <script>
 // ===== PIN =====
-const DEFAULT_PIN='1234';
+// PIN fisso nel codice — per cambiarlo modifica questa riga e ricarica su GitHub
+const APP_PIN='1612';
 let pinBuf='';
-function getPin(){return localStorage.getItem('evolvia_pin')||DEFAULT_PIN;}
+function getPin(){return APP_PIN;}
 function pinKey(k){
   if(pinBuf.length>=4)return;
   pinBuf+=k;
@@ -613,23 +658,9 @@ function checkPin(){
   }
 }
 function showChangePin(){
-  document.getElementById('cp-old').value='';
-  document.getElementById('cp-new').value='';
-  document.getElementById('cp-conf').value='';
-  document.getElementById('cp-error').textContent='';
-  document.getElementById('modal-pin').classList.add('open');
+  alert('Il PIN ora è fisso nel codice ed è uguale su tutti i dispositivi.\n\nPer cambiarlo: modifica la riga const APP_PIN nel file index.html e ricarica su GitHub.');
 }
-function changePin(){
-  const old=document.getElementById('cp-old').value;
-  const nw=document.getElementById('cp-new').value;
-  const cf=document.getElementById('cp-conf').value;
-  const err=document.getElementById('cp-error');
-  if(old!==getPin()){err.textContent='PIN attuale errato';return;}
-  if(nw.length<4){err.textContent='Il PIN deve essere almeno 4 cifre';return;}
-  if(nw!==cf){err.textContent='I PIN non coincidono';return;}
-  localStorage.setItem('evolvia_pin',nw);
-  closeModal('modal-pin');toast('✅ PIN aggiornato');
-}
+function changePin(){closeModal('modal-pin');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.addEventListener('keydown',e=>{
   const ps=document.getElementById('pin-screen');
@@ -649,11 +680,62 @@ let yr=2026,mo=new Date().getMonth();
 let db={fatture:[],prelievi:[],spese:[],ricorrenti:[],dipendenti:[]};
 let chartInst=null;
 
-function load(){
-  try{const s=localStorage.getItem('evolvia_v2');if(s){const d=JSON.parse(s);db.fatture=d.fatture||[];db.prelievi=d.prelievi||[];db.spese=d.spese||[];db.ricorrenti=d.ricorrenti||[];db.dipendenti=d.dipendenti||[];}}catch(e){}
-  initSel();renderAll();
+// ===== SUPABASE =====
+const SB_URL='https://hxybhwqvmzyiyimnyham.supabase.co';
+const SB_KEY='sb_publishable_0_-6pkbzH3SCVaQMuKw0mA_8kQ79kfh';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+const TABLES=['fatture','prelievi','spese','ricorrenti','dipendenti'];
+let saving=false;
+
+async function load(){
+  initSel();
+  try{
+    setSync('🔄 Caricamento dati dal database...');
+    for(const t of TABLES){
+      const {data,error}=await sb.from(t).select('id,data');
+      if(error)throw error;
+      db[t]=(data||[]).map(r=>({...r.data,id:Number(r.id)}));
+    }
+    setSync('✅ Dati sincronizzati con il database condiviso');
+  }catch(e){
+    setSync('⚠️ Errore di connessione al database: '+e.message);
+    toast('⚠️ Errore connessione database');
+    console.error(e);
+  }
+  renderAll();
 }
-function save(){localStorage.setItem('evolvia_v2',JSON.stringify(db));}
+
+// Salva un singolo record (upsert) sulla tabella giusta
+async function sbUpsert(table,obj){
+  try{
+    const {error}=await sb.from(table).upsert({id:obj.id,data:obj});
+    if(error)throw error;
+  }catch(e){toast('⚠️ Errore salvataggio: '+e.message);console.error(e);}
+}
+async function sbDelete(table,id){
+  try{
+    const {error}=await sb.from(table).delete().eq('id',id);
+    if(error)throw error;
+  }catch(e){toast('⚠️ Errore eliminazione: '+e.message);console.error(e);}
+}
+// salva intero stato di una tabella (per operazioni multiple)
+async function sbSyncTable(table){
+  try{
+    // elimina e reinserisce tutto: semplice e sicuro per volumi piccoli
+    const ids=db[table].map(x=>x.id);
+    const {data:existing}=await sb.from(table).select('id');
+    const toDel=(existing||[]).filter(r=>!ids.includes(Number(r.id))).map(r=>r.id);
+    if(toDel.length)await sb.from(table).delete().in('id',toDel);
+    if(db[table].length){
+      const rows=db[table].map(x=>({id:x.id,data:x}));
+      await sb.from(table).upsert(rows);
+    }
+  }catch(e){toast('⚠️ Errore sync: '+e.message);console.error(e);}
+}
+function setSync(msg){const el=document.getElementById('sync-status');if(el)el.textContent=msg;}
+
+// save() ora è un no-op di compatibilità (i salvataggi vanno su Supabase per record)
+function save(){}
 function toast(m,ms=2400){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),ms);}
 
 function initSel(){
@@ -670,7 +752,10 @@ function setYear(y){yr=y;document.querySelectorAll('.year-btn').forEach(b=>b.cla
 function prevMonth(){mo===0?(mo=11,yr--):mo--;document.querySelectorAll('.year-btn').forEach(b=>b.classList.toggle('active',parseInt(b.textContent)===yr));renderAll();}
 function nextMonth(){mo===11?(mo=0,yr++):mo++;document.querySelectorAll('.year-btn').forEach(b=>b.classList.toggle('active',parseInt(b.textContent)===yr));renderAll();}
 
+function openSidebar(){document.querySelector('.sidebar').classList.add('open');document.getElementById('sidebar-overlay').classList.add('open');}
+function closeSidebar(){document.querySelector('.sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
 function go(name){
+  closeSidebar();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
@@ -788,7 +873,7 @@ function renderDashboard(){
 }
 
 // ===== FATTURE CRUD =====
-function saveFattura(){
+async function saveFattura(){
   const imp=parseFloat(document.getElementById('ff-imp').value)||0;
   if(!imp){toast('⚠ Inserisci imponibile');return;}
   const pM=parseFloat(document.getElementById('ff-pM').value)||0;
@@ -799,7 +884,7 @@ function saveFattura(){
   const eid=v('ff-edit-id');
   if(eid){const i=db.fatture.findIndex(x=>x.id===parseInt(eid));if(i>=0){obj.id=parseInt(eid);db.fatture[i]=obj;}toast('✏️ Fattura modificata');}
   else{obj.id=Date.now();db.fatture.push(obj);toast('✅ Fattura aggiunta');}
-  save();cancelForm('ff');renderAll();renderFatture();
+  await sbUpsert('fatture',obj);cancelForm('ff');renderAll();renderFatture();
 }
 function editFattura(id){
   const x=db.fatture.find(f=>f.id===id);if(!x)return;
@@ -816,7 +901,7 @@ function editFattura(id){
 }
 
 // ===== PRELIEVI CRUD =====
-function savePrelievo(){
+async function savePrelievo(){
   const imp=parseFloat(document.getElementById('fp-imp').value)||0;
   if(!imp){toast('⚠ Inserisci importo');return;}
   const socio=v('fp-socio');
@@ -830,18 +915,20 @@ function savePrelievo(){
     const i=db.prelievi.findIndex(x=>x.id===pid);
     if(i>=0){
       db.prelievi[i]={id:pid,socio,imp,month,year:yr,desc,drive,note};
-      // aggiorna spesa collegata
+      await sbUpsert('prelievi',db.prelievi[i]);
       const si=db.spese.findIndex(x=>x.fromPrelievo===pid);
-      if(si>=0)db.spese[si]={...db.spese[si],forn:socio.charAt(0)+socio.slice(1).toLowerCase()+' (ditta individuale)',imp,totale:imp,month,desc,drive};
+      if(si>=0){db.spese[si]={...db.spese[si],forn:socio.charAt(0)+socio.slice(1).toLowerCase()+' (ditta individuale)',imp,totale:imp,month,desc,drive};await sbUpsert('spese',db.spese[si]);}
     }
     toast('✏️ Prelievo modificato');
   } else {
     const pid=Date.now();
-    db.prelievi.push({id:pid,socio,imp,month,year:yr,desc,drive,note});
-    db.spese.push({id:pid+0.5,forn:socio.charAt(0)+socio.slice(1).toLowerCase()+' (ditta individuale)',num:'',desc,cat:'Prelievo socio',imp,iva:0,totale:imp,month,year:yr,pag:true,nc:false,drive,note:'Generata da prelievo socio',fromPrelievo:pid});
+    const prel={id:pid,socio,imp,month,year:yr,desc,drive,note};
+    const spesa={id:pid+0.5,forn:socio.charAt(0)+socio.slice(1).toLowerCase()+' (ditta individuale)',num:'',desc,cat:'Prelievo socio',imp,iva:0,totale:imp,month,year:yr,pag:true,nc:false,drive,note:'Generata da prelievo socio',fromPrelievo:pid};
+    db.prelievi.push(prel);db.spese.push(spesa);
+    await sbUpsert('prelievi',prel);await sbUpsert('spese',spesa);
     toast('✅ Prelievo aggiunto — spesa creata automaticamente');
   }
-  save();cancelForm('fp');renderAll();renderPrelievi();renderSpese();
+  cancelForm('fp');renderAll();renderPrelievi();renderSpese();
 }
 function editPrelievo(id){
   const x=db.prelievi.find(p=>p.id===id);if(!x)return;
@@ -853,7 +940,7 @@ function editPrelievo(id){
 }
 
 // ===== SPESE CRUD =====
-function saveSpesa(){
+async function saveSpesa(){
   const imp=parseFloat(document.getElementById('fs-imp').value)||0;
   if(!imp){toast('⚠ Inserisci imponibile');return;}
   const iva=parseFloat(v('fs-iva'));
@@ -861,7 +948,7 @@ function saveSpesa(){
   const eid=v('fs-edit-id');
   if(eid){const i=db.spese.findIndex(x=>x.id===parseInt(eid));if(i>=0){obj.id=parseInt(eid);obj.fromPrelievo=db.spese[i].fromPrelievo;db.spese[i]=obj;}toast('✏️ Spesa modificata');}
   else{obj.id=Date.now();db.spese.push(obj);toast('✅ Spesa aggiunta');}
-  save();cancelForm('fs');renderSpese();renderAll();
+  await sbUpsert('spese',obj);cancelForm('fs');renderSpese();renderAll();
 }
 function editSpesa(id){
   const x=db.spese.find(s=>s.id===id);if(!x)return;
@@ -876,41 +963,53 @@ function editSpesa(id){
 }
 
 // ===== DELETE =====
-function del(arr,id){
+async function del(arr,id){
   const i=db[arr].findIndex(x=>x.id===id);
   if(i<0)return;
-  if(arr==='prelievi'){const pid=db.prelievi[i].id;db.spese=db.spese.filter(x=>x.fromPrelievo!==pid);}
-  if(arr==='spese'&&db.spese[i].fromPrelievo){if(!confirm('Questa spesa è collegata a un prelievo. Eliminare entrambi?'))return;const pid=db.spese[i].fromPrelievo;db.prelievi=db.prelievi.filter(x=>x.id!==pid);}
+  if(arr==='prelievi'){
+    const pid=db.prelievi[i].id;
+    const linked=db.spese.filter(x=>x.fromPrelievo===pid);
+    for(const s of linked)await sbDelete('spese',s.id);
+    db.spese=db.spese.filter(x=>x.fromPrelievo!==pid);
+  }
+  if(arr==='spese'&&db.spese[i].fromPrelievo){
+    if(!confirm('Questa spesa è collegata a un prelievo. Eliminare entrambi?'))return;
+    const pid=db.spese[i].fromPrelievo;
+    await sbDelete('prelievi',pid);
+    db.prelievi=db.prelievi.filter(x=>x.id!==pid);
+  }
+  await sbDelete(arr,id);
   db[arr].splice(db[arr].findIndex(x=>x.id===id),1);
-  save();renderAll();renderFatture();renderPrelievi();renderSpese();
+  renderAll();renderFatture();renderPrelievi();renderSpese();
 }
 
 // ===== RICORRENTI =====
-function addRicorrente(){
+async function addRicorrente(){
   const imp=parseFloat(document.getElementById('fr-imp').value)||0;
   if(!imp){toast('⚠ Inserisci importo');return;}
   const iva=parseFloat(v('fr-iva'));
-  db.ricorrenti.push({id:Date.now(),forn:v('fr-forn'),desc:v('fr-desc'),cat:v('fr-cat'),imp,iva,totale:imp*(1+iva/100),startMonth:parseInt(v('fr-start')),drive:v('fr-drive'),note:v('fr-note'),attivo:true});
-  save();toggleForm('fr');['fr-forn','fr-desc','fr-imp','fr-drive','fr-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const r={id:Date.now(),forn:v('fr-forn'),desc:v('fr-desc'),cat:v('fr-cat'),imp,iva,totale:imp*(1+iva/100),startMonth:parseInt(v('fr-start')),drive:v('fr-drive'),note:v('fr-note'),attivo:true};
+  db.ricorrenti.push(r);await sbUpsert('ricorrenti',r);toggleForm('fr');['fr-forn','fr-desc','fr-imp','fr-drive','fr-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   renderRicorrenti();toast('✅ Pagamento ricorrente aggiunto');
 }
-function toggleRicorrente(id){
-  const r=db.ricorrenti.find(x=>x.id===id);if(r)r.attivo=!r.attivo;
-  save();renderRicorrenti();
+async function toggleRicorrente(id){
+  const r=db.ricorrenti.find(x=>x.id===id);if(r){r.attivo=!r.attivo;await sbUpsert('ricorrenti',r);}
+  renderRicorrenti();
 }
-function delRicorrente(id){db.ricorrenti=db.ricorrenti.filter(x=>x.id!==id);save();renderRicorrenti();toast('🗑 Rimosso');}
-function applyRicorrenti(){
+async function delRicorrente(id){await sbDelete('ricorrenti',id);db.ricorrenti=db.ricorrenti.filter(x=>x.id!==id);renderRicorrenti();toast('🗑 Rimosso');}
+async function applyRicorrenti(){
   const attivi=db.ricorrenti.filter(x=>x.attivo);
   if(!attivi.length){toast('⚠ Nessun ricorrente attivo');return;}
   let count=0;
-  attivi.forEach(r=>{
+  for(const r of attivi){
     const already=db.spese.find(s=>s.fromRicorrente===r.id&&s.month===mo&&s.year===yr);
     if(!already){
-      db.spese.push({id:Date.now()+Math.random(),forn:r.forn,num:'',desc:r.desc,cat:r.cat,imp:r.imp,iva:r.iva,totale:r.totale,month:mo,year:yr,pag:false,nc:false,drive:r.drive,note:'Generata da ricorrente',fromRicorrente:r.id});
+      const spesa={id:Date.now()+Math.random(),forn:r.forn,num:'',desc:r.desc,cat:r.cat,imp:r.imp,iva:r.iva,totale:r.totale,month:mo,year:yr,pag:false,nc:false,drive:r.drive,note:'Generata da ricorrente',fromRicorrente:r.id};
+      db.spese.push(spesa);await sbUpsert('spese',spesa);
       count++;
     }
-  });
-  save();renderSpese();renderAll();
+  }
+  renderSpese();renderAll();
   toast(count>0?`✅ ${count} spese aggiunte per ${MESI[mo]}`:`⚠ Già applicato per ${MESI[mo]}`);
 }
 function renderRicorrenti(){
@@ -935,13 +1034,13 @@ function renderRicorrenti(){
 }
 
 // ===== DIPENDENTI =====
-function addDipendente(){
+async function addDipendente(){
   const nome=v('fd-nome');if(!nome){toast('⚠ Inserisci nome');return;}
-  db.dipendenti.push({id:Date.now(),nome,ruolo:v('fd-ruolo'),ral:parseFloat(v('fd-ral'))||0,costo:parseFloat(v('fd-costo'))||0,data:v('fd-data'),ccnl:v('fd-ccnl'),note:v('fd-note')});
-  save();toggleForm('fd');['fd-nome','fd-ruolo','fd-ral','fd-costo','fd-data','fd-ccnl','fd-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const d={id:Date.now(),nome,ruolo:v('fd-ruolo'),ral:parseFloat(v('fd-ral'))||0,costo:parseFloat(v('fd-costo'))||0,data:v('fd-data'),ccnl:v('fd-ccnl'),note:v('fd-note')};
+  db.dipendenti.push(d);await sbUpsert('dipendenti',d);toggleForm('fd');['fd-nome','fd-ruolo','fd-ral','fd-costo','fd-data','fd-ccnl','fd-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   renderDipendenti();toast('✅ Dipendente aggiunto');
 }
-function delDipendente(id){db.dipendenti=db.dipendenti.filter(x=>x.id!==id);save();renderDipendenti();}
+async function delDipendente(id){await sbDelete('dipendenti',id);db.dipendenti=db.dipendenti.filter(x=>x.id!==id);renderDipendenti();}
 function renderDipendenti(){
   const list=db.dipendenti;
   const tb=document.getElementById('tb-dipendenti');
@@ -1105,36 +1204,64 @@ function exportReportXls(){
   XLSX.writeFile(wb,`Evolvia_Report_${yr}.xlsx`);toast('⬇ Report Excel scaricato');
 }
 
-// ===== IMPORT =====
-function importXl(input){
-  const file=input.files[0];if(!file)return;
-  const log=document.getElementById('imp-log');log.style.display='block';log.innerHTML='Lettura...<br>';
-  const reader=new FileReader();
-  reader.onload=e=>{
-    try{
-      const wb=XLSX.read(e.target.result,{type:'array'});
-      const MAP={FEBBRAIO:1,MARZO:2,APRILE:3,MAGGIO:4,GIUGNO:5,LUGLIO:6,AGOSTO:7,SETTEMBRE:8,OTTOBRE:9,NOVEMBRE:10,DICEMBRE:11,GENNAIO:0};
-      let cf=0,cs=0;
-      wb.SheetNames.forEach(name=>{
-        const mIdx=MAP[name.toUpperCase()];if(mIdx===undefined)return;
-        const rows=XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,defval:''});
-        rows.forEach((row,ri)=>{
-          if(ri===0)return;
-          const cli=String(row[0]||'').trim(),fImp=parseFloat(row[6])||0;
-          if(cli&&fImp>0){db.fatture.push({id:Date.now()+Math.random(),num:String(row[4]||''),cli,desc:String(row[5]||''),cat:'Importato',imp:fImp,iva:22,totale:fImp*1.22,month:mIdx,year:2026,percM:50,percR:50,quotaM:fImp*0.5,quotaR:fImp*0.5,boni:false,nc:false,drive:'',note:''});cf++;}
-          const forn=String(row[13]||'').trim(),sImp=parseFloat(row[21])||0;
-          if(forn&&sImp>0){db.spese.push({id:Date.now()+Math.random()+1,forn,num:'',desc:String(row[20]||''),cat:'Importato',imp:sImp,iva:22,totale:sImp*1.22,month:mIdx,year:2026,pag:false,nc:false,drive:'',note:''});cs++;}
-        });
-        log.innerHTML+=`✓ ${name}<br>`;
-      });
-      save();renderAll();renderFatture();renderSpese();
-      log.innerHTML+=`<strong>✅ ${cf} fatture + ${cs} spese importate</strong>`;
-      toast(`✅ ${cf} fatture + ${cs} spese`);
-    }catch(err){log.innerHTML+=`❌ ${err.message}`;}
-  };
-  reader.readAsArrayBuffer(file);
+// ===== EXPORT BACKUP COMPLETO =====
+function exportFullBackup(){
+  const wb=XLSX.utils.book_new();
+  // Fatture (tutti gli anni)
+  if(db.fatture.length){
+    const r=db.fatture.map(x=>({Anno:x.year,Mese:MESI[x.month],'N°':x.num,Cliente:x.cli,Descrizione:x.desc,Categoria:x.cat,Imponibile:x.imp,'IVA%':x.iva,Totale:x.totale,'%Mattia':x.percM,'QuotaMattia':x.quotaM,'%Riccardo':x.percR,'QuotaRiccardo':x.quotaR,Bonifico:x.boni?'Sì':'No',NotaCredito:x.nc?'Sì':'No',Drive:x.drive,Note:x.note}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(r),'Fatture');
+  }
+  // Prelievi
+  if(db.prelievi.length){
+    const r=db.prelievi.map(x=>({Anno:x.year,Mese:MESI[x.month],Socio:x.socio,Descrizione:x.desc,Importo:x.imp,Drive:x.drive,Note:x.note}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(r),'Prelievi');
+  }
+  // Spese
+  if(db.spese.length){
+    const r=db.spese.map(x=>({Anno:x.year,Mese:MESI[x.month],Fornitore:x.forn,'N°':x.num,Descrizione:x.desc,Categoria:x.cat,Imponibile:x.imp,'IVA%':x.iva,Totale:x.totale,Pagata:x.pag?'Sì':'No',NotaCredito:x.nc?'Sì':'No',Drive:x.drive,Note:x.note}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(r),'Spese');
+  }
+  // Ricorrenti
+  if(db.ricorrenti.length){
+    const r=db.ricorrenti.map(x=>({Fornitore:x.forn,Descrizione:x.desc,Categoria:x.cat,ImportoMensile:x.imp,'IVA%':x.iva,Totale:x.totale,MeseInizio:MESI[x.startMonth],Attivo:x.attivo?'Sì':'No',Note:x.note}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(r),'Ricorrenti');
+  }
+  // Dipendenti
+  if(db.dipendenti.length){
+    const r=db.dipendenti.map(x=>({Nome:x.nome,Ruolo:x.ruolo,RAL:x.ral,CostoMensile:x.costo,DataAssunzione:x.data,CCNL:x.ccnl,Note:x.note}));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(r),'Dipendenti');
+  }
+  // Riepilogo per anno
+  const anni=[...new Set([...db.fatture,...db.spese].map(x=>x.year))].sort();
+  const riep=[];
+  anni.forEach(anno=>{
+    MESI.forEach((nome,m)=>{
+      const mf=db.fatture.filter(x=>x.year===anno&&x.month===m).reduce((s,x)=>s+x.imp,0);
+      const ms=db.spese.filter(x=>x.year===anno&&x.month===m).reduce((s,x)=>s+x.imp,0);
+      const qM=db.fatture.filter(x=>x.year===anno&&x.month===m).reduce((s,x)=>s+(x.quotaM||0),0);
+      const qR=db.fatture.filter(x=>x.year===anno&&x.month===m).reduce((s,x)=>s+(x.quotaR||0),0);
+      const pM=db.prelievi.filter(x=>x.year===anno&&x.month===m&&x.socio==='MATTIA').reduce((s,x)=>s+x.imp,0);
+      const pR=db.prelievi.filter(x=>x.year===anno&&x.month===m&&x.socio==='RICCARDO').reduce((s,x)=>s+x.imp,0);
+      if(mf||ms||qM||qR)riep.push({Anno:anno,Mese:nome,Fatturato:mf,Spese:ms,Margine:mf-ms,QuotaMattia:qM,PrelMattia:pM,ResMattia:qM-pM,QuotaRiccardo:qR,PrelRiccardo:pR,ResRiccardo:qR-pR});
+    });
+  });
+  if(riep.length)XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(riep),'Riepilogo');
+
+  if(wb.SheetNames.length===0){toast('⚠️ Nessun dato da esportare');return;}
+  const oggi=new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb,`Evolvia_Backup_Completo_${oggi}.xlsx`);
+  toast('⬇ Backup completo scaricato');
 }
-function clearAll(){db={fatture:[],prelievi:[],spese:[],ricorrenti:[],dipendenti:[]};save();renderAll();renderFatture();renderPrelievi();renderSpese();renderRicorrenti();renderDipendenti();toast('🗑 Dati cancellati');}
+async function clearAll(){
+  try{
+    setSync('🔄 Cancellazione in corso...');
+    for(const t of TABLES){await sb.from(t).delete().neq('id',0);}
+    db={fatture:[],prelievi:[],spese:[],ricorrenti:[],dipendenti:[]};
+    renderAll();renderFatture();renderPrelievi();renderSpese();renderRicorrenti();renderDipendenti();
+    setSync('✅ Database vuoto');toast('🗑 Tutti i dati cancellati');
+  }catch(e){toast('⚠️ Errore: '+e.message);}
+}
 
 // ===== HELPERS =====
 function v(id){return document.getElementById(id)?.value||'';}
