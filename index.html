@@ -370,7 +370,7 @@ select option{background:#FFFFFF;color:#0D1116}
       </div>
       <div class="frow c5">
         <div class="field"><label>Imponibile (€)</label><input id="ff-imp" type="number" step="0.01" placeholder="0.00" oninput="updateQuote()"></div>
-        <div class="field"><label>IVA %</label><select id="ff-iva"><option value="22">22%</option><option value="10">10%</option><option value="4">4%</option><option value="0">Esente</option></select></div>
+        <div class="field"><label>IVA % (scrivi a mano)</label><input id="ff-iva" type="number" step="0.01" min="0" max="100" value="22" placeholder="22"></div>
         <div class="field"><label>Mese</label><select id="ff-month"></select></div>
         <div class="field"><label>Link allegato Drive</label><input id="ff-drive" placeholder="https://drive.google.com/..."></div>
         <div class="field"><label>Banca</label><input id="ff-banca" placeholder="Banca..."></div>
@@ -496,7 +496,7 @@ select option{background:#FFFFFF;color:#0D1116}
       </div>
       <div class="frow c5">
         <div class="field"><label>Imponibile (€)</label><input id="fs-imp" type="number" step="0.01" placeholder="0.00" oninput="updateQuoteSpesa()"></div>
-        <div class="field"><label>IVA %</label><select id="fs-iva"><option value="22">22%</option><option value="10">10%</option><option value="4">4%</option><option value="0">Esente/N.A.</option></select></div>
+        <div class="field"><label>IVA % (scrivi a mano)</label><input id="fs-iva" type="number" step="0.01" min="0" max="100" value="22" placeholder="22"></div>
         <div class="field"><label>Mese</label><select id="fs-month"></select></div>
         <div class="field"><label>Link Drive</label><input id="fs-drive" placeholder="https://drive.google.com/..."></div>
         <div class="field"><label>Banca</label><input id="fs-banca" placeholder="Banca..."></div>
