@@ -284,7 +284,6 @@ select option{background:#FFFFFF;color:#0D1116}
   <div class="nav-item" onclick="go('fatture')">📄 Fatture Evolvia</div>
   <div class="nav-item" onclick="go('prelievi')">💸 Prelievi soci</div>
   <div class="nav-item" onclick="go('spese')">🧾 Spese società</div>
-  <div class="nav-item" onclick="go('dipendenti')">👥 Dipendenti</div>
   <div class="nav-section">Analisi</div>
   <div class="nav-item" onclick="go('report')">📈 Report annuale</div>
   <div class="nav-section">Strumenti</div>
@@ -557,39 +556,6 @@ select option{background:#FFFFFF;color:#0D1116}
   </div>
 </div>
 
-<!-- DIPENDENTI -->
-<div class="page" id="page-dipendenti">
-  <div class="page-header">
-    <div><div class="page-title">Dipendenti</div><div class="page-sub">Gestione costi del personale</div></div>
-    <button class="btn btn-primary" onclick="toggleForm('fd')">+ Aggiungi dipendente</button>
-  </div>
-  <div class="card">
-    <div class="form-panel" id="fd">
-      <div class="form-title">Nuovo dipendente</div>
-      <div class="frow c4">
-        <div class="field"><label>Nome e Cognome</label><input id="fd-nome" placeholder="Mario Rossi"></div>
-        <div class="field"><label>Ruolo</label><input id="fd-ruolo" placeholder="Agente, Operatore..."></div>
-        <div class="field"><label>RAL annua (€)</label><input id="fd-ral" type="number" step="100" placeholder="0.00"></div>
-        <div class="field"><label>Costo mensile aziendale (€)</label><input id="fd-costo" type="number" step="10" placeholder="0.00"></div>
-      </div>
-      <div class="frow c3">
-        <div class="field"><label>Data assunzione</label><input id="fd-data" type="date"></div>
-        <div class="field"><label>CCNL / Contratto</label><input id="fd-ccnl" placeholder="Commercio, Metalmeccanici..."></div>
-        <div class="field"><label>Note</label><input id="fd-note" placeholder="Note..."></div>
-      </div>
-      <div class="form-actions">
-        <button class="btn btn-primary" onclick="addDipendente()">Salva dipendente</button>
-        <button class="btn btn-ghost" onclick="toggleForm('fd')">Annulla</button>
-      </div>
-    </div>
-    <div class="table-wrap"><table>
-      <thead><tr><th>Nome</th><th>Ruolo</th><th class="num">RAL annua</th><th class="num">Costo mens. az.</th><th>Assunto il</th><th>CCNL</th><th>Note</th><th></th></tr></thead>
-      <tbody id="tb-dipendenti"></tbody>
-      <tfoot><tr id="tf-dipendenti" class="tfoot"></tr></tfoot>
-    </table></div>
-  </div>
-</div>
-
 <!-- REPORT -->
 <div class="page" id="page-report">
   <div class="page-header">
@@ -694,14 +660,14 @@ const fmt=v=>new Intl.NumberFormat('it-IT',{minimumFractionDigits:2,maximumFract
 const fmtK=v=>{const a=Math.abs(v),s=v<0?'−':'';return s+'€'+(a>=100000?(a/1000).toFixed(0)+'k':a>=10000?(a/1000).toFixed(1)+'k':fmt(a))};
 
 let yr=2026,mo=new Date().getMonth();
-let db={fatture:[],prelievi:[],spese:[],dipendenti:[]};
+let db={fatture:[],prelievi:[],spese:[]};
 let chartInst=null;
 
 // ===== SUPABASE =====
 const SB_URL='https://hxybhwqvmzyiyimnyham.supabase.co';
 const SB_KEY='sb_publishable_0_-6pkbzH3SCVaQMuKw0mA_8kQ79kfh';
 const sb=supabase.createClient(SB_URL,SB_KEY);
-const TABLES=['fatture','prelievi','spese','dipendenti'];
+const TABLES=['fatture','prelievi','spese'];
 let saving=false;
 
 async function load(){
@@ -815,7 +781,6 @@ function go(name){
   if(name==='fatture')renderFatture();
   if(name==='spese')renderSpese();
   if(name==='prelievi')renderPrelievi();
-  if(name==='dipendenti')renderDipendenti();
 }
 function toggleForm(id){document.getElementById(id).classList.toggle('open');}
 function cancelForm(id){
@@ -1075,31 +1040,9 @@ async function del(arr,id){
 
 
 // ===== DIPENDENTI =====
-async function addDipendente(){
-  const nome=v('fd-nome');if(!nome){toast('⚠ Inserisci nome');return;}
-  const d={id:Date.now(),nome,ruolo:v('fd-ruolo'),ral:parseFloat(v('fd-ral'))||0,costo:parseFloat(v('fd-costo'))||0,data:v('fd-data'),ccnl:v('fd-ccnl'),note:v('fd-note')};
-  db.dipendenti.push(d);await sbUpsert('dipendenti',d);toggleForm('fd');['fd-nome','fd-ruolo','fd-ral','fd-costo','fd-data','fd-ccnl','fd-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  renderDipendenti();toast('✅ Dipendente aggiunto');
-}
-async function delDipendente(id){await sbDelete('dipendenti',id);db.dipendenti=db.dipendenti.filter(x=>x.id!==id);renderDipendenti();}
-function renderDipendenti(){
-  const list=db.dipendenti;
-  const tb=document.getElementById('tb-dipendenti');
-  tb.innerHTML=list.length===0?'<tr class="empty-row"><td colspan="8">Nessun dipendente registrato</td></tr>':
-    list.map(x=>`<tr>
-      <td style="font-weight:500">${x.nome}</td>
-      <td>${x.ruolo||'—'}</td>
-      <td class="num">${fmt(x.ral)}</td>
-      <td class="num" style="color:var(--red);font-weight:600">${fmt(x.costo)}/mese</td>
-      <td>${x.data||'—'}</td>
-      <td>${x.ccnl||'—'}</td>
-      <td style="font-size:12px;color:var(--text3)">${x.note||''}</td>
-      <td><button class="btn btn-danger btn-sm" onclick="delDipendente(${x.id})">✕</button></td>
-    </tr>`).join('');
-  const totCosto=list.reduce((s,x)=>s+x.costo,0);
-  const totRal=list.reduce((s,x)=>s+x.ral,0);
-  document.getElementById('tf-dipendenti').innerHTML=`<td colspan="2">Totale (${list.length})</td><td class="num">${fmt(totRal)}</td><td class="num" style="color:var(--red)">${fmt(totCosto)}/mese</td><td colspan="4"></td>`;
-}
+
+
+
 
 // ===== RENDER TABELLE =====
 function renderFatture(){
@@ -1271,11 +1214,7 @@ function exportFullBackup(){
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(r),'Spese');
   }
   
-  // Dipendenti
-  if(db.dipendenti.length){
-    const r=db.dipendenti.map(x=>({Nome:x.nome,Ruolo:x.ruolo,RAL:x.ral,CostoMensile:x.costo,DataAssunzione:x.data,CCNL:x.ccnl,Note:x.note}));
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(r),'Dipendenti');
-  }
+  
   // Riepilogo per anno
   const anni=[...new Set([...db.fatture,...db.spese].map(x=>x.year))].sort();
   const riep=[];
@@ -1302,7 +1241,7 @@ async function clearAll(){
     setSync('🔄 Cancellazione in corso...');
     for(const t of TABLES){await sb.from(t).delete().neq('id',0);}
     db={fatture:[],prelievi:[],spese:[],dipendenti:[]};
-    renderAll();renderFatture();renderPrelievi();renderSpese();renderDipendenti();
+    renderAll();renderFatture();renderPrelievi();renderSpese();
     setSync('✅ Database vuoto');toast('🗑 Tutti i dati cancellati');
   }catch(e){toast('⚠️ Errore: '+e.message);}
 }
