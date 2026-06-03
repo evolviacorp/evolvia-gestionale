@@ -370,7 +370,7 @@ select option{background:#FFFFFF;color:#0D1116}
       </div>
       <div class="frow c5">
         <div class="field"><label>Imponibile (€)</label><input id="ff-imp" type="number" step="0.01" placeholder="0.00" oninput="updateQuote()"></div>
-        <div class="field"><label>IVA % (scrivi a mano)</label><input id="ff-iva" type="number" step="0.01" min="0" max="100" value="22" placeholder="22"></div>
+        <div class="field"><label>IVA %</label><select id="ff-iva" onchange="toggleIvaCustom('ff')"><option value="22">22%</option><option value="10">10%</option><option value="4">4%</option><option value="0">Esente</option></select></div>
         <div class="field"><label>Mese</label><select id="ff-month"></select></div>
         <div class="field"><label>Link allegato Drive</label><input id="ff-drive" placeholder="https://drive.google.com/..."></div>
         <div class="field"><label>Banca</label><input id="ff-banca" placeholder="Banca..."></div>
@@ -397,9 +397,14 @@ select option{background:#FFFFFF;color:#0D1116}
         </div>
         <div id="ff-pwarn" class="perc-warn" style="display:none">⚠ Le percentuali non sommano a 100%</div>
       </div>
-      <div style="display:flex;gap:20px;margin-bottom:10px">
+      <div style="display:flex;gap:20px;margin-bottom:10px;flex-wrap:wrap;align-items:center">
         <label class="check-row"><input type="checkbox" id="ff-boni"> Bonifico ricevuto</label>
         <label class="check-row"><input type="checkbox" id="ff-nc"> Nota di credito</label>
+        <label class="check-row"><input type="checkbox" id="ff-ivacustom" onchange="toggleIvaCustom('ff')"> IVA personalizzata</label>
+        <div id="ff-ivacustom-box" style="display:none;align-items:center;gap:8px">
+          <label style="font-size:12px;color:var(--text2);font-weight:600">IVA in €:</label>
+          <input id="ff-ivaeuro" type="number" step="0.01" placeholder="0.00" style="width:140px;padding:7px 10px;font-size:13px;border:1px solid var(--border2);border-radius:var(--radius);background:#FFFFFF;color:#0D1116;font-weight:500">
+        </div>
       </div>
       <div class="field" style="margin-bottom:10px"><label>Note</label><input id="ff-note" placeholder="Note opzionali..."></div>
       <input type="hidden" id="ff-edit-id" value="">
@@ -496,7 +501,7 @@ select option{background:#FFFFFF;color:#0D1116}
       </div>
       <div class="frow c5">
         <div class="field"><label>Imponibile (€)</label><input id="fs-imp" type="number" step="0.01" placeholder="0.00" oninput="updateQuoteSpesa()"></div>
-        <div class="field"><label>IVA % (scrivi a mano)</label><input id="fs-iva" type="number" step="0.01" min="0" max="100" value="22" placeholder="22"></div>
+        <div class="field"><label>IVA %</label><select id="fs-iva" onchange="toggleIvaCustom('fs')"><option value="22">22%</option><option value="10">10%</option><option value="4">4%</option><option value="0">Esente/N.A.</option></select></div>
         <div class="field"><label>Mese</label><select id="fs-month"></select></div>
         <div class="field"><label>Link Drive</label><input id="fs-drive" placeholder="https://drive.google.com/..."></div>
         <div class="field"><label>Banca</label><input id="fs-banca" placeholder="Banca..."></div>
@@ -527,9 +532,14 @@ select option{background:#FFFFFF;color:#0D1116}
         </div>
         <div id="fs-pwarn" class="perc-warn" style="display:none">⚠ Le percentuali non sommano a 100%</div>
       </div>
-      <div style="display:flex;gap:20px;margin-bottom:10px">
+      <div style="display:flex;gap:20px;margin-bottom:10px;flex-wrap:wrap;align-items:center">
         <label class="check-row"><input type="checkbox" id="fs-pag"> Pagata</label>
         <label class="check-row"><input type="checkbox" id="fs-nc"> Nota di credito</label>
+        <label class="check-row"><input type="checkbox" id="fs-ivacustom" onchange="toggleIvaCustom('fs')"> IVA personalizzata</label>
+        <div id="fs-ivacustom-box" style="display:none;align-items:center;gap:8px">
+          <label style="font-size:12px;color:var(--text2);font-weight:600">IVA in €:</label>
+          <input id="fs-ivaeuro" type="number" step="0.01" placeholder="0.00" style="width:140px;padding:7px 10px;font-size:13px;border:1px solid var(--border2);border-radius:var(--radius);background:#FFFFFF;color:#0D1116;font-weight:500">
+        </div>
       </div>
       <div class="field" style="margin-bottom:10px"><label>Note</label><input id="fs-note" placeholder="Note opzionali..."></div>
       <input type="hidden" id="fs-edit-id" value="">
@@ -794,6 +804,15 @@ function cancelForm(id){
   if(formEl){
     formEl.querySelectorAll('input[type=text],input[type=number],input[type=date],input:not([type]),textarea').forEach(el=>{if(el.id!==id+'-edit-id')el.value='';});
     formEl.querySelectorAll('input[type=checkbox]').forEach(el=>{el.checked=false;});
+    // Resetta i campi IVA personalizzata
+    if(id==='ff'||id==='fs'){
+      const box=document.getElementById(id+'-ivacustom-box');
+      if(box)box.style.display='none';
+      const sel=document.getElementById(id+'-iva');
+      if(sel)sel.disabled=false;
+      const eu=document.getElementById(id+'-ivaeuro');
+      if(eu)eu.value='';
+    }
     // Reset % a 50/50 di default per fatture e spese
     if(id==='ff'){
       const pm=document.getElementById('ff-pM');const pr=document.getElementById('ff-pR');
@@ -820,6 +839,34 @@ function updateQuote(){
   ptEl.textContent=tot+'%';
   ptEl.style.color=Math.abs(tot-100)<0.01?'var(--green)':'var(--red)';
   document.getElementById('ff-pwarn').style.display=Math.abs(tot-100)<0.01?'none':'block';
+}
+function toggleIvaCustom(prefix){
+  const cb=document.getElementById(prefix+'-ivacustom');
+  const box=document.getElementById(prefix+'-ivacustom-box');
+  const sel=document.getElementById(prefix+'-iva');
+  if(cb&&cb.checked){
+    box.style.display='inline-flex';
+    if(sel)sel.disabled=true;
+  } else {
+    box.style.display='none';
+    if(sel)sel.disabled=false;
+  }
+  // aggiorna le quote anche dopo il toggle
+  if(prefix==='ff')updateQuote();
+  if(prefix==='fs')updateQuoteSpesa();
+}
+function getEffectiveIva(prefix,imp){
+  // Restituisce {iva, ivaEuro, totale} considerando se IVA è personalizzata
+  const custom=document.getElementById(prefix+'-ivacustom')?.checked;
+  if(custom){
+    const ivaEuro=parseFloat(document.getElementById(prefix+'-ivaeuro')?.value)||0;
+    const ivaPerc=imp>0?(ivaEuro/imp*100):0;
+    return{iva:ivaPerc,ivaEuro,totale:imp+ivaEuro,custom:true};
+  } else {
+    const ivaPerc=parseFloat(document.getElementById(prefix+'-iva')?.value)||0;
+    const ivaEuro=imp*ivaPerc/100;
+    return{iva:ivaPerc,ivaEuro,totale:imp+ivaEuro,custom:false};
+  }
 }
 function updateQuoteSpesa(){
   const imp=parseFloat(document.getElementById('fs-imp').value)||0;
@@ -923,8 +970,8 @@ async function saveFattura(){
   const pM=parseFloat(document.getElementById('ff-pM').value)||0;
   const pR=parseFloat(document.getElementById('ff-pR').value)||0;
   if(Math.abs(pM+pR-100)>0.1){if(!confirm(`Le % sommano ${pM+pR}%, non 100%. Continuare?`))return;}
-  const iva=parseFloat(v('ff-iva'));
-  const obj={num:v('ff-num'),cli:v('ff-cli'),desc:v('ff-desc'),cat:v('ff-cat'),imp,iva,totale:imp*(1+iva/100),month:parseInt(v('ff-month')),year:yr,percM:pM,percR:pR,quotaM:imp*pM/100,quotaR:imp*pR/100,boni:cb('ff-boni'),nc:cb('ff-nc'),drive:v('ff-drive'),banca:v('ff-banca'),note:v('ff-note')};
+  const ivaCalc=getEffectiveIva('ff',imp);
+  const obj={num:v('ff-num'),cli:v('ff-cli'),desc:v('ff-desc'),cat:v('ff-cat'),imp,iva:ivaCalc.iva,ivaEuro:ivaCalc.ivaEuro,ivaCustom:ivaCalc.custom,totale:ivaCalc.totale,month:parseInt(v('ff-month')),year:yr,percM:pM,percR:pR,quotaM:imp*pM/100,quotaR:imp*pR/100,boni:cb('ff-boni'),nc:cb('ff-nc'),drive:v('ff-drive'),banca:v('ff-banca'),note:v('ff-note')};
   const eid=v('ff-edit-id');
   if(eid){const i=db.fatture.findIndex(x=>x.id===parseInt(eid));if(i>=0){obj.id=parseInt(eid);db.fatture[i]=obj;}toast('✏️ Fattura modificata');}
   else{obj.id=Date.now();db.fatture.push(obj);toast('✅ Fattura aggiunta');}
@@ -935,7 +982,10 @@ function editFattura(id){
   document.getElementById('ff-title').textContent='Modifica fattura';
   document.getElementById('ff-edit-id').value=id;
   sv('ff-num',x.num);sv('ff-cli',x.cli);sv('ff-desc',x.desc);sv('ff-cat',x.cat);
-  sv('ff-imp',x.imp);sv('ff-iva',x.iva);sv('ff-month',x.month);sv('ff-drive',x.drive||'');sv('ff-banca',x.banca||'');sv('ff-note',x.note||'');
+  sv('ff-imp',x.imp);sv('ff-month',x.month);sv('ff-drive',x.drive||'');sv('ff-banca',x.banca||'');sv('ff-note',x.note||'');
+  // IVA: se personalizzata, mostra il campo €
+  if(x.ivaCustom){document.getElementById('ff-ivacustom').checked=true;sv('ff-ivaeuro',x.ivaEuro||0);}else{document.getElementById('ff-ivacustom').checked=false;sv('ff-iva',x.iva||22);sv('ff-ivaeuro','');}
+  toggleIvaCustom('ff');
   sv('ff-pM',x.percM);sv('ff-pR',x.percR);
   document.getElementById('ff-boni').checked=x.boni||false;
   document.getElementById('ff-nc').checked=x.nc||false;
@@ -990,8 +1040,8 @@ async function saveSpesa(){
   const pM=parseFloat(document.getElementById('fs-pM').value)||0;
   const pR=parseFloat(document.getElementById('fs-pR').value)||0;
   if(Math.abs(pM+pR-100)>0.1){if(!confirm(`Le % sommano ${pM+pR}%, non 100%. Continuare?`))return;}
-  const iva=parseFloat(v('fs-iva'));
-  const obj={forn:v('fs-forn'),num:v('fs-num'),desc:v('fs-desc'),cat:v('fs-cat'),imp,iva,totale:imp*(1+iva/100),month:parseInt(v('fs-month')),year:yr,percM:pM,percR:pR,quotaM:imp*pM/100,quotaR:imp*pR/100,pag:cb('fs-pag'),nc:cb('fs-nc'),drive:v('fs-drive'),banca:v('fs-banca'),data:v('fs-data'),dataPag:v('fs-datapag'),note:v('fs-note')};
+  const ivaCalc=getEffectiveIva('fs',imp);
+  const obj={forn:v('fs-forn'),num:v('fs-num'),desc:v('fs-desc'),cat:v('fs-cat'),imp,iva:ivaCalc.iva,ivaEuro:ivaCalc.ivaEuro,ivaCustom:ivaCalc.custom,totale:ivaCalc.totale,month:parseInt(v('fs-month')),year:yr,percM:pM,percR:pR,quotaM:imp*pM/100,quotaR:imp*pR/100,pag:cb('fs-pag'),nc:cb('fs-nc'),drive:v('fs-drive'),banca:v('fs-banca'),data:v('fs-data'),dataPag:v('fs-datapag'),note:v('fs-note')};
   const eid=v('fs-edit-id');
   if(eid){const i=db.spese.findIndex(x=>x.id===parseInt(eid));if(i>=0){obj.id=parseInt(eid);obj.fromPrelievo=db.spese[i].fromPrelievo;db.spese[i]=obj;}toast('✏️ Spesa modificata');}
   else{obj.id=Date.now();db.spese.push(obj);toast('✅ Spesa aggiunta');}
@@ -1002,7 +1052,10 @@ function editSpesa(id){
   document.getElementById('fs-title').textContent='Modifica spesa';
   document.getElementById('fs-edit-id').value=id;
   sv('fs-forn',x.forn);sv('fs-num',x.num||'');sv('fs-desc',x.desc||'');sv('fs-cat',x.cat);
-  sv('fs-imp',x.imp);sv('fs-iva',x.iva);sv('fs-month',x.month);sv('fs-drive',x.drive||'');sv('fs-banca',x.banca||'');sv('fs-data',x.data||'');sv('fs-datapag',x.dataPag||'');sv('fs-note',x.note||'');
+  sv('fs-imp',x.imp);sv('fs-month',x.month);sv('fs-drive',x.drive||'');sv('fs-banca',x.banca||'');sv('fs-data',x.data||'');sv('fs-datapag',x.dataPag||'');sv('fs-note',x.note||'');
+  // IVA: se personalizzata, mostra il campo €
+  if(x.ivaCustom){document.getElementById('fs-ivacustom').checked=true;sv('fs-ivaeuro',x.ivaEuro||0);}else{document.getElementById('fs-ivacustom').checked=false;sv('fs-iva',x.iva||22);sv('fs-ivaeuro','');}
+  toggleIvaCustom('fs');
   sv('fs-pM',x.percM!==undefined?x.percM:50);sv('fs-pR',x.percR!==undefined?x.percR:50);
   updateQuoteSpesa();
   document.getElementById('fs-pag').checked=x.pag||false;
@@ -1059,7 +1112,7 @@ function renderFatture(){
     list.sort((a,b)=>b.month-a.month||b.id-a.id).map(x=>`<tr>
       <td>${x.num||'—'}</td><td>${x.cli||'—'}</td><td>${x.desc||'—'}${x.nc?'<span class="nc-tag">NC</span>':''}</td>
       <td><span class="badge bg-gray">${x.cat||'—'}</span></td>
-      <td class="num">${fmt(x.imp)}</td><td>${x.iva}%</td><td class="num" style="font-weight:600">${fmt(x.totale)}</td>
+      <td class="num">${fmt(x.imp)}</td><td>${x.ivaCustom?'€'+fmt(x.ivaEuro||0):(x.iva||0)+'%'}</td><td class="num" style="font-weight:600">${fmt(x.totale)}</td>
       <td>${MS[x.month]}</td>
       <td class="num" style="color:var(--blue)">${x.percM}%</td><td class="num" style="color:var(--blue);font-weight:600">${fmt(x.quotaM)}</td>
       <td class="num" style="color:var(--purple)">${x.percR}%</td><td class="num" style="color:var(--purple);font-weight:600">${fmt(x.quotaR)}</td>
@@ -1107,7 +1160,7 @@ function renderSpese(){
       <td>${x.forn||'—'}</td><td>${x.num||'—'}</td>
       <td>${x.desc||'—'}${x.nc?'<span class="nc-tag">NC</span>':''}${x.fromPrelievo?'<span class="nc-tag" style="color:var(--purple);border-color:#CECBF6">AUTO</span>':''}</td>
       <td><span class="badge ${x.cat==='F24'||x.cat==='Altre tasse'?'bg-red':'bg-amber'}">${x.cat||'—'}</span></td>
-      <td class="num">${fmt(x.imp)}</td><td>${x.iva}%</td>
+      <td class="num">${fmt(x.imp)}</td><td>${x.ivaCustom?'€'+fmt(x.ivaEuro||0):(x.iva||0)+'%'}</td>
       <td class="num" style="font-weight:600">${fmt(x.totale)}</td>
       <td>${MS[x.month]}</td>
       <td class="num" style="color:var(--teal-mid)">${x.percM!==undefined?x.percM+'%':'—'}</td>
@@ -1178,10 +1231,10 @@ function renderReport(){
 // ===== EXPORT =====
 function exportXls(tipo){
   const data=tipo==='fatture'
-    ?db.fatture.filter(x=>x.year===yr).map(x=>({'N°':x.num,Cliente:x.cli,Descrizione:x.desc,Categoria:x.cat,Imponibile:x.imp,'IVA%':x.iva,Totale:x.totale,Mese:MESI[x.month],'%Mattia':x.percM,'QuotaMattia':x.quotaM,'%Riccardo':x.percR,'QuotaRiccardo':x.quotaR,Bonifico:x.boni?'Sì':'No',Banca:x.banca||'',Drive:x.drive,Note:x.note}))
+    ?db.fatture.filter(x=>x.year===yr).map(x=>({'N°':x.num,Cliente:x.cli,Descrizione:x.desc,Categoria:x.cat,Imponibile:x.imp,'IVA%':x.iva,'IVA€':x.ivaEuro||(x.imp*(x.iva||0)/100),'IVApersonalizzata':x.ivaCustom?'Sì':'No',Totale:x.totale,Mese:MESI[x.month],'%Mattia':x.percM,'QuotaMattia':x.quotaM,'%Riccardo':x.percR,'QuotaRiccardo':x.quotaR,Bonifico:x.boni?'Sì':'No',Banca:x.banca||'',Drive:x.drive,Note:x.note}))
     :tipo==='prelievi'
     ?db.prelievi.filter(x=>x.year===yr).map(x=>({Socio:x.socio,Descrizione:x.desc,Mese:MESI[x.month],Importo:x.imp,Banca:x.banca||'',Drive:x.drive,Note:x.note}))
-    :db.spese.filter(x=>x.year===yr).map(x=>({Fornitore:x.forn,'N°':x.num,Descrizione:x.desc,Categoria:x.cat,Imponibile:x.imp,'IVA%':x.iva,Totale:x.totale,Mese:MESI[x.month],'%Mattia':x.percM,'QuotaMattia':x.quotaM,'%Riccardo':x.percR,'QuotaRiccardo':x.quotaR,'DataDocumento':x.data||'','DataPagamento':x.dataPag||'',Pagata:x.pag?'Sì':'No',Banca:x.banca||'',Drive:x.drive,Note:x.note}));
+    :db.spese.filter(x=>x.year===yr).map(x=>({Fornitore:x.forn,'N°':x.num,Descrizione:x.desc,Categoria:x.cat,Imponibile:x.imp,'IVA%':x.iva,'IVA€':x.ivaEuro||(x.imp*(x.iva||0)/100),'IVApersonalizzata':x.ivaCustom?'Sì':'No',Totale:x.totale,Mese:MESI[x.month],'%Mattia':x.percM,'QuotaMattia':x.quotaM,'%Riccardo':x.percR,'QuotaRiccardo':x.quotaR,'DataDocumento':x.data||'','DataPagamento':x.dataPag||'',Pagata:x.pag?'Sì':'No',Banca:x.banca||'',Drive:x.drive,Note:x.note}));
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(data),tipo);
   XLSX.writeFile(wb,`Evolvia_${tipo}_${yr}.xlsx`);toast('⬇ Export completato');
@@ -1200,7 +1253,7 @@ function exportFullBackup(){
   const wb=XLSX.utils.book_new();
   // Fatture (tutti gli anni)
   if(db.fatture.length){
-    const r=db.fatture.map(x=>({Anno:x.year,Mese:MESI[x.month],'N°':x.num,Cliente:x.cli,Descrizione:x.desc,Categoria:x.cat,Imponibile:x.imp,'IVA%':x.iva,Totale:x.totale,'%Mattia':x.percM,'QuotaMattia':x.quotaM,'%Riccardo':x.percR,'QuotaRiccardo':x.quotaR,Bonifico:x.boni?'Sì':'No',NotaCredito:x.nc?'Sì':'No',Banca:x.banca||'',Drive:x.drive,Note:x.note}));
+    const r=db.fatture.map(x=>({Anno:x.year,Mese:MESI[x.month],'N°':x.num,Cliente:x.cli,Descrizione:x.desc,Categoria:x.cat,Imponibile:x.imp,'IVA%':x.iva,'IVA€':x.ivaEuro||(x.imp*(x.iva||0)/100),Totale:x.totale,'%Mattia':x.percM,'QuotaMattia':x.quotaM,'%Riccardo':x.percR,'QuotaRiccardo':x.quotaR,Bonifico:x.boni?'Sì':'No',NotaCredito:x.nc?'Sì':'No',Banca:x.banca||'',Drive:x.drive,Note:x.note}));
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(r),'Fatture');
   }
   // Prelievi
@@ -1210,7 +1263,7 @@ function exportFullBackup(){
   }
   // Spese
   if(db.spese.length){
-    const r=db.spese.map(x=>({Anno:x.year,Mese:MESI[x.month],Fornitore:x.forn,'N°':x.num,Descrizione:x.desc,Categoria:x.cat,Imponibile:x.imp,'IVA%':x.iva,Totale:x.totale,'%Mattia':x.percM,'QuotaMattia':x.quotaM,'%Riccardo':x.percR,'QuotaRiccardo':x.quotaR,'DataDocumento':x.data||'','DataPagamento':x.dataPag||'',Pagata:x.pag?'Sì':'No',NotaCredito:x.nc?'Sì':'No',Banca:x.banca||'',Drive:x.drive,Note:x.note}));
+    const r=db.spese.map(x=>({Anno:x.year,Mese:MESI[x.month],Fornitore:x.forn,'N°':x.num,Descrizione:x.desc,Categoria:x.cat,Imponibile:x.imp,'IVA%':x.iva,'IVA€':x.ivaEuro||(x.imp*(x.iva||0)/100),Totale:x.totale,'%Mattia':x.percM,'QuotaMattia':x.quotaM,'%Riccardo':x.percR,'QuotaRiccardo':x.quotaR,'DataDocumento':x.data||'','DataPagamento':x.dataPag||'',Pagata:x.pag?'Sì':'No',NotaCredito:x.nc?'Sì':'No',Banca:x.banca||'',Drive:x.drive,Note:x.note}));
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(r),'Spese');
   }
   
