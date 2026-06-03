@@ -284,7 +284,6 @@ select option{background:#FFFFFF;color:#0D1116}
   <div class="nav-item" onclick="go('fatture')">📄 Fatture Evolvia</div>
   <div class="nav-item" onclick="go('prelievi')">💸 Prelievi soci</div>
   <div class="nav-item" onclick="go('spese')">🧾 Spese società</div>
-  <div class="nav-item" onclick="go('ricorrenti')">🔁 Pagamenti ricorrenti</div>
   <div class="nav-item" onclick="go('dipendenti')">👥 Dipendenti</div>
   <div class="nav-section">Analisi</div>
   <div class="nav-item" onclick="go('report')">📈 Report annuale</div>
@@ -558,47 +557,6 @@ select option{background:#FFFFFF;color:#0D1116}
   </div>
 </div>
 
-<!-- RICORRENTI -->
-<div class="page" id="page-ricorrenti">
-  <div class="page-header">
-    <div><div class="page-title">Pagamenti ricorrenti</div><div class="page-sub">Abbonamenti fissi mensili — vengono aggiunti automaticamente alle spese ogni mese</div></div>
-    <button class="btn btn-primary" onclick="toggleForm('fr')">+ Nuovo ricorrente</button>
-  </div>
-  <div class="card" style="margin-bottom:16px">
-    <div class="form-panel" id="fr">
-      <div class="form-title">Nuovo pagamento ricorrente</div>
-      <div class="frow c4">
-        <div class="field"><label>Fornitore</label><input id="fr-forn" placeholder="Es. Leasing auto, Affitto..."></div>
-        <div class="field"><label>Descrizione</label><input id="fr-desc" placeholder="Descrizione..."></div>
-        <div class="field"><label>Categoria</label><select id="fr-cat">
-          <option>Affitto</option><option>Leasing auto</option><option>Software</option>
-          <option>Telefonia</option><option>Commercialista</option><option>Personale</option><option>Altro</option>
-        </select></div>
-        <div class="field"><label>Importo mensile (€)</label><input id="fr-imp" type="number" step="0.01" placeholder="0.00"></div>
-      </div>
-      <div class="frow c3">
-        <div class="field"><label>IVA %</label><select id="fr-iva"><option value="22">22%</option><option value="10">10%</option><option value="4">4%</option><option value="0">Esente</option></select></div>
-        <div class="field"><label>Mese inizio</label><select id="fr-start"></select></div>
-        <div class="field"><label>Link Drive</label><input id="fr-drive" placeholder="https://drive.google.com/..."></div>
-      </div>
-      <div class="field" style="margin-bottom:10px"><label>Note</label><input id="fr-note" placeholder="Note..."></div>
-      <div class="form-actions">
-        <button class="btn btn-primary" onclick="addRicorrente()">Salva ricorrente</button>
-        <button class="btn btn-ghost" onclick="toggleForm('fr')">Annulla</button>
-      </div>
-    </div>
-    <div class="card-header" style="border-top:none">
-      <span class="card-title">🔁 Pagamenti attivi</span>
-      <button class="btn btn-sm btn-primary" onclick="applyRicorrenti()">⚡ Applica al mese corrente</button>
-    </div>
-    <div id="ric-list"></div>
-  </div>
-  <div class="card">
-    <div class="card-header"><span class="card-title">📊 Totale ricorrenti mensile</span></div>
-    <div style="padding:16px" id="ric-summary"></div>
-  </div>
-</div>
-
 <!-- DIPENDENTI -->
 <div class="page" id="page-dipendenti">
   <div class="page-header">
@@ -736,14 +694,14 @@ const fmt=v=>new Intl.NumberFormat('it-IT',{minimumFractionDigits:2,maximumFract
 const fmtK=v=>{const a=Math.abs(v),s=v<0?'−':'';return s+'€'+(a>=100000?(a/1000).toFixed(0)+'k':a>=10000?(a/1000).toFixed(1)+'k':fmt(a))};
 
 let yr=2026,mo=new Date().getMonth();
-let db={fatture:[],prelievi:[],spese:[],ricorrenti:[],dipendenti:[]};
+let db={fatture:[],prelievi:[],spese:[],dipendenti:[]};
 let chartInst=null;
 
 // ===== SUPABASE =====
 const SB_URL='https://hxybhwqvmzyiyimnyham.supabase.co';
 const SB_KEY='sb_publishable_0_-6pkbzH3SCVaQMuKw0mA_8kQ79kfh';
 const sb=supabase.createClient(SB_URL,SB_KEY);
-const TABLES=['fatture','prelievi','spese','ricorrenti','dipendenti'];
+const TABLES=['fatture','prelievi','spese','dipendenti'];
 let saving=false;
 
 async function load(){
@@ -816,7 +774,7 @@ function initSel(){
   document.getElementById('year-row').innerHTML=YEARS.map(y=>`<button class="year-btn ${y===yr?'active':''}" onclick="setYear(${y})">${y}</button>`).join('');
   const mOpts=MESI.map((n,i)=>`<option value="${i}" ${i===mo?'selected':''}>${n}</option>`).join('');
   const mOptsAll='<option value="">Tutti i mesi</option>'+MESI.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
-  ['ff-month','fp-month','fs-month','fr-start'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=mOpts;});
+  ['ff-month','fp-month','fs-month'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=mOpts;});
   ['sf-month','sp-month','ss-month'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=mOptsAll;});
   const sc=document.getElementById('ss-cat');
   if(sc)sc.innerHTML='<option value="">Tutte le categorie</option>'+['Affitto','Leasing auto','Commercialista','Marketing','Personale','Carburante','Software','Telefonia','F24','Altre tasse','Dipendenti','Cene aziendali','Ufficio','Prelievo socio','Altro'].map(c=>`<option>${c}</option>`).join('');
@@ -857,7 +815,6 @@ function go(name){
   if(name==='fatture')renderFatture();
   if(name==='spese')renderSpese();
   if(name==='prelievi')renderPrelievi();
-  if(name==='ricorrenti')renderRicorrenti();
   if(name==='dipendenti')renderDipendenti();
 }
 function toggleForm(id){document.getElementById(id).classList.toggle('open');}
@@ -1111,54 +1068,11 @@ async function del(arr,id){
 }
 
 // ===== RICORRENTI =====
-async function addRicorrente(){
-  const imp=parseFloat(document.getElementById('fr-imp').value)||0;
-  if(!imp){toast('⚠ Inserisci importo');return;}
-  const iva=parseFloat(v('fr-iva'));
-  const r={id:Date.now(),forn:v('fr-forn'),desc:v('fr-desc'),cat:v('fr-cat'),imp,iva,totale:imp*(1+iva/100),startMonth:parseInt(v('fr-start')),drive:v('fr-drive'),note:v('fr-note'),attivo:true};
-  db.ricorrenti.push(r);await sbUpsert('ricorrenti',r);toggleForm('fr');['fr-forn','fr-desc','fr-imp','fr-drive','fr-note'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  renderRicorrenti();toast('✅ Pagamento ricorrente aggiunto');
-}
-async function toggleRicorrente(id){
-  const r=db.ricorrenti.find(x=>x.id===id);if(r){r.attivo=!r.attivo;await sbUpsert('ricorrenti',r);}
-  renderRicorrenti();
-}
-async function delRicorrente(id){await sbDelete('ricorrenti',id);db.ricorrenti=db.ricorrenti.filter(x=>x.id!==id);renderRicorrenti();toast('🗑 Rimosso');}
-async function applyRicorrenti(){
-  const attivi=db.ricorrenti.filter(x=>x.attivo);
-  if(!attivi.length){toast('⚠ Nessun ricorrente attivo');return;}
-  let count=0;
-  for(const r of attivi){
-    const already=db.spese.find(s=>s.fromRicorrente===r.id&&s.month===mo&&s.year===yr);
-    if(!already){
-      const spesa={id:Math.floor(Date.now()+Math.random()*1000),forn:r.forn,num:'',desc:r.desc,cat:r.cat,imp:r.imp,iva:r.iva,totale:r.totale,month:mo,year:yr,pag:false,nc:false,drive:r.drive,note:'Generata da ricorrente',fromRicorrente:r.id,banca:r.banca||''};
-      db.spese.push(spesa);await sbUpsert('spese',spesa);
-      count++;
-    }
-  }
-  renderSpese();renderAll();
-  toast(count>0?`✅ ${count} spese aggiunte per ${MESI[mo]}`:`⚠ Già applicato per ${MESI[mo]}`);
-}
-function renderRicorrenti(){
-  const list=db.ricorrenti;
-  const el=document.getElementById('ric-list');
-  el.innerHTML=list.length===0?'<div style="padding:20px;text-align:center;color:var(--text3)">Nessun pagamento ricorrente</div>':
-    list.map(r=>`<div class="ricorrente-row">
-      <div style="flex:1"><strong>${r.forn}</strong> — ${r.desc}<span class="badge ${r.attivo?'bg-green':'bg-gray'}" style="margin-left:8px">${r.attivo?'Attivo':'Sospeso'}</span></div>
-      <div style="font-size:12px;color:var(--text3);min-width:80px">${r.cat}</div>
-      <div style="font-weight:600;color:var(--red);min-width:80px;text-align:right">${fmt(r.imp)}/mese</div>
-      <button class="btn btn-sm" onclick="toggleRicorrente(${r.id})" style="margin-left:8px">${r.attivo?'Sospendi':'Attiva'}</button>
-      <button class="btn btn-danger btn-sm" onclick="delRicorrente(${r.id})">✕</button>
-    </div>`).join('');
-  const totMens=list.filter(x=>x.attivo).reduce((s,x)=>s+x.imp,0);
-  const totAnn=totMens*12;
-  document.getElementById('ric-summary').innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
-      <div class="metric"><div class="metric-label">Costo mensile ricorrenti</div><div class="metric-value mv-red">${fmtK(totMens)}</div></div>
-      <div class="metric"><div class="metric-label">Costo annuo stimato</div><div class="metric-value mv-amber">${fmtK(totAnn)}</div></div>
-      <div class="metric"><div class="metric-label">N° ricorrenti attivi</div><div class="metric-value">${list.filter(x=>x.attivo).length}</div></div>
-    </div>`;
-}
+
+
+
+
+
 
 // ===== DIPENDENTI =====
 async function addDipendente(){
@@ -1356,11 +1270,7 @@ function exportFullBackup(){
     const r=db.spese.map(x=>({Anno:x.year,Mese:MESI[x.month],Fornitore:x.forn,'N°':x.num,Descrizione:x.desc,Categoria:x.cat,Imponibile:x.imp,'IVA%':x.iva,Totale:x.totale,'%Mattia':x.percM,'QuotaMattia':x.quotaM,'%Riccardo':x.percR,'QuotaRiccardo':x.quotaR,'DataDocumento':x.data||'','DataPagamento':x.dataPag||'',Pagata:x.pag?'Sì':'No',NotaCredito:x.nc?'Sì':'No',Banca:x.banca||'',Drive:x.drive,Note:x.note}));
     XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(r),'Spese');
   }
-  // Ricorrenti
-  if(db.ricorrenti.length){
-    const r=db.ricorrenti.map(x=>({Fornitore:x.forn,Descrizione:x.desc,Categoria:x.cat,ImportoMensile:x.imp,'IVA%':x.iva,Totale:x.totale,MeseInizio:MESI[x.startMonth],Attivo:x.attivo?'Sì':'No',Note:x.note}));
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(r),'Ricorrenti');
-  }
+  
   // Dipendenti
   if(db.dipendenti.length){
     const r=db.dipendenti.map(x=>({Nome:x.nome,Ruolo:x.ruolo,RAL:x.ral,CostoMensile:x.costo,DataAssunzione:x.data,CCNL:x.ccnl,Note:x.note}));
@@ -1391,8 +1301,8 @@ async function clearAll(){
   try{
     setSync('🔄 Cancellazione in corso...');
     for(const t of TABLES){await sb.from(t).delete().neq('id',0);}
-    db={fatture:[],prelievi:[],spese:[],ricorrenti:[],dipendenti:[]};
-    renderAll();renderFatture();renderPrelievi();renderSpese();renderRicorrenti();renderDipendenti();
+    db={fatture:[],prelievi:[],spese:[],dipendenti:[]};
+    renderAll();renderFatture();renderPrelievi();renderSpese();renderDipendenti();
     setSync('✅ Database vuoto');toast('🗑 Tutti i dati cancellati');
   }catch(e){toast('⚠️ Errore: '+e.message);}
 }
