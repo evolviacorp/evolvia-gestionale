@@ -113,6 +113,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{font-size:11px;font-weight:700;color:var(--text2);text-align:left;padding:10px 12px;border-bottom:1px solid var(--border2);background:var(--bg3);white-space:nowrap;text-transform:uppercase;letter-spacing:.06em}
 td{padding:10px 12px;border-bottom:0.5px solid var(--border);color:var(--text);vertical-align:middle;font-weight:500}
+td:last-child{padding:8px 10px}
 tbody tr:nth-child(even) td{background:rgba(255,255,255,0.018)}
 tr:last-child td{border-bottom:none}
 tbody tr:hover td{background:rgba(51,198,188,0.06)}
@@ -1191,7 +1192,8 @@ function renderSpese(){
       <td>${x.forn||'—'}</td><td>${x.num||'—'}</td>
       <td>${x.desc||'—'}${x.nc?'<span class="nc-tag">NC</span>':''}${x.fromPrelievo?'<span class="nc-tag" style="color:var(--purple);border-color:#CECBF6">AUTO</span>':''}</td>
       <td><span class="badge ${x.cat==='F24'||x.cat==='Altre tasse'?'bg-red':'bg-amber'}">${x.cat||'—'}</span></td>
-      <td class="num">${fmt(x.imp)}</td><td>${x.ivaCustom?'€'+fmt(x.ivaEuro||0):(x.iva||0)+'%'}</td>
+      <td class="num">${fmt(x.imp)}</td><td>${x.ivaCustom?'<span style="color:var(--amber)">PERS.</span>':(x.iva||0)+'%'}</td>
+      <td class="num" style="color:var(--text2)">${fmt(x.ivaEuro!==undefined?x.ivaEuro:(x.imp*(x.iva||0)/100))}</td>
       <td class="num" style="font-weight:600">${fmt(x.totale)}</td>
       <td>${MS[x.month]}</td>
       <td class="num" style="color:var(--teal-mid)">${x.percM!==undefined?x.percM+'%':'—'}</td>
