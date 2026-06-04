@@ -1143,7 +1143,7 @@ function renderFatture(){
       <td style="text-align:center">${x.boni?'<span class="ok-icon">✓</span>':'<span class="no-icon">○</span>'}</td>
       <td>${x.drive?`<a class="link-a" href="${x.drive}" target="_blank">📎</a>`:'—'}</td>
       <td style="font-size:12px;color:var(--text3)">${x.note||''}</td>
-      <td style="display:flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(${x.id})">✏</button><button class="btn btn-danger btn-sm" onclick="del('fatture',${x.id})">✕</button></td>
+      <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px;align-items:center"><button class="btn btn-edit btn-sm" onclick="editFattura(${x.id})" title="Modifica">✏</button><button class="btn btn-danger btn-sm" onclick="del('fatture',${x.id})" title="Elimina">✕</button></div></td>
     </tr>`).join('');
   const tI=list.reduce((s,x)=>s+x.imp,0),tT=list.reduce((s,x)=>s+x.totale,0),qM=list.reduce((s,x)=>s+x.quotaM,0),qR=list.reduce((s,x)=>s+x.quotaR,0);
   const totIvaF=list.reduce((s,x)=>s+(x.ivaEuro!==undefined?x.ivaEuro:(x.imp*(x.iva||0)/100)),0);
@@ -1165,7 +1165,7 @@ function renderPrelievi(){
       <td class="num" style="font-weight:600;color:var(--amber)">${fmt(x.imp)}</td>
       <td>${x.drive?`<a class="link-a" href="${x.drive}" target="_blank">📎</a>`:'—'}</td>
       <td style="font-size:12px;color:var(--text3)">${x.note||''}</td>
-      <td style="display:flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editPrelievo(${x.id})">✏</button><button class="btn btn-danger btn-sm" onclick="del('prelievi',${x.id})">✕</button></td>
+      <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px;align-items:center"><button class="btn btn-edit btn-sm" onclick="editPrelievo(${x.id})" title="Modifica">✏</button><button class="btn btn-danger btn-sm" onclick="del('prelievi',${x.id})" title="Elimina">✕</button></div></td>
     </tr>`).join('');
   document.getElementById('tf-prelievi').innerHTML=`<td colspan="3">Totale</td><td class="num">${fmt(list.reduce((s,x)=>s+x.imp,0))}</td><td colspan="3"></td>`;
 }
@@ -1206,7 +1206,7 @@ function renderSpese(){
       <td style="font-size:12px;color:var(--text2)">${x.banca||'—'}</td>
       <td>${x.drive?`<a class="link-a" href="${x.drive}" target="_blank">📎</a>`:'—'}</td>
       <td style="font-size:12px;color:var(--text3)">${x.note||''}</td>
-      <td style="display:flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editSpesa(${x.id})">✏</button><button class="btn btn-danger btn-sm" onclick="del('spese',${x.id})">✕</button></td>
+      <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px;align-items:center"><button class="btn btn-edit btn-sm" onclick="editSpesa(${x.id})" title="Modifica">✏</button><button class="btn btn-danger btn-sm" onclick="del('spese',${x.id})" title="Elimina">✕</button></div></td>
     </tr>`).join('');
   const tI=list.reduce((s,x)=>s+x.imp,0);
   const totIvaS=list.reduce((s,x)=>s+(x.ivaEuro!==undefined?x.ivaEuro:(x.imp*(x.iva||0)/100)),0);
