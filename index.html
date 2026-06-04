@@ -414,15 +414,21 @@ select option{background:#FFFFFF;color:#0D1116}
       </div>
     </div>
     <div class="filter-bar">
-      <input placeholder="🔍 Cerca cliente, descrizione..." id="sf-q" oninput="renderFatture()">
+      <input placeholder="🔍 Cerca cliente, descrizione..." id="sf-q" oninput="renderFatture()" style="flex:1;min-width:180px">
       <select id="sf-month" onchange="renderFatture()"><option value="">Tutti i mesi</option></select>
-      <select id="sf-boni" onchange="renderFatture()"><option value="">Tutti</option><option value="1">Incassate</option><option value="0">Da incassare</option></select>
+      <select id="sf-boni" onchange="renderFatture()"><option value="">Tutte (inc/da inc)</option><option value="1">Solo incassate</option><option value="0">Solo da incassare</option></select>
+      <input id="sf-min" type="number" placeholder="€ min" onchange="renderFatture()" style="width:90px">
+      <input id="sf-max" type="number" placeholder="€ max" onchange="renderFatture()" style="width:90px">
+      <select id="sf-amt-field" onchange="renderFatture()" style="width:130px">
+        <option value="imp">su Imponibile</option>
+        <option value="totale">su Totale</option>
+      </select>
       <span id="sf-count" style="font-size:12px;color:var(--text3);margin-left:auto"></span>
     </div>
     <div class="table-wrap"><table>
       <thead><tr>
         <th>N°</th><th>Cliente</th><th>Desc.</th><th>Cat.</th>
-        <th class="num">Imponibile</th><th>IVA</th><th class="num">Totale</th>
+        <th class="num">Imponibile</th><th>IVA %</th><th class="num">IVA €</th><th class="num">Totale</th>
         <th>Mese</th><th class="num">%M</th><th class="num">Quota M.</th>
         <th class="num">%R</th><th class="num">Quota R.</th>
         <th>Boni.</th><th>Drive</th><th>Note</th><th></th>
@@ -495,8 +501,8 @@ select option{background:#FFFFFF;color:#0D1116}
           <option>Affitto</option><option>Leasing auto</option><option>Commercialista</option>
           <option>Marketing</option><option>Personale</option><option>Carburante</option>
           <option>Software</option><option>Telefonia</option><option>F24</option>
-          <option>Altre tasse</option><option>Dipendenti</option><option>Cene aziendali</option>
-          <option>Ufficio</option><option>Prelievo socio</option><option>Altro</option>
+          <option>Altre tasse</option><option>Banca</option><option>Agenti/Collaboratori</option>
+          <option>Cene aziendali</option><option>Ufficio</option><option>Prelievo socio</option><option>Altro</option>
         </select></div>
       </div>
       <div class="frow c5">
@@ -549,7 +555,7 @@ select option{background:#FFFFFF;color:#0D1116}
       </div>
     </div>
     <div class="filter-bar">
-      <input placeholder="🔍 Cerca fornitore, descrizione..." id="ss-q" oninput="renderSpese()">
+      <input placeholder="🔍 Cerca fornitore, descrizione..." id="ss-q" oninput="renderSpese()" style="flex:1;min-width:180px">
       <select id="ss-month" onchange="renderSpese()"><option value="">Tutti i mesi</option></select>
       <select id="ss-cat" onchange="renderSpese()"><option value="">Tutte le categorie</option></select>
       <select id="ss-tasse" onchange="renderSpese()">
@@ -557,9 +563,20 @@ select option{background:#FFFFFF;color:#0D1116}
         <option value="F24">Solo F24</option>
         <option value="Altre tasse">Solo altre tasse</option>
       </select>
+      <select id="ss-pag" onchange="renderSpese()">
+        <option value="">Pagate/non pagate</option>
+        <option value="1">Solo pagate</option>
+        <option value="0">Solo non pagate</option>
+      </select>
+      <input id="ss-min" type="number" placeholder="€ min" onchange="renderSpese()" style="width:90px">
+      <input id="ss-max" type="number" placeholder="€ max" onchange="renderSpese()" style="width:90px">
+      <select id="ss-amt-field" onchange="renderSpese()" style="width:130px">
+        <option value="imp">su Imponibile</option>
+        <option value="totale">su Totale</option>
+      </select>
     </div>
     <div class="table-wrap"><table>
-      <thead><tr><th>Fornitore</th><th>N°</th><th>Desc.</th><th>Cat.</th><th class="num">Imponibile</th><th>IVA</th><th class="num">Totale</th><th>Mese</th><th class="num">%M</th><th class="num">Quota M.</th><th class="num">%R</th><th class="num">Quota R.</th><th>Data doc.</th><th>Data pag.</th><th>Pag.</th><th>Banca</th><th>Drive</th><th>Note</th><th></th></tr></thead>
+      <thead><tr><th>Fornitore</th><th>N°</th><th>Desc.</th><th>Cat.</th><th class="num">Imponibile</th><th>IVA %</th><th class="num">IVA €</th><th class="num">Totale</th><th>Mese</th><th class="num">%M</th><th class="num">Quota M.</th><th class="num">%R</th><th class="num">Quota R.</th><th>Data doc.</th><th>Data pag.</th><th>Pag.</th><th>Banca</th><th>Drive</th><th>Note</th><th></th></tr></thead>
       <tbody id="tb-spese"></tbody>
       <tfoot><tr id="tf-spese" class="tfoot"></tr></tfoot>
     </table></div>
@@ -753,7 +770,7 @@ function initSel(){
   ['ff-month','fp-month','fs-month'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=mOpts;});
   ['sf-month','sp-month','ss-month'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=mOptsAll;});
   const sc=document.getElementById('ss-cat');
-  if(sc)sc.innerHTML='<option value="">Tutte le categorie</option>'+['Affitto','Leasing auto','Commercialista','Marketing','Personale','Carburante','Software','Telefonia','F24','Altre tasse','Dipendenti','Cene aziendali','Ufficio','Prelievo socio','Altro'].map(c=>`<option>${c}</option>`).join('');
+  if(sc)sc.innerHTML='<option value="">Tutte le categorie</option>'+['Affitto','Leasing auto','Commercialista','Marketing','Personale','Carburante','Software','Telefonia','F24','Altre tasse','Banca','Agenti/Collaboratori','Cene aziendali','Ufficio','Prelievo socio','Altro'].map(c=>`<option>${c}</option>`).join('');
 }
 
 function setYear(y){yr=y;document.querySelectorAll('.year-btn').forEach(b=>b.classList.toggle('active',parseInt(b.textContent)===y));renderAll();}
@@ -1100,11 +1117,16 @@ async function del(arr,id){
 // ===== RENDER TABELLE =====
 function renderFatture(){
   const q=v('sf-q').toLowerCase();const sm=v('sf-month');const sb=v('sf-boni');
+  const minA=parseFloat(v('sf-min'));const maxA=parseFloat(v('sf-max'));
+  const amtField=v('sf-amt-field')||'imp';
   let list=db.fatture.filter(x=>{
     if(x.year!==yr)return false;
     if(sm!==''&&x.month!==parseInt(sm))return false;
     if(sb==='1'&&!x.boni)return false;if(sb==='0'&&x.boni)return false;
     if(q&&!(x.cli+' '+x.desc+' '+x.num).toLowerCase().includes(q))return false;
+    const amt=amtField==='totale'?(x.totale||0):(x.imp||0);
+    if(!isNaN(minA)&&amt<minA)return false;
+    if(!isNaN(maxA)&&amt>maxA)return false;
     return true;
   });
   document.getElementById('sf-count').textContent=list.length+' fatture';
@@ -1112,7 +1134,8 @@ function renderFatture(){
     list.sort((a,b)=>b.month-a.month||b.id-a.id).map(x=>`<tr>
       <td>${x.num||'—'}</td><td>${x.cli||'—'}</td><td>${x.desc||'—'}${x.nc?'<span class="nc-tag">NC</span>':''}</td>
       <td><span class="badge bg-gray">${x.cat||'—'}</span></td>
-      <td class="num">${fmt(x.imp)}</td><td>${x.ivaCustom?'€'+fmt(x.ivaEuro||0):(x.iva||0)+'%'}</td><td class="num" style="font-weight:600">${fmt(x.totale)}</td>
+      <td class="num">${fmt(x.imp)}</td><td>${x.ivaCustom?'<span style="color:var(--amber)">PERS.</span>':(x.iva||0)+'%'}</td>
+      <td class="num" style="color:var(--text2)">${fmt(x.ivaEuro!==undefined?x.ivaEuro:(x.imp*(x.iva||0)/100))}</td><td class="num" style="font-weight:600">${fmt(x.totale)}</td>
       <td>${MS[x.month]}</td>
       <td class="num" style="color:var(--blue)">${x.percM}%</td><td class="num" style="color:var(--blue);font-weight:600">${fmt(x.quotaM)}</td>
       <td class="num" style="color:var(--purple)">${x.percR}%</td><td class="num" style="color:var(--purple);font-weight:600">${fmt(x.quotaR)}</td>
@@ -1122,7 +1145,8 @@ function renderFatture(){
       <td style="display:flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(${x.id})">✏</button><button class="btn btn-danger btn-sm" onclick="del('fatture',${x.id})">✕</button></td>
     </tr>`).join('');
   const tI=list.reduce((s,x)=>s+x.imp,0),tT=list.reduce((s,x)=>s+x.totale,0),qM=list.reduce((s,x)=>s+x.quotaM,0),qR=list.reduce((s,x)=>s+x.quotaR,0);
-  document.getElementById('tf-fatture').innerHTML=`<td colspan="4">Totale (${list.length})</td><td class="num">${fmt(tI)}</td><td></td><td class="num">${fmt(tT)}</td><td></td><td></td><td class="num" style="color:var(--blue)">${fmt(qM)}</td><td></td><td class="num" style="color:var(--purple)">${fmt(qR)}</td><td colspan="4"></td>`;
+  const totIvaF=list.reduce((s,x)=>s+(x.ivaEuro!==undefined?x.ivaEuro:(x.imp*(x.iva||0)/100)),0);
+  document.getElementById('tf-fatture').innerHTML=`<td colspan="4">Totale (${list.length})</td><td class="num">${fmt(tI)}</td><td></td><td class="num" style="color:var(--amber)">${fmt(totIvaF)}</td><td class="num">${fmt(tT)}</td><td></td><td></td><td class="num" style="color:var(--teal-mid)">${fmt(qM)}</td><td></td><td class="num" style="color:var(--orange-mid)">${fmt(qR)}</td><td colspan="4"></td>`;
 }
 
 function renderPrelievi(){
@@ -1147,12 +1171,19 @@ function renderPrelievi(){
 
 function renderSpese(){
   const q=v('ss-q').toLowerCase(),sm=v('ss-month'),sc=v('ss-cat'),st=v('ss-tasse');
+  const sp=v('ss-pag');
+  const minA=parseFloat(v('ss-min'));const maxA=parseFloat(v('ss-max'));
+  const amtField=v('ss-amt-field')||'imp';
   let list=db.spese.filter(x=>{
     if(x.year!==yr)return false;
     if(sm!==''&&x.month!==parseInt(sm))return false;
     if(sc&&x.cat!==sc)return false;
     if(st&&x.cat!==st)return false;
+    if(sp==='1'&&!x.pag)return false;if(sp==='0'&&x.pag)return false;
     if(q&&!(x.forn+' '+x.desc).toLowerCase().includes(q))return false;
+    const amt=amtField==='totale'?(x.totale||0):(x.imp||0);
+    if(!isNaN(minA)&&amt<minA)return false;
+    if(!isNaN(maxA)&&amt>maxA)return false;
     return true;
   });
   document.getElementById('tb-spese').innerHTML=list.length===0?'<tr class="empty-row"><td colspan="12">Nessuna spesa trovata</td></tr>':
@@ -1176,7 +1207,8 @@ function renderSpese(){
       <td style="display:flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editSpesa(${x.id})">✏</button><button class="btn btn-danger btn-sm" onclick="del('spese',${x.id})">✕</button></td>
     </tr>`).join('');
   const tI=list.reduce((s,x)=>s+x.imp,0);
-  document.getElementById('tf-spese').innerHTML=`<td colspan="4">Totale (${list.length})</td><td class="num">${fmt(tI)}</td><td></td><td class="num">${fmt(list.reduce((s,x)=>s+x.totale,0))}</td><td></td><td colspan="2" class="num" style="color:var(--teal-mid)">${fmt(list.reduce((s,x)=>s+(x.quotaM||0),0))}</td><td colspan="2" class="num" style="color:var(--orange-mid)">${fmt(list.reduce((s,x)=>s+(x.quotaR||0),0))}</td><td colspan="6"></td>`;
+  const totIvaS=list.reduce((s,x)=>s+(x.ivaEuro!==undefined?x.ivaEuro:(x.imp*(x.iva||0)/100)),0);
+  document.getElementById('tf-spese').innerHTML=`<td colspan="4">Totale (${list.length})</td><td class="num">${fmt(tI)}</td><td></td><td class="num" style="color:var(--amber)">${fmt(totIvaS)}</td><td class="num">${fmt(list.reduce((s,x)=>s+x.totale,0))}</td><td></td><td></td><td class="num" style="color:var(--teal-mid)">${fmt(list.reduce((s,x)=>s+(x.quotaM||0),0))}</td><td></td><td class="num" style="color:var(--orange-mid)">${fmt(list.reduce((s,x)=>s+(x.quotaR||0),0))}</td><td colspan="7"></td>`;
 }
 
 function renderReport(){
