@@ -931,29 +931,38 @@ function updateQuoteSpesa(){
 // ===== RESIDUO =====
 function calcResiduo(socio,filtYr){
   const fy=filtYr||yr;
-  const aF=db.fatture.filter(x=>x.year===fy);
+  // Solo fatture INCASSATE (bonifico ricevuto)
+  const aF=db.fatture.filter(x=>x.year===fy&&x.boni);
+  // Tutte le fatture per mostrare il da incassare
+  const aFtot=db.fatture.filter(x=>x.year===fy);
   const aP=db.prelievi.filter(x=>x.year===fy&&x.socio===socio);
   // Spese SOCIETA' escludendo "Prelievo socio" (già contate come prelievi)
   const aS=db.spese.filter(x=>x.year===fy&&x.cat!=='Prelievo socio');
-  // Quote fatture: calcolate sull'imponibile (percM/R % di imp)
+  // Quote fatture: solo incassate, sull'imponibile
   const quota=socio==='MATTIA'
     ?aF.reduce((s,x)=>s+(x.imp*(x.percM||0)/100),0)
     :aF.reduce((s,x)=>s+(x.imp*(x.percR||0)/100),0);
+  // Da incassare ancora
+  const fattureNonPagate=aFtot.filter(x=>!x.boni);
+  const daIncassare=socio==='MATTIA'
+    ?fattureNonPagate.reduce((s,x)=>s+(x.imp*(x.percM||0)/100),0)
+    :fattureNonPagate.reduce((s,x)=>s+(x.imp*(x.percR||0)/100),0);
   const prel=aP.reduce((s,x)=>s+x.imp,0);
-  // Quote spese: calcolate sull'imponibile (percM/R % di imp) — ignora i valori salvati
+  // Quote spese: sull'imponibile
   const quotaSpese=socio==='MATTIA'
     ?aS.reduce((s,x)=>s+(x.imp*(x.percM||0)/100),0)
     :aS.reduce((s,x)=>s+(x.imp*(x.percR||0)/100),0);
-  return{quota,prelievi:prel,spese:quotaSpese,residuo:quota-prel-quotaSpese};
+  return{quota,prelievi:prel,spese:quotaSpese,daIncassare,residuo:quota-prel-quotaSpese};
 }
 function residuoCard(socio,el){
   const r=calcResiduo(socio);
   const cfg=socio==='MATTIA'?{av:'var(--teal-bg)',tc:'var(--teal-mid)',init:'MA'}:{av:'var(--orange-bg)',tc:'var(--orange-mid)',init:'RI'};
   el.innerHTML=`<div class="residuo-header"><div class="avatar" style="background:${cfg.av};color:${cfg.tc}">${cfg.init}</div><div><div style="font-size:15px;font-weight:700">${socio.charAt(0)+socio.slice(1).toLowerCase()}</div><div style="font-size:11px;color:var(--text3)">Anno ${yr}</div></div></div>
-    <div class="res-line"><span style="color:var(--text2)">Quota totale dalle fatture</span><span style="color:var(--teal-mid);font-weight:600">${fmtK(r.quota)}</span></div>
-    <div class="res-line"><span style="color:var(--text2)">Già prelevato</span><span style="color:var(--red-mid)">- ${fmtK(r.prelievi)}</span></div>
-    <div class="res-line"><span style="color:var(--text2)">Quota spese società a carico</span><span style="color:var(--orange-mid)">- ${fmtK(r.spese)}</span></div>
-    <div class="res-line"><span style="font-weight:700">Residuo disponibile</span><span style="color:${r.residuo>=0?'var(--green-mid)':'var(--red-mid)'};font-size:22px;font-weight:700">${fmtK(r.residuo)}</span></div>`;
+    <div class="res-line"><span style="color:var(--text2)">Quota fatture incassate</span><span style="color:var(--teal-mid);font-weight:600">${fmtK(r.quota)}</span></div>
+    ${r.daIncassare>0?`<div class="res-line"><span style="color:var(--text3);font-size:12px">↳ Da incassare ancora</span><span style="color:var(--text3);font-size:12px">${fmtK(r.daIncassare)}</span></div>`:''}
+    <div class="res-line"><span style="color:var(--text2)">Già prelevato</span><span style="color:var(--red-mid)">− ${fmtK(r.prelievi)}</span></div>
+    <div class="res-line"><span style="color:var(--text2)">Quota spese a carico</span><span style="color:var(--orange-mid)">− ${fmtK(r.spese)}</span></div>
+    <div class="res-line" style="border-top:1px solid var(--border2);margin-top:4px;padding-top:10px"><span style="font-weight:700">Residuo disponibile</span><span style="color:${r.residuo>=0?'var(--green-mid)':'var(--red-mid)'};font-size:22px;font-weight:700">${fmtK(r.residuo)}</span></div>`;
 }
 
 // ===== IVA TRIMESTRALE =====
