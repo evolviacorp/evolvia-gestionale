@@ -906,9 +906,15 @@ function calcResiduo(socio,filtYr){
   const aP=db.prelievi.filter(x=>x.year===fy&&x.socio===socio);
   // Spese SOCIETA' escludendo "Prelievo socio" (già contate come prelievi)
   const aS=db.spese.filter(x=>x.year===fy&&x.cat!=='Prelievo socio');
-  const quota=socio==='MATTIA'?aF.reduce((s,x)=>s+(x.quotaM||0),0):aF.reduce((s,x)=>s+(x.quotaR||0),0);
+  // Quote fatture: calcolate sull'imponibile (percM/R % di imp)
+  const quota=socio==='MATTIA'
+    ?aF.reduce((s,x)=>s+(x.imp*(x.percM||0)/100),0)
+    :aF.reduce((s,x)=>s+(x.imp*(x.percR||0)/100),0);
   const prel=aP.reduce((s,x)=>s+x.imp,0);
-  const quotaSpese=socio==='MATTIA'?aS.reduce((s,x)=>s+(x.quotaM||0),0):aS.reduce((s,x)=>s+(x.quotaR||0),0);
+  // Quote spese: calcolate sull'imponibile (percM/R % di imp) — ignora i valori salvati
+  const quotaSpese=socio==='MATTIA'
+    ?aS.reduce((s,x)=>s+(x.imp*(x.percM||0)/100),0)
+    :aS.reduce((s,x)=>s+(x.imp*(x.percR||0)/100),0);
   return{quota,prelievi:prel,spese:quotaSpese,residuo:quota-prel-quotaSpese};
 }
 function residuoCard(socio,el){
