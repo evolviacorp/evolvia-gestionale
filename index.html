@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Evolvia — Gestionale</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -34,7 +34,7 @@
   --amber:#FFC83D;--amber-bg:#3D2D08;
   --radius:8px;--radius-lg:12px;
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.55;min-height:100vh;-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.55;min-height:100vh;-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 *{-webkit-tap-highlight-color:rgba(0,0,0,0.05)}
 .nav-item,.hamburger,.btn,.year-btn,.pin-key,.view-btn{cursor:pointer;-webkit-user-select:none;user-select:none}
 
@@ -54,7 +54,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .pin-error{color:var(--red-mid);font-size:13px;min-height:18px;font-weight:600}
 .pin-change{font-size:12px;color:var(--text3);margin-top:16px;cursor:pointer;text-decoration:underline}
 
-.shell{display:flex;min-height:100vh}
+.shell{display:flex;min-height:100vh;min-height:-webkit-fill-available}
 .sidebar{width:230px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0}
 .main{flex:1;padding:24px 28px;overflow:auto}
 .logo{padding:20px;border-bottom:0.5px solid var(--border);margin-bottom:8px}
@@ -172,7 +172,36 @@ tbody tr:hover td{background:rgba(51,198,188,0.06)}
 ::-webkit-scrollbar-thumb:hover{background:var(--teal)}
 select option{background:#FFFFFF;color:#0D1116}
 .table-wrap{overflow-x:auto}
-@media(max-width:768px){.sidebar{display:none}.main{padding:16px}.two-col{grid-template-columns:1fr}.frow.c2,.frow.c3,.frow.c4,.frow.c5{grid-template-columns:1fr 1fr}.iva-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main{padding:12px 10px}
+  .two-col{grid-template-columns:1fr}
+  /* Form: tutto su 1 colonna */
+  .frow.c2,.frow.c3,.frow.c4,.frow.c5{grid-template-columns:1fr}
+  .iva-grid{grid-template-columns:1fr 1fr}
+  /* Tabelle: scroll orizzontale */
+  .card{overflow-x:auto}
+  table{min-width:600px}
+  /* Metriche: 2 per riga */
+  .metrics-grid{grid-template-columns:1fr 1fr}
+  /* Residuo: stack */
+  .two-col-res{grid-template-columns:1fr}
+  /* Filtri: wrap su piu righe */
+  .filter-bar{flex-wrap:wrap;gap:6px}
+  .filter-bar input,.filter-bar select{font-size:13px;padding:7px 10px}
+  /* PIN card: piu compatta */
+  .pin-card{padding:24px 20px;width:90vw}
+  /* Bottoni azioni: compatti */
+  .btn-sm{padding:5px 8px;font-size:12px}
+  /* Page title piu piccolo */
+  .page-title{font-size:18px}
+  /* IVA trim: 2 colonne */
+  .iva-grid{grid-template-columns:1fr 1fr}
+  /* Perc row su mobile */
+  .perc-row{flex-direction:column;gap:8px}
+  /* Form panel padding ridotto */
+  .form-panel{padding:12px 10px}
+}
 
 /* ===== MOBILE ===== */
 .mobile-topbar{display:none;align-items:center;gap:10px;padding:14px 16px;background:var(--bg2);border-bottom:1px solid var(--border2);position:sticky;top:0;z-index:50}
@@ -181,8 +210,8 @@ select option{background:#FFFFFF;color:#0D1116}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:90}
 .sidebar-overlay.open{display:block}
 @media(max-width:768px){
-  .mobile-topbar{display:flex}
-  .sidebar{position:fixed;left:0;top:0;height:100vh;z-index:100;transform:translateX(-100%);transition:transform .25s ease;box-shadow:2px 0 16px rgba(0,0,0,.12)}
+  .mobile-topbar{display:flex!important}
+  .sidebar{position:fixed;left:0;top:0;height:100vh;z-index:100;transform:translateX(-100%);transition:transform .25s ease;box-shadow:2px 0 16px rgba(0,0,0,.12);display:flex!important}
   .sidebar.open{transform:translateX(0)}
   .main{padding:14px}
   .two-col{grid-template-columns:1fr}
