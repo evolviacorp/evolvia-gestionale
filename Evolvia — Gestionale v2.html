@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- saved from url=(0061)file:///C:/Users/matti/Downloads/Evolvia_Gestionale_v2_3.html -->
+<!-- saved from url=(0061)file:///C:/Users/matti/Downloads/Evolvia_Gestionale_v2_4.html -->
 <html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Evolvia — Gestionale v2</title>
 <script src="./Evolvia — Gestionale v2_files/xlsx.full.min.js.download"></script>
 <script src="./Evolvia — Gestionale v2_files/chart.js.download"></script>
-<script src="./Evolvia — Gestionale v2_files/supabase.js.download"></script>
+<script src="./Evolvia — Gestionale v2_files/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -240,16 +240,16 @@ select option{background:#FFFFFF;color:#0D1116}
 <body>
 
 <!-- PIN SCREEN -->
-<div id="pin-screen">
+<div id="pin-screen" style="display: none;">
   <div class="pin-card">
     <div style="width:70px;height:70px;border-radius:50%;background:var(--teal-bg);border:2px solid var(--teal);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:28px;">📊</div>
     <div class="pin-sub">Gestionale Evolvia</div>
     <div class="pin-prompt">Inserisci il PIN per accedere</div>
     <div class="pin-dots" id="pin-dots">
-      <div class="pin-dot" id="d0"></div>
-      <div class="pin-dot" id="d1"></div>
-      <div class="pin-dot" id="d2"></div>
-      <div class="pin-dot" id="d3"></div>
+      <div class="pin-dot filled" id="d0"></div>
+      <div class="pin-dot filled" id="d1"></div>
+      <div class="pin-dot filled" id="d2"></div>
+      <div class="pin-dot filled" id="d3"></div>
     </div>
     <div class="pin-keypad">
       <button class="pin-key" onclick="pinKey(&#39;1&#39;)">1</button>
@@ -269,7 +269,7 @@ select option{background:#FFFFFF;color:#0D1116}
 </div>
 
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
-<div class="shell" id="app" style="display:none">
+<div class="shell" id="app" style="display: flex;">
 
 <div class="mobile-topbar">
   <button class="hamburger" id="hamburger-btn" type="button">☰</button>
@@ -298,7 +298,7 @@ select option{background:#FFFFFF;color:#0D1116}
   <div class="nav-item" onclick="go(&#39;esporta&#39;)">⬇ Esporta dati</div>
   <div class="sidebar-footer">
     <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Anno</div>
-    <div class="year-row" id="year-row"></div>
+    <div class="year-row" id="year-row"><button class="year-btn " onclick="setYear(2024)">2024</button><button class="year-btn " onclick="setYear(2025)">2025</button><button class="year-btn active" onclick="setYear(2026)">2026</button><button class="year-btn " onclick="setYear(2027)">2027</button></div>
   </div>
 </aside>
 
@@ -309,46 +309,120 @@ select option{background:#FFFFFF;color:#0D1116}
 <div class="page active" id="page-dashboard">
   <div class="page-header">
     <div>
-      <div class="page-title" id="dash-title">Dashboard</div>
-      <div class="page-sub" id="dash-sub"></div>
+      <div class="page-title" id="dash-title">Dashboard — Giugno</div>
+      <div class="page-sub" id="dash-sub">2026</div>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
       <button class="btn btn-ghost btn-sm" onclick="prevMonth()">‹</button>
-      <span id="month-label" style="font-size:15px;font-weight:600;min-width:130px;text-align:center"></span>
+      <span id="month-label" style="font-size:15px;font-weight:600;min-width:130px;text-align:center">Giugno 2026</span>
       <button class="btn btn-ghost btn-sm" onclick="nextMonth()">›</button>
     </div>
   </div>
-  <div class="metrics" id="dash-metrics"></div>
+  <div class="metrics" id="dash-metrics">
+    <div class="metric"><div class="metric-label">Fatturato mese</div><div class="metric-value mv-blue">€0,00</div><div class="metric-sub">0 fatture</div></div>
+    <div class="metric"><div class="metric-label">Uscite mese</div><div class="metric-value mv-red">€0,00</div></div>
+    <div class="metric"><div class="metric-label">Margine mese</div><div class="metric-value mv-green">€0,00</div></div>
+    <div class="metric"><div class="metric-label">Comp. agenti mese</div><div class="metric-value mv-amber">€0,00</div></div>
+    <div class="metric"><div class="metric-label">Da incassare</div><div class="metric-value mv-amber">€0,00</div></div>
+    <div class="metric"><div class="metric-label">IVA debito mese</div><div class="metric-value mv-red">€0,00</div></div>
+    <div class="metric"><div class="metric-label">IVA credito mese</div><div class="metric-value mv-green">€0,00</div></div>
+  </div>
   <!-- IVA TRIMESTRALE -->
   <div class="card" style="margin-bottom:16px">
     <div class="card-header">
-      <span class="card-title">🧾 IVA trimestrale — <span id="iva-year-label"></span></span>
+      <span class="card-title">🧾 IVA trimestrale — <span id="iva-year-label">2026</span></span>
     </div>
     <div style="padding:16px">
-      <div class="iva-grid" id="iva-trimestrale"></div>
+      <div class="iva-grid" id="iva-trimestrale"><div class="iva-trim">
+      <div class="iva-trim-label">1° Trim (Gen-Mar)</div>
+      <div class="iva-trim-value" style="color:var(--red)">€10.5k</div>
+      <div class="iva-trim-sub">Da versare</div>
+      <div style="margin-top:8px;font-size:11px;color:var(--text3)">Debito: €10.5k<br>Credito: €0,00</div>
+    </div><div class="iva-trim">
+      <div class="iva-trim-label">2° Trim (Apr-Giu)</div>
+      <div class="iva-trim-value" style="color:var(--red)">€16.3k</div>
+      <div class="iva-trim-sub">Da versare</div>
+      <div style="margin-top:8px;font-size:11px;color:var(--text3)">Debito: €16.3k<br>Credito: €0,00</div>
+    </div><div class="iva-trim">
+      <div class="iva-trim-label">3° Trim (Lug-Set)</div>
+      <div class="iva-trim-value" style="color:var(--red)">€0,00</div>
+      <div class="iva-trim-sub">Da versare</div>
+      <div style="margin-top:8px;font-size:11px;color:var(--text3)">Debito: €0,00<br>Credito: €0,00</div>
+    </div><div class="iva-trim">
+      <div class="iva-trim-label">4° Trim (Ott-Dic)</div>
+      <div class="iva-trim-value" style="color:var(--red)">€0,00</div>
+      <div class="iva-trim-sub">Da versare</div>
+      <div style="margin-top:8px;font-size:11px;color:var(--text3)">Debito: €0,00<br>Credito: €0,00</div>
+    </div></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div style="background:var(--bg2);border-radius:var(--radius);padding:12px">
           <div style="font-size:11px;color:var(--text3);margin-bottom:4px">IVA A DEBITO ANNO</div>
-          <div style="font-size:20px;font-weight:700;color:var(--red)" id="iva-tot-debito">—</div>
+          <div style="font-size:20px;font-weight:700;color:var(--red)" id="iva-tot-debito">€26.9k</div>
         </div>
         <div style="background:var(--bg2);border-radius:var(--radius);padding:12px">
           <div style="font-size:11px;color:var(--text3);margin-bottom:4px">IVA A CREDITO ANNO</div>
-          <div style="font-size:20px;font-weight:700;color:var(--green)" id="iva-tot-credito">—</div>
+          <div style="font-size:20px;font-weight:700;color:var(--green)" id="iva-tot-credito">€0,00</div>
         </div>
       </div>
     </div>
   </div>
   <!-- RESIDUI SOCI -->
-  <div class="three-col" style="margin-bottom:16px" id="dash-residui"></div>
+  <div class="three-col" style="margin-bottom:16px" id="dash-residui"><div class="residuo-card">
+    <div class="residuo-header"><div class="avatar" style="background:var(--teal-bg);color:var(--teal-mid)">MA</div><div><div style="font-size:15px;font-weight:700">Mattia</div><div style="font-size:11px;color:var(--text3)">Anno 2026</div></div></div>
+    <div class="res-line"><span style="color:var(--text2)">Quota fatture incassate</span><span style="color:var(--teal-mid);font-weight:600">€0,00</span></div>
+    
+    <div class="res-line"><span style="color:var(--text2)">Già prelevato</span><span style="color:var(--red-mid)">− €0,00</span></div>
+    <div class="res-line"><span style="color:var(--text2)">Quota spese a carico</span><span style="color:var(--orange-mid)">− €0,00</span></div>
+    <div class="res-line" style="border-top:1px solid var(--border2);margin-top:4px;padding-top:10px"><span style="font-weight:700">Residuo disponibile</span><span style="color:var(--green-mid);font-size:22px;font-weight:700">€0,00</span></div>
+  </div><div class="residuo-card">
+    <div class="residuo-header"><div class="avatar" style="background:var(--orange-bg);color:var(--orange-mid)">RI</div><div><div style="font-size:15px;font-weight:700">Riccardo</div><div style="font-size:11px;color:var(--text3)">Anno 2026</div></div></div>
+    <div class="res-line"><span style="color:var(--text2)">Quota fatture incassate</span><span style="color:var(--teal-mid);font-weight:600">€0,00</span></div>
+    
+    <div class="res-line"><span style="color:var(--text2)">Già prelevato</span><span style="color:var(--red-mid)">− €0,00</span></div>
+    <div class="res-line"><span style="color:var(--text2)">Quota spese a carico</span><span style="color:var(--orange-mid)">− €0,00</span></div>
+    <div class="res-line" style="border-top:1px solid var(--border2);margin-top:4px;padding-top:10px"><span style="font-weight:700">Residuo disponibile</span><span style="color:var(--green-mid);font-size:22px;font-weight:700">€0,00</span></div>
+  </div><div class="residuo-card">
+    <div class="residuo-header"><div class="avatar" style="background:var(--purple-bg);color:var(--purple-mid)">SE</div><div><div style="font-size:15px;font-weight:700">Sergio</div><div style="font-size:11px;color:var(--text3)">Anno 2026</div></div></div>
+    <div class="res-line"><span style="color:var(--text2)">Quota fatture incassate</span><span style="color:var(--teal-mid);font-weight:600">€0,00</span></div>
+    
+    <div class="res-line"><span style="color:var(--text2)">Già prelevato</span><span style="color:var(--red-mid)">− €0,00</span></div>
+    <div class="res-line"><span style="color:var(--text2)">Quota spese a carico</span><span style="color:var(--orange-mid)">− €0,00</span></div>
+    <div class="res-line" style="border-top:1px solid var(--border2);margin-top:4px;padding-top:10px"><span style="font-weight:700">Residuo disponibile</span><span style="color:var(--green-mid);font-size:22px;font-weight:700">€0,00</span></div>
+  </div></div>
   <!-- ULTIME OPERAZIONI -->
   <div class="two-col">
     <div class="card">
       <div class="card-header"><span class="card-title">📄 Ultime fatture emesse</span><button class="btn btn-sm" onclick="go(&#39;fatture&#39;)">Tutte →</button></div>
-      <div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="num">Impon.</th><th>Q.M</th><th>Q.R</th><th>Q.S</th></tr></thead><tbody id="dash-fatt"></tbody></table></div>
+      <div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="num">Impon.</th><th>Q.M</th><th>Q.R</th><th>Q.S</th></tr></thead><tbody id="dash-fatt"><tr>
+    <td>ILINK SRL</td><td class="num">901,50</td>
+    <td class="num" style="color:var(--teal-mid);font-size:12px">€0,00</td>
+    <td class="num" style="color:var(--orange-mid);font-size:12px">€0,00</td>
+    <td class="num" style="color:var(--purple-mid);font-size:12px">€0,00</td>
+  </tr><tr>
+    <td>POWER UP SRL</td><td class="num">5867,50</td>
+    <td class="num" style="color:var(--teal-mid);font-size:12px">€0,00</td>
+    <td class="num" style="color:var(--orange-mid);font-size:12px">€0,00</td>
+    <td class="num" style="color:var(--purple-mid);font-size:12px">€0,00</td>
+  </tr><tr>
+    <td>DISMART SRL</td><td class="num">3276,00</td>
+    <td class="num" style="color:var(--teal-mid);font-size:12px">€0,00</td>
+    <td class="num" style="color:var(--orange-mid);font-size:12px">€0,00</td>
+    <td class="num" style="color:var(--purple-mid);font-size:12px">€0,00</td>
+  </tr><tr>
+    <td>ENOVA SRL</td><td class="num">10.309,00</td>
+    <td class="num" style="color:var(--teal-mid);font-size:12px">€0,00</td>
+    <td class="num" style="color:var(--orange-mid);font-size:12px">€0,00</td>
+    <td class="num" style="color:var(--purple-mid);font-size:12px">€0,00</td>
+  </tr><tr>
+    <td>DISMART SRL</td><td class="num">2901,00</td>
+    <td class="num" style="color:var(--teal-mid);font-size:12px">€0,00</td>
+    <td class="num" style="color:var(--orange-mid);font-size:12px">€0,00</td>
+    <td class="num" style="color:var(--purple-mid);font-size:12px">€0,00</td>
+  </tr></tbody></table></div>
     </div>
     <div class="card">
       <div class="card-header"><span class="card-title">📤 Ultime fatture passive</span><button class="btn btn-sm" onclick="go(&#39;passive&#39;)">Tutte →</button></div>
-      <div class="table-wrap"><table><thead><tr><th>Tipo</th><th>Fornitore/Socio</th><th class="num">Importo</th></tr></thead><tbody id="dash-pass"></tbody></table></div>
+      <div class="table-wrap"><table><thead><tr><th>Tipo</th><th>Fornitore/Socio</th><th class="num">Importo</th></tr></thead><tbody id="dash-pass"><tr class="empty-row"><td colspan="3">Nessuna fattura passiva</td></tr></tbody></table></div>
     </div>
   </div>
 </div>
@@ -379,7 +453,7 @@ select option{background:#FFFFFF;color:#0D1116}
         <div class="field"><label>IVA %</label><select id="ff-iva" onchange="onIvaChange(&#39;ff&#39;)">
           <option value="22">22%</option><option value="10">10%</option><option value="4">4%</option><option value="0">Esente</option>
         </select></div>
-        <div class="field"><label>Mese</label><select id="ff-month"></select></div>
+        <div class="field"><label>Mese</label><select id="ff-month"><option value="0">Gennaio</option><option value="1">Febbraio</option><option value="2">Marzo</option><option value="3">Aprile</option><option value="4">Maggio</option><option value="5" selected="">Giugno</option><option value="6">Luglio</option><option value="7">Agosto</option><option value="8">Settembre</option><option value="9">Ottobre</option><option value="10">Novembre</option><option value="11">Dicembre</option></select></div>
         <div class="field"><label>Banca</label><input id="ff-banca" placeholder="Banca accredito..."></div>
       </div>
       <div class="frow c2">
@@ -440,7 +514,7 @@ select option{background:#FFFFFF;color:#0D1116}
     </div>
     <div class="filter-bar">
       <input placeholder="🔍 Cerca cliente, descrizione..." id="sf-q" oninput="renderFatture()" style="flex:1">
-      <select id="sf-month" onchange="renderFatture()"></select>
+      <select id="sf-month" onchange="renderFatture()"><option value="">Tutti i mesi</option><option value="0">Gennaio</option><option value="1">Febbraio</option><option value="2">Marzo</option><option value="3">Aprile</option><option value="4">Maggio</option><option value="5">Giugno</option><option value="6">Luglio</option><option value="7">Agosto</option><option value="8">Settembre</option><option value="9">Ottobre</option><option value="10">Novembre</option><option value="11">Dicembre</option></select>
       <select id="sf-boni" onchange="renderFatture()">
         <option value="">Tutte</option><option value="1">Solo incassate</option><option value="0">Solo da incassare</option>
       </select>
@@ -530,7 +604,7 @@ select option{background:#FFFFFF;color:#0D1116}
         <div class="field"><label>IVA %</label><select id="fp-iva" onchange="onIvaChange(&#39;fp&#39;)">
           <option value="22">22%</option><option value="10">10%</option><option value="4">4%</option><option value="0">Esente/N.A.</option>
         </select></div>
-        <div class="field"><label>Mese</label><select id="fp-month"></select></div>
+        <div class="field"><label>Mese</label><select id="fp-month"><option value="0">Gennaio</option><option value="1">Febbraio</option><option value="2">Marzo</option><option value="3">Aprile</option><option value="4">Maggio</option><option value="5" selected="">Giugno</option><option value="6">Luglio</option><option value="7">Agosto</option><option value="8">Settembre</option><option value="9">Ottobre</option><option value="10">Novembre</option><option value="11">Dicembre</option></select></div>
         <div class="field"><label>Banca</label><input id="fp-banca" placeholder="Banca..."></div>
       </div>
       <div class="frow c2">
@@ -596,7 +670,7 @@ select option{background:#FFFFFF;color:#0D1116}
         <option value="agente">Fattura agente</option>
         <option value="spesa">Spesa societaria</option>
       </select>
-      <select id="sp-month" onchange="renderPassive()"></select>
+      <select id="sp-month" onchange="renderPassive()"><option value="">Tutti i mesi</option><option value="0">Gennaio</option><option value="1">Febbraio</option><option value="2">Marzo</option><option value="3">Aprile</option><option value="4">Maggio</option><option value="5">Giugno</option><option value="6">Luglio</option><option value="7">Agosto</option><option value="8">Settembre</option><option value="9">Ottobre</option><option value="10">Novembre</option><option value="11">Dicembre</option></select>
       <select id="sp-pag" onchange="renderPassive()">
         <option value="">Pagate/non pagate</option><option value="1">Solo pagate</option><option value="0">Solo non pagate</option>
       </select>
@@ -702,7 +776,7 @@ select option{background:#FFFFFF;color:#0D1116}
       </div>
       <div style="background:var(--bg2);border-radius:var(--radius);padding:14px;margin-bottom:16px">
         <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">📌 Stato sincronizzazione</div>
-        <div id="sync-status" style="font-size:12px;color:var(--text3)">—</div>
+        <div id="sync-status" style="font-size:12px;color:var(--text3)">⚠️ Errore: Could not find the table 'public.passive' in the schema cache</div>
       </div>
       <div style="padding-top:16px;border-top:0.5px solid var(--border)">
         <button class="btn btn-danger btn-sm" onclick="if(confirm(&#39;Cancellare TUTTI i dati? Azione irreversibile.&#39;))clearAll()">🗑 Cancella tutti i dati</button>
@@ -714,7 +788,7 @@ select option{background:#FFFFFF;color:#0D1116}
 </main>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast">⚠️ Errore connessione</div>
 
 <script>
 // ===== CONFIG =====
@@ -731,7 +805,7 @@ const fmtK = v => {const a=Math.abs(v),s=v<0?'−':'';return s+'€'+(a>=100000?
 let yr = 2026, mo = new Date().getMonth();
 let db = {fatture:[], passive:[], tasse:[]};
 let chartInst = null;
-const sb = window.supabase.createClient(SB_URL, SB_KEY);
+const sb = supabase.createClient(SB_URL, SB_KEY);
 
 // ===== PIN =====
 let pinBuf = '';
