@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- saved from url=(0061)file:///C:/Users/matti/Downloads/Evolvia_Gestionale_v2_8.html -->
+<!-- saved from url=(0061)file:///C:/Users/matti/Downloads/Evolvia_Gestionale_v2_9.html -->
 <html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Evolvia — Gestionale v2</title>
 <script src="./index_files/xlsx.full.min.js.download"></script>
 <script src="./index_files/chart.js.download"></script>
-<script src="./index_files/supabase.min.js.download"></script>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -240,16 +240,16 @@ select option{background:#FFFFFF;color:#0D1116}
 <body>
 
 <!-- PIN SCREEN -->
-<div id="pin-screen" style="display: none;">
+<div id="pin-screen">
   <div class="pin-card">
     <div style="width:70px;height:70px;border-radius:50%;background:var(--teal-bg);border:2px solid var(--teal);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:28px;">📊</div>
     <div class="pin-sub">Gestionale Evolvia</div>
     <div class="pin-prompt">Inserisci il PIN per accedere</div>
     <div class="pin-dots" id="pin-dots">
-      <div class="pin-dot filled" id="d0"></div>
-      <div class="pin-dot filled" id="d1"></div>
-      <div class="pin-dot filled" id="d2"></div>
-      <div class="pin-dot filled" id="d3"></div>
+      <div class="pin-dot" id="d0"></div>
+      <div class="pin-dot" id="d1"></div>
+      <div class="pin-dot" id="d2"></div>
+      <div class="pin-dot" id="d3"></div>
     </div>
     <div class="pin-keypad">
       <button class="pin-key" onclick="pinKey(&#39;1&#39;)">1</button>
@@ -269,7 +269,7 @@ select option{background:#FFFFFF;color:#0D1116}
 </div>
 
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
-<div class="shell" id="app" style="display: flex;">
+<div class="shell" id="app" style="display:none">
 
 <div class="mobile-topbar">
   <button class="hamburger" id="hamburger-btn" type="button">☰</button>
@@ -288,9 +288,9 @@ select option{background:#FFFFFF;color:#0D1116}
     </div>
   </div>
   <div class="nav-section">Principale</div>
-  <div class="nav-item" onclick="go(&#39;dashboard&#39;)">📊 Dashboard</div>
+  <div class="nav-item active" onclick="go(&#39;dashboard&#39;)">📊 Dashboard</div>
   <div class="nav-item" onclick="go(&#39;fatture&#39;)">📄 Fatture emesse</div>
-  <div class="nav-item active" onclick="go(&#39;passive&#39;)">📤 Fatture passive</div>
+  <div class="nav-item" onclick="go(&#39;passive&#39;)">📤 Fatture passive</div>
   <div class="nav-section">Analisi</div>
   <div class="nav-item" onclick="go(&#39;tasse&#39;)">🧾 Tasse &amp; F24</div>
   <div class="nav-item" onclick="go(&#39;report&#39;)">📈 Report annuale</div>
@@ -298,7 +298,7 @@ select option{background:#FFFFFF;color:#0D1116}
   <div class="nav-item" onclick="go(&#39;esporta&#39;)">⬇ Esporta dati</div>
   <div class="sidebar-footer">
     <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Anno</div>
-    <div class="year-row" id="year-row"><button class="year-btn " onclick="setYear(2024)">2024</button><button class="year-btn " onclick="setYear(2025)">2025</button><button class="year-btn active" onclick="setYear(2026)">2026</button><button class="year-btn " onclick="setYear(2027)">2027</button></div>
+    <div class="year-row" id="year-row"></div>
   </div>
 </aside>
 
@@ -306,143 +306,49 @@ select option{background:#FFFFFF;color:#0D1116}
 <main class="main">
 
 <!-- ===== DASHBOARD ===== -->
-<div class="page" id="page-dashboard">
+<div class="page active" id="page-dashboard">
   <div class="page-header">
     <div>
-      <div class="page-title" id="dash-title">Dashboard — Giugno</div>
-      <div class="page-sub" id="dash-sub">2026</div>
+      <div class="page-title" id="dash-title">Dashboard</div>
+      <div class="page-sub" id="dash-sub"></div>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
       <button class="btn btn-ghost btn-sm" onclick="prevMonth()">‹</button>
-      <span id="month-label" style="font-size:15px;font-weight:600;min-width:130px;text-align:center">Giugno 2026</span>
+      <span id="month-label" style="font-size:15px;font-weight:600;min-width:130px;text-align:center"></span>
       <button class="btn btn-ghost btn-sm" onclick="nextMonth()">›</button>
     </div>
   </div>
-  <div class="metrics" id="dash-metrics">
-    <div class="metric"><div class="metric-label">Fatturato mese</div><div class="metric-value mv-blue">€0,00</div><div class="metric-sub">0 fatture</div></div>
-    <div class="metric"><div class="metric-label">Uscite mese</div><div class="metric-value mv-red">€8901,11</div></div>
-    <div class="metric"><div class="metric-label">Margine mese</div><div class="metric-value mv-red">−€8901,11</div></div>
-    <div class="metric"><div class="metric-label">Comp. agenti mese</div><div class="metric-value mv-amber">€0,00</div></div>
-    <div class="metric"><div class="metric-label">Da incassare</div><div class="metric-value mv-amber">€0,00</div></div>
-    <div class="metric"><div class="metric-label">IVA debito mese</div><div class="metric-value mv-red">€0,00</div></div>
-    <div class="metric"><div class="metric-label">IVA credito mese</div><div class="metric-value mv-green">€1366,27</div></div>
-  </div>
+  <div class="metrics" id="dash-metrics"></div>
   <!-- IVA TRIMESTRALE -->
   <div class="card" style="margin-bottom:16px">
     <div class="card-header">
-      <span class="card-title">🧾 IVA trimestrale — <span id="iva-year-label">2026</span></span>
+      <span class="card-title">🧾 IVA trimestrale — <span id="iva-year-label"></span></span>
     </div>
     <div style="padding:16px">
-      <div class="iva-grid" id="iva-trimestrale"><div class="iva-trim">
-      <div class="iva-trim-label">1° Trim (Gen-Mar)</div>
-      <div class="iva-trim-value" style="color:var(--red)">€7532,19</div>
-      <div class="iva-trim-sub">Da versare</div>
-      <div style="margin-top:8px;font-size:11px;color:var(--text3)">Debito: €10.5k<br>Credito: €2989,59</div>
-    </div><div class="iva-trim">
-      <div class="iva-trim-label">2° Trim (Apr-Giu)</div>
-      <div class="iva-trim-value" style="color:var(--red)">€6600,23</div>
-      <div class="iva-trim-sub">Da versare</div>
-      <div style="margin-top:8px;font-size:11px;color:var(--text3)">Debito: €16.3k<br>Credito: €9730,42</div>
-    </div><div class="iva-trim">
-      <div class="iva-trim-label">3° Trim (Lug-Set)</div>
-      <div class="iva-trim-value" style="color:var(--red)">€0,00</div>
-      <div class="iva-trim-sub">Da versare</div>
-      <div style="margin-top:8px;font-size:11px;color:var(--text3)">Debito: €0,00<br>Credito: €0,00</div>
-    </div><div class="iva-trim">
-      <div class="iva-trim-label">4° Trim (Ott-Dic)</div>
-      <div class="iva-trim-value" style="color:var(--red)">€0,00</div>
-      <div class="iva-trim-sub">Da versare</div>
-      <div style="margin-top:8px;font-size:11px;color:var(--text3)">Debito: €0,00<br>Credito: €0,00</div>
-    </div></div>
+      <div class="iva-grid" id="iva-trimestrale"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div style="background:var(--bg2);border-radius:var(--radius);padding:12px">
           <div style="font-size:11px;color:var(--text3);margin-bottom:4px">IVA A DEBITO ANNO</div>
-          <div style="font-size:20px;font-weight:700;color:var(--red)" id="iva-tot-debito">€26.9k</div>
+          <div style="font-size:20px;font-weight:700;color:var(--red)" id="iva-tot-debito">—</div>
         </div>
         <div style="background:var(--bg2);border-radius:var(--radius);padding:12px">
           <div style="font-size:11px;color:var(--text3);margin-bottom:4px">IVA A CREDITO ANNO</div>
-          <div style="font-size:20px;font-weight:700;color:var(--green)" id="iva-tot-credito">€12.7k</div>
+          <div style="font-size:20px;font-weight:700;color:var(--green)" id="iva-tot-credito">—</div>
         </div>
       </div>
     </div>
   </div>
   <!-- RESIDUI SOCI -->
-  <div class="three-col" style="margin-bottom:16px" id="dash-residui"><div class="residuo-card">
-    <div class="residuo-header"><div class="avatar" style="background:var(--teal-bg);color:var(--teal-mid)">MA</div><div><div style="font-size:15px;font-weight:700">Mattia</div><div style="font-size:11px;color:var(--text3)">Anno 2026</div></div></div>
-    <div class="res-line"><span style="color:var(--text2)">Quota fatture incassate</span><span style="color:var(--teal-mid);font-weight:600">€76.0k</span></div>
-    <div class="res-line"><span style="color:var(--text3);font-size:12px">↳ Da incassare ancora</span><span style="color:var(--text3);font-size:12px">€5616,50</span></div>
-    <div class="res-line"><span style="color:var(--text2)">Già prelevato</span><span style="color:var(--red-mid)">− €46.1k</span></div>
-    <div class="res-line"><span style="color:var(--text2)">Quota spese a carico</span><span style="color:var(--orange-mid)">− €17.6k</span></div>
-    <div class="res-line" style="border-top:1px solid var(--border2);margin-top:4px;padding-top:10px"><span style="font-weight:700">Residuo disponibile</span><span style="color:var(--green-mid);font-size:22px;font-weight:700">€12.2k</span></div>
-  </div><div class="residuo-card">
-    <div class="residuo-header"><div class="avatar" style="background:var(--orange-bg);color:var(--orange-mid)">RI</div><div><div style="font-size:15px;font-weight:700">Riccardo</div><div style="font-size:11px;color:var(--text3)">Anno 2026</div></div></div>
-    <div class="res-line"><span style="color:var(--text2)">Quota fatture incassate</span><span style="color:var(--teal-mid);font-weight:600">€19.0k</span></div>
-    
-    <div class="res-line"><span style="color:var(--text2)">Già prelevato</span><span style="color:var(--red-mid)">− €16.1k</span></div>
-    <div class="res-line"><span style="color:var(--text2)">Quota spese a carico</span><span style="color:var(--orange-mid)">− €13.8k</span></div>
-    <div class="res-line" style="border-top:1px solid var(--border2);margin-top:4px;padding-top:10px"><span style="font-weight:700">Residuo disponibile</span><span style="color:var(--red-mid);font-size:22px;font-weight:700">−€10.8k</span></div>
-  </div><div class="residuo-card">
-    <div class="residuo-header"><div class="avatar" style="background:var(--purple-bg);color:var(--purple-mid)">SE</div><div><div style="font-size:15px;font-weight:700">Sergio</div><div style="font-size:11px;color:var(--text3)">Anno 2026</div></div></div>
-    <div class="res-line"><span style="color:var(--text2)">Quota fatture incassate</span><span style="color:var(--teal-mid);font-weight:600">€8898,50</span></div>
-    
-    <div class="res-line"><span style="color:var(--text2)">Già prelevato</span><span style="color:var(--red-mid)">− €0,00</span></div>
-    <div class="res-line"><span style="color:var(--text2)">Quota spese a carico</span><span style="color:var(--orange-mid)">− €0,00</span></div>
-    <div class="res-line" style="border-top:1px solid var(--border2);margin-top:4px;padding-top:10px"><span style="font-weight:700">Residuo disponibile</span><span style="color:var(--green-mid);font-size:22px;font-weight:700">€8898,50</span></div>
-  </div></div>
+  <div class="three-col" style="margin-bottom:16px" id="dash-residui"></div>
   <!-- ULTIME OPERAZIONI -->
   <div class="two-col">
     <div class="card">
       <div class="card-header"><span class="card-title">📄 Ultime fatture emesse</span><button class="btn btn-sm" onclick="go(&#39;fatture&#39;)">Tutte →</button></div>
-      <div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="num">Impon.</th><th>Q.M</th><th>Q.R</th><th>Q.S</th></tr></thead><tbody id="dash-fatt"><tr>
-    <td>ILINK SRL</td><td class="num">13.060,00</td>
-    <td class="num" style="color:var(--teal-mid);font-size:12px">€5670,00</td>
-    <td class="num" style="color:var(--orange-mid);font-size:12px">€3240,00</td>
-    <td class="num" style="color:var(--purple-mid);font-size:12px">€0,00</td>
-  </tr><tr>
-    <td>ENOVA SRL</td><td class="num">10.309,00</td>
-    <td class="num" style="color:var(--teal-mid);font-size:12px">€6230,00</td>
-    <td class="num" style="color:var(--orange-mid);font-size:12px">€3299,00</td>
-    <td class="num" style="color:var(--purple-mid);font-size:12px">€0,00</td>
-  </tr><tr>
-    <td>MASTER GROUP SRL</td><td class="num">4715,00</td>
-    <td class="num" style="color:var(--teal-mid);font-size:12px">€4715,00</td>
-    <td class="num" style="color:var(--orange-mid);font-size:12px">€0,00</td>
-    <td class="num" style="color:var(--purple-mid);font-size:12px">€0,00</td>
-  </tr><tr>
-    <td>B-AGENZIE DI Endemione Beatrice</td><td class="num">490,00</td>
-    <td class="num" style="color:var(--teal-mid);font-size:12px">€490,00</td>
-    <td class="num" style="color:var(--orange-mid);font-size:12px">€0,00</td>
-    <td class="num" style="color:var(--purple-mid);font-size:12px">€0,00</td>
-  </tr><tr>
-    <td>DISMART SRL</td><td class="num">1569,50</td>
-    <td class="num" style="color:var(--teal-mid);font-size:12px">€0,00</td>
-    <td class="num" style="color:var(--orange-mid);font-size:12px">€80,00</td>
-    <td class="num" style="color:var(--purple-mid);font-size:12px">€1489,50</td>
-  </tr></tbody></table></div>
+      <div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="num">Impon.</th><th>Q.M</th><th>Q.R</th><th>Q.S</th></tr></thead><tbody id="dash-fatt"></tbody></table></div>
     </div>
     <div class="card">
       <div class="card-header"><span class="card-title">📤 Ultime fatture passive</span><button class="btn btn-sm" onclick="go(&#39;passive&#39;)">Tutte →</button></div>
-      <div class="table-wrap"><table><thead><tr><th>Tipo</th><th>Fornitore/Socio</th><th class="num">Importo</th></tr></thead><tbody id="dash-pass"><tr>
-    <td><span class="badge tipo-agente">Agente</span></td>
-    <td>SAT DI D'ELIA SERGIO</td>
-    <td class="num" style="color:var(--amber)">3276,00</td>
-  </tr><tr>
-    <td><span class="badge tipo-spesa">Spesa</span></td>
-    <td>ANTHROPIC</td>
-    <td class="num" style="color:var(--amber)">28,06</td>
-  </tr><tr>
-    <td><span class="badge tipo-spesa">Spesa</span></td>
-    <td>META</td>
-    <td class="num" style="color:var(--amber)">32,02</td>
-  </tr><tr>
-    <td><span class="badge tipo-spesa">Spesa</span></td>
-    <td>META</td>
-    <td class="num" style="color:var(--amber)">26,20</td>
-  </tr><tr>
-    <td><span class="badge tipo-spesa">Spesa</span></td>
-    <td>RIZZO ADINO GIUSEPPE</td>
-    <td class="num" style="color:var(--amber)">90,00</td>
-  </tr></tbody></table></div>
+      <div class="table-wrap"><table><thead><tr><th>Tipo</th><th>Fornitore/Socio</th><th class="num">Importo</th></tr></thead><tbody id="dash-pass"></tbody></table></div>
     </div>
   </div>
 </div>
@@ -473,7 +379,7 @@ select option{background:#FFFFFF;color:#0D1116}
         <div class="field"><label>IVA %</label><select id="ff-iva" onchange="onIvaChange(&#39;ff&#39;)">
           <option value="22">22%</option><option value="10">10%</option><option value="4">4%</option><option value="0">Esente</option>
         </select></div>
-        <div class="field"><label>Mese</label><select id="ff-month"><option value="0">Gennaio</option><option value="1">Febbraio</option><option value="2">Marzo</option><option value="3">Aprile</option><option value="4">Maggio</option><option value="5" selected="">Giugno</option><option value="6">Luglio</option><option value="7">Agosto</option><option value="8">Settembre</option><option value="9">Ottobre</option><option value="10">Novembre</option><option value="11">Dicembre</option></select></div>
+        <div class="field"><label>Mese</label><select id="ff-month"></select></div>
         <div class="field"><label>Banca</label><input id="ff-banca" placeholder="Banca accredito..."></div>
       </div>
       <div class="frow c2">
@@ -534,11 +440,11 @@ select option{background:#FFFFFF;color:#0D1116}
     </div>
     <div class="filter-bar">
       <input placeholder="🔍 Cerca cliente, descrizione..." id="sf-q" oninput="renderFatture()" style="flex:1">
-      <select id="sf-month" onchange="renderFatture()"><option value="">Tutti i mesi</option><option value="0">Gennaio</option><option value="1">Febbraio</option><option value="2">Marzo</option><option value="3">Aprile</option><option value="4">Maggio</option><option value="5">Giugno</option><option value="6">Luglio</option><option value="7">Agosto</option><option value="8">Settembre</option><option value="9">Ottobre</option><option value="10">Novembre</option><option value="11">Dicembre</option></select>
+      <select id="sf-month" onchange="renderFatture()"></select>
       <select id="sf-boni" onchange="renderFatture()">
         <option value="">Tutte</option><option value="1">Solo incassate</option><option value="0">Solo da incassare</option>
       </select>
-      <span id="sf-count" style="font-size:12px;color:var(--text3);margin-left:auto">25 fatture</span>
+      <span id="sf-count" style="font-size:12px;color:var(--text3);margin-left:auto"></span>
     </div>
     <div class="table-wrap"><table>
       <thead><tr>
@@ -549,439 +455,14 @@ select option{background:#FFFFFF;color:#0D1116}
         <th class="num">Agenti</th>
         <th>Boni.</th><th>Drive</th><th>Note</th><th></th>
       </tr></thead>
-      <tbody id="tb-fatture"><tr>
-        <td>25/2026</td><td>ILINK SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI ILLUMIA MARZO</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">901,50</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">198,33</td>
-        <td class="num" style="font-weight:600">1099,83</td>
-        <td>Mag</td>
-        <td class="num"><span style="color:var(--teal-mid)">901,50</span><br><span style="font-size:11px;color:var(--text3)">100.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="no-icon">○</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 01/06/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780334681344)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780334681344)">✕</button></div></td>
-      </tr><tr>
-        <td>24/2026</td><td>DISMART SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI SKY MARZO</td>
-        <td><span class="badge bg-gray">Internet</span></td>
-        <td class="num">3276,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">720,72</td>
-        <td class="num" style="font-weight:600">3996,72</td>
-        <td>Mag</td>
-        <td class="num"><span style="color:var(--teal-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 26/05/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780334108596)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780334108596)">✕</button></div></td>
-      </tr><tr>
-        <td>23/2026</td><td>POWER UP SRL</td>
-        <td>SEGNALAZIONE CLIENTI MESE DI APRILE 2026</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">5867,50</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">1290,85</td>
-        <td class="num" style="font-weight:600">7158,35</td>
-        <td>Mag</td>
-        <td class="num"><span style="color:var(--teal-mid)">5867,50</span><br><span style="font-size:11px;color:var(--text3)">100.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 22/05/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780334000944)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780334000944)">✕</button></div></td>
-      </tr><tr>
-        <td>22/2026</td><td>ENOVA SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI IREN MARZO</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">10.309,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">2267,98</td>
-        <td class="num" style="font-weight:600">12.576,98</td>
-        <td>Mag</td>
-        <td class="num"><span style="color:var(--teal-mid)">6230,00</span><br><span style="font-size:11px;color:var(--text3)">65.4%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">3299,00</span><br><span style="font-size:11px;color:var(--text3)">34.6%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px"><span style="font-size:11px;color:var(--text3)">Filippo Pagliara: €780,00</span></td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 19/05/2026 - 61.94 MATTIA - 33.51 RICCARDO - 4.55 SPESE</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780333952417)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780333952417)">✕</button></div></td>
-      </tr><tr>
-        <td>21/2026</td><td>DISMART SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI SKY MARZO</td>
-        <td><span class="badge bg-gray">Internet</span></td>
-        <td class="num">2901,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">638,22</td>
-        <td class="num" style="font-weight:600">3539,22</td>
-        <td>Mag</td>
-        <td class="num"><span style="color:var(--teal-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 18/05/2026 - SERGIO</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780333622175)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780333622175)">✕</button></div></td>
-      </tr><tr>
-        <td>20/2026</td><td>ILINK SRL</td>
-        <td>ASSISTENZA SEGNALAZIONI LEADS COMPARASEMPLICE RIF. MARZO</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">13.060,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">2873,20</td>
-        <td class="num" style="font-weight:600">15.933,20</td>
-        <td>Mag</td>
-        <td class="num"><span style="color:var(--teal-mid)">5670,00</span><br><span style="font-size:11px;color:var(--text3)">63.6%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">3240,00</span><br><span style="font-size:11px;color:var(--text3)">36.4%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px"><span style="font-size:11px;color:var(--text3)">Lettieri Veronica: €4149,00</span></td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 13/05/2026 - 43.42 MATTIA - 24.81 RICCARDO - 31.77 SPESE</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780333486048)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780333486048)">✕</button></div></td>
-      </tr><tr>
-        <td>19/2026</td><td>MASTER GROUP SRL</td>
-        <td>PROFORMA #206046 - PROFORMA #203734</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">4715,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">1037,30</td>
-        <td class="num" style="font-weight:600">5752,30</td>
-        <td>Mag</td>
-        <td class="num"><span style="color:var(--teal-mid)">4715,00</span><br><span style="font-size:11px;color:var(--text3)">100.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="no-icon">○</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 07/05/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780332989398)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780332989398)">✕</button></div></td>
-      </tr><tr>
-        <td>18/2026</td><td>B-AGENZIE DI Endemione Beatrice</td>
-        <td>SEGNALAZIONE CLIENTI E SUPPORTO VENDITE FEBBRAIO 2026</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">490,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">107,80</td>
-        <td class="num" style="font-weight:600">597,80</td>
-        <td>Mag</td>
-        <td class="num"><span style="color:var(--teal-mid)">490,00</span><br><span style="font-size:11px;color:var(--text3)">100.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 07/05/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780332829020)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780332829020)">✕</button></div></td>
-      </tr><tr>
-        <td>17/2026</td><td>DISMART SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI SKY FEBBRAIO</td>
-        <td><span class="badge bg-gray">Internet</span></td>
-        <td class="num">1569,50</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">345,29</td>
-        <td class="num" style="font-weight:600">1914,79</td>
-        <td>Apr</td>
-        <td class="num"><span style="color:var(--teal-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">80,00</span><br><span style="font-size:11px;color:var(--text3)">5.1%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">1489,50</span><br><span style="font-size:11px;color:var(--text3)">94.9%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 27/04/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780332711590)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780332711590)">✕</button></div></td>
-      </tr><tr>
-        <td>16/2026</td><td>ENOVA SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI IREN FEBBRAIO</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">19.140,50</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">4210,91</td>
-        <td class="num" style="font-weight:600">23.351,41</td>
-        <td>Apr</td>
-        <td class="num"><span style="color:var(--teal-mid)">12.212,00</span><br><span style="font-size:11px;color:var(--text3)">69.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">5488,00</span><br><span style="font-size:11px;color:var(--text3)">31.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px"><span style="font-size:11px;color:var(--text3)">AF ADVISOR: €540,00</span><br><span style="font-size:11px;color:var(--text3)">PAGLIARA FILIPPO: €900,00</span></td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 24/04/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780332657946)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780332657946)">✕</button></div></td>
-      </tr><tr>
-        <td>15/2026</td><td>DISMART SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI SKY FEBBRAIO</td>
-        <td><span class="badge bg-gray">Internet</span></td>
-        <td class="num">3010,23</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">662,25</td>
-        <td class="num" style="font-weight:600">3672,48</td>
-        <td>Apr</td>
-        <td class="num"><span style="color:var(--teal-mid)">3010,00</span><br><span style="font-size:11px;color:var(--text3)">100.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 20/04/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780332292690)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780332292690)">✕</button></div></td>
-      </tr><tr>
-        <td>14/2026</td><td>ILINK SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI ILLUMIA FEBBRAIO</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">2565,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">564,30</td>
-        <td class="num" style="font-weight:600">3129,30</td>
-        <td>Apr</td>
-        <td class="num"><span style="color:var(--teal-mid)">2565,00</span><br><span style="font-size:11px;color:var(--text3)">100.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 20/04/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780332220134)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780332220134)">✕</button></div></td>
-      </tr><tr>
-        <td>13/2026</td><td>POWER UP SRL</td>
-        <td>ASSISTENZA SEGNALAZIONI CLIENTI MESE DI MARZO</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">6130,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">1348,60</td>
-        <td class="num" style="font-weight:600">7478,60</td>
-        <td>Apr</td>
-        <td class="num"><span style="color:var(--teal-mid)">6130,00</span><br><span style="font-size:11px;color:var(--text3)">100.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 20/04/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780332153374)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780332153374)">✕</button></div></td>
-      </tr><tr>
-        <td>12/2026</td><td>ILINK SRL</td>
-        <td>ASSISTENZA SEGNALAZIONI LEADS COMPARASEMPLICE RIF. FEBBRAIO</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">295,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">64,90</td>
-        <td class="num" style="font-weight:600">359,90</td>
-        <td>Apr</td>
-        <td class="num"><span style="color:var(--teal-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">295,00</span><br><span style="font-size:11px;color:var(--text3)">100.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 20/04/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780331958373)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780331958373)">✕</button></div></td>
-      </tr><tr>
-        <td>11/2026</td><td>DISMART SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI SKY</td>
-        <td><span class="badge bg-gray">Internet</span></td>
-        <td class="num">7112,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">1564,64</td>
-        <td class="num" style="font-weight:600">8676,64</td>
-        <td>Mar</td>
-        <td class="num"><span style="color:var(--teal-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">7112,00</span><br><span style="font-size:11px;color:var(--text3)">100.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 24/03/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780331842733)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780331842733)">✕</button></div></td>
-      </tr><tr>
-        <td>10/2026</td><td>DISMART SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI SKY</td>
-        <td><span class="badge bg-gray">Internet</span></td>
-        <td class="num">297,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">65,34</td>
-        <td class="num" style="font-weight:600">362,34</td>
-        <td>Mar</td>
-        <td class="num"><span style="color:var(--teal-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">297,00</span><br><span style="font-size:11px;color:var(--text3)">100.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 24/03/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780331775406)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780331775406)">✕</button></div></td>
-      </tr><tr>
-        <td>09/2026</td><td>DISMART SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI SKY</td>
-        <td><span class="badge bg-gray">Internet</span></td>
-        <td class="num">85,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">18,70</td>
-        <td class="num" style="font-weight:600">103,70</td>
-        <td>Mar</td>
-        <td class="num"><span style="color:var(--teal-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">85,00</span><br><span style="font-size:11px;color:var(--text3)">100.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 24/03/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780331670890)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780331670890)">✕</button></div></td>
-      </tr><tr>
-        <td>08/2026</td><td>POWER UP SRL</td>
-        <td>SEGNALAZIONE CLIENTI MESE DI FEBBRAIO 2026</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">2090,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">459,80</td>
-        <td class="num" style="font-weight:600">2549,80</td>
-        <td>Mar</td>
-        <td class="num"><span style="color:var(--teal-mid)">2090,00</span><br><span style="font-size:11px;color:var(--text3)">100.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 20/03/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780331622644)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780331622644)">✕</button></div></td>
-      </tr><tr>
-        <td>07/2026</td><td>ENOVA SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI IREN - GENNAIO 2026</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">15.082,50</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">3318,15</td>
-        <td class="num" style="font-weight:600">18.400,65</td>
-        <td>Mar</td>
-        <td class="num"><span style="color:var(--teal-mid)">12.082,00</span><br><span style="font-size:11px;color:var(--text3)">80.1%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">3000,50</span><br><span style="font-size:11px;color:var(--text3)">19.9%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 20/03/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780331568834)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780331568834)">✕</button></div></td>
-      </tr><tr>
-        <td>06/2026</td><td>ILINK SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI COMPARASEMPLICE - GENNAIO 2026</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">1435,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">315,70</td>
-        <td class="num" style="font-weight:600">1750,70</td>
-        <td>Mar</td>
-        <td class="num"><span style="color:var(--teal-mid)">445,00</span><br><span style="font-size:11px;color:var(--text3)">31.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">990,00</span><br><span style="font-size:11px;color:var(--text3)">69.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 13/03/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780331435348)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780331435348)">✕</button></div></td>
-      </tr><tr>
-        <td>05/2026</td><td>POWER UP SRL</td>
-        <td>SEGNALAZIONE CLIENTI MESE DI GENNAIO 2026</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">890,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">195,80</td>
-        <td class="num" style="font-weight:600">1085,80</td>
-        <td>Feb</td>
-        <td class="num"><span style="color:var(--teal-mid)">890,00</span><br><span style="font-size:11px;color:var(--text3)">100.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 24/02/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780331231347)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780331231347)">✕</button></div></td>
-      </tr><tr>
-        <td>04/2026</td><td>ENOVA SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI IREN</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">8242,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">1813,24</td>
-        <td class="num" style="font-weight:600">10.055,24</td>
-        <td>Feb</td>
-        <td class="num"><span style="color:var(--teal-mid)">5699,50</span><br><span style="font-size:11px;color:var(--text3)">69.2%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">2542,50</span><br><span style="font-size:11px;color:var(--text3)">30.8%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 19/02/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780331128693)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780331128693)">✕</button></div></td>
-      </tr><tr>
-        <td>03/2026</td><td>DISMART SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI VODAFONE - TIM BUSINESS</td>
-        <td><span class="badge bg-gray">Internet</span></td>
-        <td class="num">1873,77</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">412,23</td>
-        <td class="num" style="font-weight:600">2286,00</td>
-        <td>Feb</td>
-        <td class="num"><span style="color:var(--teal-mid)">1873,77</span><br><span style="font-size:11px;color:var(--text3)">100.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 16/02/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780330903390)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780330903390)">✕</button></div></td>
-      </tr><tr>
-        <td>02/2026</td><td>ENOVA SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI EGEA</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">10.349,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">2276,78</td>
-        <td class="num" style="font-weight:600">12.625,78</td>
-        <td>Feb</td>
-        <td class="num"><span style="color:var(--teal-mid)">10.349,00</span><br><span style="font-size:11px;color:var(--text3)">100.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 04/02/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780330842137)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780330842137)">✕</button></div></td>
-      </tr><tr>
-        <td>01/2026</td><td>ILINK SRL</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI COMPARASEMPLICE</td>
-        <td><span class="badge bg-gray">Luce/Gas</span></td>
-        <td class="num">370,00</td>
-        <td>22%</td>
-        <td class="num" style="color:var(--text2)">81,40</td>
-        <td class="num" style="font-weight:600">451,40</td>
-        <td>Feb</td>
-        <td class="num"><span style="color:var(--teal-mid)">370,00</span><br><span style="font-size:11px;color:var(--text3)">100.0%</span></td>
-        <td class="num"><span style="color:var(--orange-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td class="num"><span style="color:var(--purple-mid)">0,00</span><br><span style="font-size:11px;color:var(--text3)">0.0%</span></td>
-        <td style="font-size:12px;min-width:120px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">EMESSA IL 04/02/2026</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editFattura(1780330764413)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;fatture&#39;,1780330764413)">✕</button></div></td>
-      </tr></tbody>
-      <tfoot><tr id="tf-fatture" class="tfoot"><td colspan="4">Totale (25)</td><td class="num">122.056,50</td><td></td><td class="num"></td><td class="num">148.908,93</td><td></td><td class="num" style="color:var(--teal-mid)">81.590,27</td><td class="num" style="color:var(--orange-mid)">19.020,00</td><td class="num" style="color:var(--purple-mid)">8898,50</td><td class="num" style="color:var(--amber)">6369,00</td><td colspan="4"></td></tr></tfoot>
+      <tbody id="tb-fatture"></tbody>
+      <tfoot><tr id="tf-fatture" class="tfoot"></tr></tfoot>
     </table></div>
   </div>
 </div>
 
 <!-- ===== FATTURE PASSIVE ===== -->
-<div class="page active" id="page-passive">
+<div class="page" id="page-passive">
   <div class="page-header">
     <div><div class="page-title">Fatture Passive</div><div class="page-sub">Fatture soci, agenti e spese societarie</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
@@ -1049,7 +530,7 @@ select option{background:#FFFFFF;color:#0D1116}
         <div class="field"><label>IVA %</label><select id="fp-iva" onchange="onIvaChange(&#39;fp&#39;)">
           <option value="22">22%</option><option value="10">10%</option><option value="4">4%</option><option value="0">Esente/N.A.</option>
         </select></div>
-        <div class="field"><label>Mese</label><select id="fp-month"><option value="0">Gennaio</option><option value="1">Febbraio</option><option value="2">Marzo</option><option value="3">Aprile</option><option value="4">Maggio</option><option value="5" selected="">Giugno</option><option value="6">Luglio</option><option value="7">Agosto</option><option value="8">Settembre</option><option value="9">Ottobre</option><option value="10">Novembre</option><option value="11">Dicembre</option></select></div>
+        <div class="field"><label>Mese</label><select id="fp-month"></select></div>
         <div class="field"><label>Banca</label><input id="fp-banca" placeholder="Banca..."></div>
       </div>
       <div class="frow c2">
@@ -1115,11 +596,11 @@ select option{background:#FFFFFF;color:#0D1116}
         <option value="agente">Fattura agente</option>
         <option value="spesa">Spesa societaria</option>
       </select>
-      <select id="sp-month" onchange="renderPassive()"><option value="">Tutti i mesi</option><option value="0">Gennaio</option><option value="1">Febbraio</option><option value="2">Marzo</option><option value="3">Aprile</option><option value="4">Maggio</option><option value="5">Giugno</option><option value="6">Luglio</option><option value="7">Agosto</option><option value="8">Settembre</option><option value="9">Ottobre</option><option value="10">Novembre</option><option value="11">Dicembre</option></select>
+      <select id="sp-month" onchange="renderPassive()"></select>
       <select id="sp-pag" onchange="renderPassive()">
         <option value="">Pagate/non pagate</option><option value="1">Solo pagate</option><option value="0">Solo non pagate</option>
       </select>
-      <span id="sp-count" style="font-size:12px;color:var(--text3);margin-left:auto">12 record</span>
+      <span id="sp-count" style="font-size:12px;color:var(--text3);margin-left:auto"></span>
     </div>
     <div class="table-wrap"><table>
       <thead><tr>
@@ -1128,248 +609,8 @@ select option{background:#FFFFFF;color:#0D1116}
         <th>Mese</th><th>Q.Mattia</th><th>Q.Riccardo</th><th>Q.Sergio</th>
         <th>Data doc.</th><th>Data pag.</th><th>Pag.</th><th>Banca</th><th>Drive</th><th>Note</th><th></th>
       </tr></thead>
-      <tbody id="tb-passive"><tr>
-        <td><span class="badge tipo-socio">Socio</span></td>
-        <td>MATTIA</td><td>—</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI IREN - FEBBRAIO 2026</td>
-        <td><span class="badge bg-amber">Compenso socio</span></td>
-        <td class="num">1475,50</td>
-        <td>0%</td>
-        <td class="num" style="color:var(--text2)">0,00</td>
-        <td class="num" style="font-weight:600">1475,50</td>
-        <td>Mag</td>
-        <td class="num" style="color:var(--teal-mid)">1475,50</td>
-        <td class="num" style="color:var(--orange-mid)">—</td>
-        <td class="num" style="color:var(--purple-mid)">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td style="font-size:12px">BCC LEVERANO</td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">FATTURA SERGIO</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editPassiva(1781687623769)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;passive&#39;,1781687623769)">✕</button></div></td>
-      </tr><tr>
-        <td><span class="badge tipo-socio">Socio</span></td>
-        <td>MATTIA</td><td>—</td>
-        <td>SEGNALAZIONE CLIENTI - MARZO 2026</td>
-        <td><span class="badge bg-amber">Compenso socio</span></td>
-        <td class="num">9480,00</td>
-        <td>0%</td>
-        <td class="num" style="color:var(--text2)">0,00</td>
-        <td class="num" style="font-weight:600">9480,00</td>
-        <td>Mag</td>
-        <td class="num" style="color:var(--teal-mid)">9480,00</td>
-        <td class="num" style="color:var(--orange-mid)">—</td>
-        <td class="num" style="color:var(--purple-mid)">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td style="font-size:12px">BCC LEVERANO</td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)"></td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editPassiva(1781687623345)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;passive&#39;,1781687623345)">✕</button></div></td>
-      </tr><tr>
-        <td><span class="badge tipo-socio">Socio</span></td>
-        <td>MATTIA</td><td>—</td>
-        <td>ASSISTENZA INSERIEMENTO CONTRATTI FEBBRAIO 2026</td>
-        <td><span class="badge bg-amber">Compenso socio</span></td>
-        <td class="num">4620,00</td>
-        <td>0%</td>
-        <td class="num" style="color:var(--text2)">0,00</td>
-        <td class="num" style="font-weight:600">4620,00</td>
-        <td>Mag</td>
-        <td class="num" style="color:var(--teal-mid)">4620,00</td>
-        <td class="num" style="color:var(--orange-mid)">—</td>
-        <td class="num" style="color:var(--purple-mid)">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td style="font-size:12px">BCC LEVERANO</td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)"></td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editPassiva(1781687623211)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;passive&#39;,1781687623211)">✕</button></div></td>
-      </tr><tr>
-        <td><span class="badge tipo-socio">Socio</span></td>
-        <td>MATTIA</td><td>—</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI IREN - FEBBRAIO 2026</td>
-        <td><span class="badge bg-amber">Compenso socio</span></td>
-        <td class="num">14.436,00</td>
-        <td>0%</td>
-        <td class="num" style="color:var(--text2)">0,00</td>
-        <td class="num" style="font-weight:600">14.436,00</td>
-        <td>Apr</td>
-        <td class="num" style="color:var(--teal-mid)">14.436,00</td>
-        <td class="num" style="color:var(--orange-mid)">—</td>
-        <td class="num" style="color:var(--purple-mid)">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td style="font-size:12px">BCC LEVERANO</td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">FATTURA SERGIO</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editPassiva(1781687623670)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;passive&#39;,1781687623670)">✕</button></div></td>
-      </tr><tr>
-        <td><span class="badge tipo-socio">Socio</span></td>
-        <td>RICCARDO</td><td>—</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI IREN - GENNAIO 2026</td>
-        <td><span class="badge bg-amber">Compenso socio</span></td>
-        <td class="num">2965,00</td>
-        <td>0%</td>
-        <td class="num" style="color:var(--text2)">0,00</td>
-        <td class="num" style="font-weight:600">2965,00</td>
-        <td>Mar</td>
-        <td class="num" style="color:var(--teal-mid)">—</td>
-        <td class="num" style="color:var(--orange-mid)">2965,00</td>
-        <td class="num" style="color:var(--purple-mid)">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td style="font-size:12px">BCC LEVERANO</td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)"></td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editPassiva(1781687624062)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;passive&#39;,1781687624062)">✕</button></div></td>
-      </tr><tr>
-        <td><span class="badge tipo-socio">Socio</span></td>
-        <td>MATTIA</td><td>—</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI IREN - GENNAIO 2026</td>
-        <td><span class="badge bg-amber">Compenso socio</span></td>
-        <td class="num">3840,00</td>
-        <td>0%</td>
-        <td class="num" style="color:var(--text2)">0,00</td>
-        <td class="num" style="font-weight:600">3840,00</td>
-        <td>Mar</td>
-        <td class="num" style="color:var(--teal-mid)">3840,00</td>
-        <td class="num" style="color:var(--orange-mid)">—</td>
-        <td class="num" style="color:var(--purple-mid)">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td style="font-size:12px">BCC LEVERANO</td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">FATTURA SERGIO</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editPassiva(1781687623867)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;passive&#39;,1781687623867)">✕</button></div></td>
-      </tr><tr>
-        <td><span class="badge tipo-socio">Socio</span></td>
-        <td>MATTIA</td><td>—</td>
-        <td>ASSISTENZA INSERIMENTO CONTRATTI IREN - GENNAIO 2026</td>
-        <td><span class="badge bg-amber">Compenso socio</span></td>
-        <td class="num">1040,00</td>
-        <td>0%</td>
-        <td class="num" style="color:var(--text2)">0,00</td>
-        <td class="num" style="font-weight:600">1040,00</td>
-        <td>Mar</td>
-        <td class="num" style="color:var(--teal-mid)">1040,00</td>
-        <td class="num" style="color:var(--orange-mid)">—</td>
-        <td class="num" style="color:var(--purple-mid)">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td style="font-size:12px">BCC LEVERANO</td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)"></td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editPassiva(1781687623093)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;passive&#39;,1781687623093)">✕</button></div></td>
-      </tr><tr>
-        <td><span class="badge tipo-socio">Socio</span></td>
-        <td>RICCARDO</td><td>—</td>
-        <td>INTERMEDIAZIONI RETE AGENZIE IREN</td>
-        <td><span class="badge bg-amber">Compenso socio</span></td>
-        <td class="num">2055,00</td>
-        <td>0%</td>
-        <td class="num" style="color:var(--text2)">0,00</td>
-        <td class="num" style="font-weight:600">2055,00</td>
-        <td>Feb</td>
-        <td class="num" style="color:var(--teal-mid)">—</td>
-        <td class="num" style="color:var(--orange-mid)">2055,00</td>
-        <td class="num" style="color:var(--purple-mid)">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td style="font-size:12px">BCC LEVERANO</td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)"></td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editPassiva(1781687623964)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;passive&#39;,1781687623964)">✕</button></div></td>
-      </tr><tr>
-        <td><span class="badge tipo-socio">Socio</span></td>
-        <td>MATTIA</td><td>—</td>
-        <td>SEGNALAZIONE LEAD IREN</td>
-        <td><span class="badge bg-amber">Compenso socio</span></td>
-        <td class="num">2214,00</td>
-        <td>0%</td>
-        <td class="num" style="color:var(--text2)">0,00</td>
-        <td class="num" style="font-weight:600">2214,00</td>
-        <td>Feb</td>
-        <td class="num" style="color:var(--teal-mid)">2214,00</td>
-        <td class="num" style="color:var(--orange-mid)">—</td>
-        <td class="num" style="color:var(--purple-mid)">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td style="font-size:12px">BCC LEVERANO</td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">FATTURA SERGIO</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editPassiva(1781687623572)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;passive&#39;,1781687623572)">✕</button></div></td>
-      </tr><tr>
-        <td><span class="badge tipo-socio">Socio</span></td>
-        <td>MATTIA</td><td>—</td>
-        <td>SEGNALAZIONE CONTRATTI IREN</td>
-        <td><span class="badge bg-amber">Compenso socio</span></td>
-        <td class="num">3892,00</td>
-        <td>0%</td>
-        <td class="num" style="color:var(--text2)">0,00</td>
-        <td class="num" style="font-weight:600">3892,00</td>
-        <td>Feb</td>
-        <td class="num" style="color:var(--teal-mid)">3892,00</td>
-        <td class="num" style="color:var(--orange-mid)">—</td>
-        <td class="num" style="color:var(--purple-mid)">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td style="font-size:12px">BCC LEVERANO</td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)">FATTURA SERGIO</td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editPassiva(1781687623473)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;passive&#39;,1781687623473)">✕</button></div></td>
-      </tr><tr>
-        <td><span class="badge tipo-socio">Socio</span></td>
-        <td>MATTIA</td><td>—</td>
-        <td>SEGNALAZIONE LEAD IREN</td>
-        <td><span class="badge bg-amber">Compenso socio</span></td>
-        <td class="num">2041,00</td>
-        <td>0%</td>
-        <td class="num" style="color:var(--text2)">0,00</td>
-        <td class="num" style="font-weight:600">2041,00</td>
-        <td>Feb</td>
-        <td class="num" style="color:var(--teal-mid)">2041,00</td>
-        <td class="num" style="color:var(--orange-mid)">—</td>
-        <td class="num" style="color:var(--purple-mid)">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td style="font-size:12px">BCC LEVERANO</td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)"></td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editPassiva(1781687622990)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;passive&#39;,1781687622990)">✕</button></div></td>
-      </tr><tr>
-        <td><span class="badge tipo-socio">Socio</span></td>
-        <td>MATTIA</td><td>—</td>
-        <td>SEGNALAZIONE CONTRATTI IREN</td>
-        <td><span class="badge bg-amber">Compenso socio</span></td>
-        <td class="num">3055,00</td>
-        <td>0%</td>
-        <td class="num" style="color:var(--text2)">0,00</td>
-        <td class="num" style="font-weight:600">3055,00</td>
-        <td>Feb</td>
-        <td class="num" style="color:var(--teal-mid)">3055,00</td>
-        <td class="num" style="color:var(--orange-mid)">—</td>
-        <td class="num" style="color:var(--purple-mid)">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="font-size:12px">—</td>
-        <td style="text-align:center"><span class="ok-icon">✓</span></td>
-        <td style="font-size:12px">BCC LEVERANO</td>
-        <td>—</td>
-        <td style="font-size:12px;color:var(--text3)"></td>
-        <td style="white-space:nowrap"><div style="display:inline-flex;gap:4px"><button class="btn btn-edit btn-sm" onclick="editPassiva(1781687622873)">✏</button><button class="btn btn-danger btn-sm" onclick="delRecord(&#39;passive&#39;,1781687622873)">✕</button></div></td>
-      </tr></tbody>
-      <tfoot><tr id="tf-passive" class="tfoot"><td colspan="5">Totale (12)</td><td class="num">51.113,50</td><td></td><td></td><td class="num">51.113,50</td><td></td><td class="num" style="color:var(--teal-mid)">46.093,50</td><td class="num" style="color:var(--orange-mid)">5020,00</td><td class="num" style="color:var(--purple-mid)">0,00</td><td colspan="7"></td></tr></tfoot>
+      <tbody id="tb-passive"></tbody>
+      <tfoot><tr id="tf-passive" class="tfoot"></tr></tfoot>
     </table></div>
   </div>
 </div>
@@ -1461,7 +702,7 @@ select option{background:#FFFFFF;color:#0D1116}
       </div>
       <div style="background:var(--bg2);border-radius:var(--radius);padding:14px;margin-bottom:16px">
         <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">📌 Stato sincronizzazione</div>
-        <div id="sync-status" style="font-size:12px;color:var(--text3)">✅ Dati sincronizzati</div>
+        <div id="sync-status" style="font-size:12px;color:var(--text3)">—</div>
       </div>
       <div style="padding-top:16px;border-top:0.5px solid var(--border);margin-bottom:12px">
         <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">📦 Importa dati storici</div>
@@ -1479,24 +720,34 @@ select option{background:#FFFFFF;color:#0D1116}
 </main>
 </div>
 
-<div class="toast" id="toast">📦 Migrati 88 record dal vecchio database</div>
+<div class="toast" id="toast"></div>
 
 <script>
 // ===== CONFIG =====
 const APP_PIN = '1612';
 const SB_URL = 'https://hxybhwqvmzyiyimnyham.supabase.co';
 const SB_KEY = 'sb_publishable_0_-6pkbzH3SCVaQMuKw0mA_8kQ79kfh';
-const TABLES = ['fatture','passive','tasse'];
-const MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
-const MS = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
-const YEARS = [2024,2025,2026,2027];
-const fmt = v => new Intl.NumberFormat('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2}).format(v||0);
-const fmtK = v => {const a=Math.abs(v),s=v<0?'−':'';return s+'€'+(a>=100000?(a/1000).toFixed(0)+'k':a>=10000?(a/1000).toFixed(1)+'k':fmt(a));};
-
-let yr = 2026, mo = new Date().getMonth();
-let db = {fatture:[], passive:[], tasse:[]};
-let chartInst = null;
-let sb; document.addEventListener("DOMContentLoaded", function(){ sb = window.supabase.createClient(SB_URL, SB_KEY); });
+// ===== SUPABASE CLIENT (fetch-based, no CDN needed) =====
+const _H = () => ({'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json'});
+const sb = {
+  from: (table) => ({
+    select: (cols) => fetch(`${SB_URL}/rest/v1/${table}?select=${cols||'*'}`, {headers: _H()})
+      .then(r => r.json().then(data => r.ok ? {data, error: null} : {data: null, error: data})),
+    upsert: (obj) => fetch(`${SB_URL}/rest/v1/${table}`, {
+      method: 'POST',
+      headers: {..._H(), 'Prefer': 'resolution=merge-duplicates,return=minimal'},
+      body: JSON.stringify(Array.isArray(obj) ? obj : [obj])
+    }).then(r => r.ok ? {error: null} : r.json().then(e => ({error: e}))),
+    delete: () => ({
+      eq: (col, val) => fetch(`${SB_URL}/rest/v1/${table}?${col}=eq.${encodeURIComponent(val)}`, {
+        method: 'DELETE', headers: {..._H(), 'Prefer': 'return=minimal'}
+      }).then(r => r.ok ? {error: null} : r.json().then(e => ({error: e}))),
+      neq: (col, val) => fetch(`${SB_URL}/rest/v1/${table}?${col}=neq.${encodeURIComponent(val)}`, {
+        method: 'DELETE', headers: {..._H(), 'Prefer': 'return=minimal'}
+      }).then(r => r.ok ? {error: null} : r.json().then(e => ({error: e})))
+    })
+  })
+};
 
 // ===== PIN =====
 let pinBuf = '';
