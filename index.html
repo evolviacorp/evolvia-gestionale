@@ -727,6 +727,15 @@ select option{background:#FFFFFF;color:#0D1116}
 const APP_PIN = '1612';
 const SB_URL = 'https://hxybhwqvmzyiyimnyham.supabase.co';
 const SB_KEY = 'sb_publishable_0_-6pkbzH3SCVaQMuKw0mA_8kQ79kfh';
+const TABLES = ['fatture','passive','tasse'];
+const MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const MS = ['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+const YEARS = [2024,2025,2026,2027];
+const fmt = v => new Intl.NumberFormat('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2}).format(v||0);
+const fmtK = v => {const a=Math.abs(v),s=v<0?'\u2212':'';return s+'\u20ac'+(a>=100000?(a/1000).toFixed(0)+'k':a>=10000?(a/1000).toFixed(1)+'k':fmt(a));};
+let yr = 2026, mo = new Date().getMonth();
+let db = {fatture:[], passive:[], tasse:[]};
+let chartInst = null;
 // ===== SUPABASE CLIENT (fetch-based, no CDN needed) =====
 const _H = () => ({'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json'});
 const sb = {
