@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<!-- saved from url=(0061)file:///C:/Users/matti/Downloads/Evolvia_Gestionale_v2_9.html -->
-<html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="it">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Evolvia — Gestionale v2</title>
-<script src="./index_files/xlsx.full.min.js.download"></script>
-<script src="./index_files/chart.js.download"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -252,16 +252,16 @@ select option{background:#FFFFFF;color:#0D1116}
       <div class="pin-dot" id="d3"></div>
     </div>
     <div class="pin-keypad">
-      <button class="pin-key" onclick="pinKey(&#39;1&#39;)">1</button>
-      <button class="pin-key" onclick="pinKey(&#39;2&#39;)">2</button>
-      <button class="pin-key" onclick="pinKey(&#39;3&#39;)">3</button>
-      <button class="pin-key" onclick="pinKey(&#39;4&#39;)">4</button>
-      <button class="pin-key" onclick="pinKey(&#39;5&#39;)">5</button>
-      <button class="pin-key" onclick="pinKey(&#39;6&#39;)">6</button>
-      <button class="pin-key" onclick="pinKey(&#39;7&#39;)">7</button>
-      <button class="pin-key" onclick="pinKey(&#39;8&#39;)">8</button>
-      <button class="pin-key" onclick="pinKey(&#39;9&#39;)">9</button>
-      <button class="pin-key" onclick="pinKey(&#39;0&#39;)" style="grid-column:2">0</button>
+      <button class="pin-key" onclick="pinKey('1')">1</button>
+      <button class="pin-key" onclick="pinKey('2')">2</button>
+      <button class="pin-key" onclick="pinKey('3')">3</button>
+      <button class="pin-key" onclick="pinKey('4')">4</button>
+      <button class="pin-key" onclick="pinKey('5')">5</button>
+      <button class="pin-key" onclick="pinKey('6')">6</button>
+      <button class="pin-key" onclick="pinKey('7')">7</button>
+      <button class="pin-key" onclick="pinKey('8')">8</button>
+      <button class="pin-key" onclick="pinKey('9')">9</button>
+      <button class="pin-key" onclick="pinKey('0')" style="grid-column:2">0</button>
       <button class="pin-key del" onclick="pinDel()">⌫</button>
     </div>
     <div class="pin-error" id="pin-error"></div>
@@ -288,14 +288,14 @@ select option{background:#FFFFFF;color:#0D1116}
     </div>
   </div>
   <div class="nav-section">Principale</div>
-  <div class="nav-item active" onclick="go(&#39;dashboard&#39;)">📊 Dashboard</div>
-  <div class="nav-item" onclick="go(&#39;fatture&#39;)">📄 Fatture emesse</div>
-  <div class="nav-item" onclick="go(&#39;passive&#39;)">📤 Fatture passive</div>
+  <div class="nav-item active" onclick="go('dashboard')">📊 Dashboard</div>
+  <div class="nav-item" onclick="go('fatture')">📄 Fatture emesse</div>
+  <div class="nav-item" onclick="go('passive')">📤 Fatture passive</div>
   <div class="nav-section">Analisi</div>
-  <div class="nav-item" onclick="go(&#39;tasse&#39;)">🧾 Tasse &amp; F24</div>
-  <div class="nav-item" onclick="go(&#39;report&#39;)">📈 Report annuale</div>
+  <div class="nav-item" onclick="go('tasse')">🧾 Tasse & F24</div>
+  <div class="nav-item" onclick="go('report')">📈 Report annuale</div>
   <div class="nav-section">Strumenti</div>
-  <div class="nav-item" onclick="go(&#39;esporta&#39;)">⬇ Esporta dati</div>
+  <div class="nav-item" onclick="go('esporta')">⬇ Esporta dati</div>
   <div class="sidebar-footer">
     <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Anno</div>
     <div class="year-row" id="year-row"></div>
@@ -343,11 +343,11 @@ select option{background:#FFFFFF;color:#0D1116}
   <!-- ULTIME OPERAZIONI -->
   <div class="two-col">
     <div class="card">
-      <div class="card-header"><span class="card-title">📄 Ultime fatture emesse</span><button class="btn btn-sm" onclick="go(&#39;fatture&#39;)">Tutte →</button></div>
+      <div class="card-header"><span class="card-title">📄 Ultime fatture emesse</span><button class="btn btn-sm" onclick="go('fatture')">Tutte →</button></div>
       <div class="table-wrap"><table><thead><tr><th>Cliente</th><th class="num">Impon.</th><th>Q.M</th><th>Q.R</th><th>Q.S</th></tr></thead><tbody id="dash-fatt"></tbody></table></div>
     </div>
     <div class="card">
-      <div class="card-header"><span class="card-title">📤 Ultime fatture passive</span><button class="btn btn-sm" onclick="go(&#39;passive&#39;)">Tutte →</button></div>
+      <div class="card-header"><span class="card-title">📤 Ultime fatture passive</span><button class="btn btn-sm" onclick="go('passive')">Tutte →</button></div>
       <div class="table-wrap"><table><thead><tr><th>Tipo</th><th>Fornitore/Socio</th><th class="num">Importo</th></tr></thead><tbody id="dash-pass"></tbody></table></div>
     </div>
   </div>
@@ -358,8 +358,8 @@ select option{background:#FFFFFF;color:#0D1116}
   <div class="page-header">
     <div><div class="page-title">Fatture Emesse</div><div class="page-sub">Quote di competenza soci + compensi agenti</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-sm" onclick="exportXls(&#39;fatture&#39;)">⬇ Excel</button>
-      <button class="btn btn-sm btn-primary" onclick="toggleForm(&#39;ff&#39;)">+ Nuova fattura</button>
+      <button class="btn btn-sm" onclick="exportXls('fatture')">⬇ Excel</button>
+      <button class="btn btn-sm btn-primary" onclick="toggleForm('ff')">+ Nuova fattura</button>
     </div>
   </div>
   <div class="card">
@@ -376,7 +376,7 @@ select option{background:#FFFFFF;color:#0D1116}
       </div>
       <div class="frow c4">
         <div class="field"><label>Imponibile (€)</label><input id="ff-imp" type="number" step="0.01" placeholder="0.00" oninput="onImpChange()"></div>
-        <div class="field"><label>IVA %</label><select id="ff-iva" onchange="onIvaChange(&#39;ff&#39;)">
+        <div class="field"><label>IVA %</label><select id="ff-iva" onchange="onIvaChange('ff')">
           <option value="22">22%</option><option value="10">10%</option><option value="4">4%</option><option value="0">Esente</option>
         </select></div>
         <div class="field"><label>Mese</label><select id="ff-month"></select></div>
@@ -389,7 +389,7 @@ select option{background:#FFFFFF;color:#0D1116}
       <div style="display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
         <label class="check-row"><input type="checkbox" id="ff-boni"> Bonifico ricevuto</label>
         <label class="check-row"><input type="checkbox" id="ff-nc"> Nota di credito</label>
-        <label class="check-row"><input type="checkbox" id="ff-ivacustom" onchange="onIvaChange(&#39;ff&#39;)"> IVA personalizzata (€)</label>
+        <label class="check-row"><input type="checkbox" id="ff-ivacustom" onchange="onIvaChange('ff')"> IVA personalizzata (€)</label>
         <div id="ff-ivacustom-box" style="display:none;align-items:center;gap:8px">
           <label style="font-size:12px;color:var(--text2);font-weight:600">IVA €:</label>
           <input id="ff-ivaeuro" type="number" step="0.01" placeholder="0.00" style="width:120px;padding:7px 10px;font-size:13px;border:1px solid var(--border2);border-radius:var(--radius);background:#FFFFFF;color:#0D1116">
@@ -435,7 +435,7 @@ select option{background:#FFFFFF;color:#0D1116}
       <input type="hidden" id="ff-edit-id" value="">
       <div class="form-actions">
         <button class="btn btn-primary" onclick="saveFattura()">Salva fattura</button>
-        <button class="btn btn-ghost" onclick="cancelForm(&#39;ff&#39;)">Annulla</button>
+        <button class="btn btn-ghost" onclick="cancelForm('ff')">Annulla</button>
       </div>
     </div>
     <div class="filter-bar">
@@ -466,8 +466,8 @@ select option{background:#FFFFFF;color:#0D1116}
   <div class="page-header">
     <div><div class="page-title">Fatture Passive</div><div class="page-sub">Fatture soci, agenti e spese societarie</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-sm" onclick="exportXls(&#39;passive&#39;)">⬇ Excel</button>
-      <button class="btn btn-sm btn-primary" onclick="toggleForm(&#39;fp&#39;)">+ Nuova fattura passiva</button>
+      <button class="btn btn-sm" onclick="exportXls('passive')">⬇ Excel</button>
+      <button class="btn btn-sm btn-primary" onclick="toggleForm('fp')">+ Nuova fattura passiva</button>
     </div>
   </div>
   <div class="card">
@@ -475,9 +475,9 @@ select option{background:#FFFFFF;color:#0D1116}
       <div class="form-title" id="fp-title">Nuova fattura passiva</div>
       <!-- Tipo -->
       <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-        <button class="btn btn-sm" id="ftipo-socio" onclick="setTipoPassiva(&#39;socio&#39;)" style="border-color:var(--teal);color:var(--teal-mid)">👤 Fattura socio</button>
-        <button class="btn btn-sm" id="ftipo-agente" onclick="setTipoPassiva(&#39;agente&#39;)">🤝 Fattura agente</button>
-        <button class="btn btn-sm" id="ftipo-spesa" onclick="setTipoPassiva(&#39;spesa&#39;)">🏢 Spesa societaria</button>
+        <button class="btn btn-sm" id="ftipo-socio" onclick="setTipoPassiva('socio')" style="border-color:var(--teal);color:var(--teal-mid)">👤 Fattura socio</button>
+        <button class="btn btn-sm" id="ftipo-agente" onclick="setTipoPassiva('agente')">🤝 Fattura agente</button>
+        <button class="btn btn-sm" id="ftipo-spesa" onclick="setTipoPassiva('spesa')">🏢 Spesa societaria</button>
       </div>
       <input type="hidden" id="fp-tipo" value="socio">
 
@@ -490,7 +490,7 @@ select option{background:#FFFFFF;color:#0D1116}
         <div class="field"><label>N° Documento</label><input id="fp-num" placeholder="001/2026"></div>
         <div class="field"><label>Descrizione</label><input id="fp-desc" placeholder="Descrizione..."></div>
         <div class="field" id="fp-cat-wrap"><label>Categoria</label><select id="fp-cat">
-          <optgroup label="Compensi soci &amp; collaboratori">
+          <optgroup label="Compensi soci & collaboratori">
             <option>Compenso socio</option>
             <option>Commissione agente/rete</option>
             <option>Collaborazione occasionale</option>
@@ -499,18 +499,18 @@ select option{background:#FFFFFF;color:#0D1116}
           <optgroup label="Costi operativi fissi">
             <option>Affitto ufficio</option>
             <option>Leasing auto</option>
-            <option>Telefonia &amp; connettività</option>
-            <option>Software &amp; abbonamenti</option>
-            <option>Banca &amp; commissioni</option>
+            <option>Telefonia & connettività</option>
+            <option>Software & abbonamenti</option>
+            <option>Banca & commissioni</option>
           </optgroup>
           <optgroup label="Servizi professionali">
             <option>Commercialista / Consulenza fiscale</option>
             <option>Consulenza legale</option>
-            <option>Marketing &amp; pubblicità</option>
+            <option>Marketing & pubblicità</option>
           </optgroup>
           <optgroup label="Costi variabili">
-            <option>Carburante &amp; trasferte</option>
-            <option>Cene &amp; rappresentanza</option>
+            <option>Carburante & trasferte</option>
+            <option>Cene & rappresentanza</option>
             <option>Materiale ufficio</option>
             <option>Formazione</option>
           </optgroup>
@@ -527,7 +527,7 @@ select option{background:#FFFFFF;color:#0D1116}
       </div>
       <div class="frow c4">
         <div class="field"><label>Imponibile (€)</label><input id="fp-imp" type="number" step="0.01" placeholder="0.00" oninput="onPassivaImpChange()"></div>
-        <div class="field"><label>IVA %</label><select id="fp-iva" onchange="onIvaChange(&#39;fp&#39;)">
+        <div class="field"><label>IVA %</label><select id="fp-iva" onchange="onIvaChange('fp')">
           <option value="22">22%</option><option value="10">10%</option><option value="4">4%</option><option value="0">Esente/N.A.</option>
         </select></div>
         <div class="field"><label>Mese</label><select id="fp-month"></select></div>
@@ -544,7 +544,7 @@ select option{background:#FFFFFF;color:#0D1116}
       <div style="display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
         <label class="check-row"><input type="checkbox" id="fp-pag"> Pagata</label>
         <label class="check-row"><input type="checkbox" id="fp-nc"> Nota di credito</label>
-        <label class="check-row"><input type="checkbox" id="fp-ivacustom" onchange="onIvaChange(&#39;fp&#39;)"> IVA personalizzata (€)</label>
+        <label class="check-row"><input type="checkbox" id="fp-ivacustom" onchange="onIvaChange('fp')"> IVA personalizzata (€)</label>
         <div id="fp-ivacustom-box" style="display:none;align-items:center;gap:8px">
           <label style="font-size:12px;color:var(--text2);font-weight:600">IVA €:</label>
           <input id="fp-ivaeuro" type="number" step="0.01" placeholder="0.00" style="width:120px;padding:7px 10px;font-size:13px;border:1px solid var(--border2);border-radius:var(--radius);background:#FFFFFF;color:#0D1116">
@@ -585,7 +585,7 @@ select option{background:#FFFFFF;color:#0D1116}
       <input type="hidden" id="fp-edit-id" value="">
       <div class="form-actions">
         <button class="btn btn-primary" onclick="savePassiva()">Salva</button>
-        <button class="btn btn-ghost" onclick="cancelForm(&#39;fp&#39;)">Annulla</button>
+        <button class="btn btn-ghost" onclick="cancelForm('fp')">Annulla</button>
       </div>
     </div>
     <div class="filter-bar">
@@ -618,8 +618,8 @@ select option{background:#FFFFFF;color:#0D1116}
 <!-- ===== TASSE & F24 ===== -->
 <div class="page" id="page-tasse">
   <div class="page-header">
-    <div><div class="page-title">Tasse &amp; F24</div><div class="page-sub">Scadenze fiscali e registro pagamenti</div></div>
-    <button class="btn btn-sm btn-primary" onclick="toggleForm(&#39;ft&#39;)">+ Nuova scadenza</button>
+    <div><div class="page-title">Tasse & F24</div><div class="page-sub">Scadenze fiscali e registro pagamenti</div></div>
+    <button class="btn btn-sm btn-primary" onclick="toggleForm('ft')">+ Nuova scadenza</button>
   </div>
 
   <!-- IVA calcolata automaticamente -->
@@ -652,7 +652,7 @@ select option{background:#FFFFFF;color:#0D1116}
       <input type="hidden" id="ft-edit-id" value="">
       <div class="form-actions">
         <button class="btn btn-primary" onclick="saveTassa()">Salva</button>
-        <button class="btn btn-ghost" onclick="cancelForm(&#39;ft&#39;)">Annulla</button>
+        <button class="btn btn-ghost" onclick="cancelForm('ft')">Annulla</button>
       </div>
     </div>
     <div class="card-header" style="border-top:0;border-bottom:1px solid var(--border)"><span class="card-title">📋 Scadenze registrate</span></div>
@@ -711,7 +711,7 @@ select option{background:#FFFFFF;color:#0D1116}
         <div id="mig-status" style="font-size:12px;color:var(--text3);margin-top:8px"></div>
       </div>
       <div style="padding-top:16px;border-top:0.5px solid var(--border)">
-        <button class="btn btn-danger btn-sm" onclick="if(confirm(&#39;Cancellare TUTTI i dati? Azione irreversibile.&#39;))clearAll()">🗑 Cancella tutti i dati</button>
+        <button class="btn btn-danger btn-sm" onclick="if(confirm('Cancellare TUTTI i dati? Azione irreversibile.'))clearAll()">🗑 Cancella tutti i dati</button>
       </div>
     </div>
   </div>
@@ -1502,6 +1502,5 @@ async function runMigrazione(){
 }
 
 </script>
-
-
-</body></html>
+</body>
+</html>
