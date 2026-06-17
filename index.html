@@ -789,8 +789,7 @@ async function load(){
       if(error)throw error;
       db[t]=(data||[]).map(r=>({...r.data,id:Number(r.id)}));
     }
-    // Migrazione dati vecchi: converti prelievi+spese -> passive
-    await migrateOldData();
+    // Migrazione automatica disabilitata - usare il bottone manuale
     setSync('✅ Dati sincronizzati');
   }catch(e){
     setSync('⚠️ Errore: '+e.message);
